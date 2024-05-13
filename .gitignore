@@ -1,0 +1,6 @@
+.DS_Store
+*cpython-310.pyc
+static/
+Z_Django_Comands/
+z_Archived_Code/
+db.sqlite3
