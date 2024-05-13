@@ -1,0 +1,31 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Sale vinyl options{% endblock %}
+
+{% block nav-title %}SALE VINYL OPTIONS <span style="color: green;">{{ release.catalog_number }}</span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="margin-top:30px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'release_compile' library.id release.id %}" style="width:300px" class="btn btn-secondary btn-sm">Return to Release Compile</a>
+    </span>
+  </header>
+</div>
+<br>
+
+<div style="margin-top: 120px; display:flex; justify-content:center">
+  <div>
+    <span style="display:flex; justify-content:center">
+      <a href="{% url 'sale_vinyl_edit_details' library.id release.id %}" style="width:400px" class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit Sale Details</a>
+    </span>
+    <br>
+
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,303 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{ cashbook_month.start_date|date:'F y'}} Forecast Edit{% endblock %}
+
+{% block nav-title %}{{ cashbook_month.start_date|date:'F y'}} FORECAST EDIT{% endblock %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:center; margin-top: 40px">
+  <form action="{% url 'cashbook_month_edit_forecast_submission' library.id cashbook_month.id %}" method="post" enctype="multipart/form-data">
+    <div class="row" style="width:1200px; display:flex; justify-content:space-between">
+      <div class="column" style="width:300px;">
+      
+        {% csrf_token %}
+
+        <hr style="width:300px">       
+        <strong>Income</strong><br>
+
+        <!--#region funds_introduced_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="funds_introduced_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Funds Introduced
+              </span>
+              <span>
+                {{ comparison_cashbook_month.funds_introduced_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.funds_introduced_forecast }}" id="funds_introduced_forecast" name="funds_introduced_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+        <!--#region interest_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="interest_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Interest
+              </span>
+              <span>
+                {{ comparison_cashbook_month.interest_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.interest_forecast }}" id="interest_forecast" name="interest_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+        <!--#region logistics_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="logistics_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Logistics
+              </span>
+              <span>
+                {{ comparison_cashbook_month.logistics_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.logistics_forecast }}" id="logistics_forecast" name="logistics_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+        <!--#region sales_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="sales_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Sales
+              </span>
+              <span>
+                {{ comparison_cashbook_month.sales_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.sales_forecast }}" id="sales_forecast" name="sales_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+        
+        <hr style="width:300px; margin-top:39px">       
+        <strong>Expenses</strong><br>
+
+        <!--#region bank_fee_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="bank_fee_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Bank Fees
+              </span>
+              <span>
+                {{ comparison_cashbook_month.bank_fees_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.bank_fee_forecast }}" id="bank_fee_forecast" name="bank_fee_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+
+      </div>
+      <div class="column" style="width:300px;">
+
+        <hr style="width:300px">
+
+        <!--#region consumables_forecast -->
+        <div class="form-group col-md-12" style="width:300px;  margin-top:50px">
+          <label for="consumables_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Consumables
+              </span>
+              <span>
+                {{ comparison_cashbook_month.consumables_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.consumables_forecast }}" id="consumables_forecast" name="consumables_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+        <!--#region communications_forecast -->
+        <div class="form-group col-md-12" style="width:300px;">
+          <label for="communications_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Comminications & Internet
+              </span>
+              <span>
+                {{ comparison_cashbook_month.communications_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.communications_forecast }}" id="communications_forecast" name="communications_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+        
+        <!--#region drawings_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="drawings_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Drawings
+              </span>
+              <span>
+                {{ comparison_cashbook_month.drawings_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.drawings_forecast }}" id="drawings_forecast" name="drawings_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+        <!--#region fit_out_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="fit_out_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Fit Out
+              </span>
+              <span>
+                {{ comparison_cashbook_month.fit_out_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.fit_out_forecast }}" id="fit_out_forecast" name="fit_out_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+        <!--#region home_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="home_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Home Expenses
+              </span>
+              <span>
+                {{ comparison_cashbook_month.home_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.home_forecast }}" id="home_forecast" name="home_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+        <!--#region professional_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="professional_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Professional
+              </span>
+              <span>
+                {{ comparison_cashbook_month.professional_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.professional_forecast }}" id="professional_forecast" name="professional_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+      </div>
+      <div class="column" style="width:300px;">
+
+        <hr style="width:300px">
+
+        <!--#region stock_forecast -->
+        <div class="form-group col-md-12" style="width:300px; ;  margin-top:50px">
+          <label for="stock_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Stock
+              </span>
+              <span>
+                {{ comparison_cashbook_month.stock_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.stock_forecast }}" id="stock_forecast" name="stock_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+        <!--#region shipping_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="shipping_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Shipping
+              </span>
+              <span>
+                {{ comparison_cashbook_month.shipping_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.shipping_forecast }}" id="shipping_forecast" name="shipping_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+        
+        <!--#region sundry_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="sundry_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Sundry
+              </span>
+              <span>
+                {{ comparison_cashbook_month.sundry_actual|floatformat:0 }}
+              </span>
+            </span>
+          </label>
+          <input type="number" step=".01" value="{{ cashbook_month.sundry_forecast }}" id="sundry_forecast" name="sundry_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+
+        <hr style="width:300px; margin-top:39px">
+        <strong>Balance</strong><br>
+
+        <!--#region opening_balance_forecast -->
+        <div class="form-group col-md-12" style="width:300px">
+          <label for="opening_balance_forecast" class="form-label" >
+            <span style="display:flex; justify-content:space-between; width:300px">
+              <span>
+                Opening Balance
+              </span>
+              <span>
+                {{ comparison_cashbook_month.closing_balance }}
+              </span>
+            </span>
+          </label>
+          <label for="" class="form-label"></label>
+          <input type="number" step=".01" value="{{ cashbook_month.opening_balance_forecast }}" id="opening_balance_forecast" name="opening_balance_forecast" class="form-control">
+        </div>
+        <!--#endregion -->
+        
+        <hr style="margin-top:39px; width:300px">   
+
+        <!--#region submit and cancel-->
+        <div class="form-group col-md-12" style="margin-top:30px">
+          <input type="submit" value="Edit Cashflow Forecast" class="btn btn-secondary btn-sm form-control" style="width:300px"> 
+        </div>
+
+        <div class="form-group col-md-12" style="margin-top:30px">
+          <button onclick="history.back()" class="btn btn-warning btn-sm" style="width:300px">Cancel</button>
+        </div>
+        <!--#endregion -->
+
+      </div>
+    </div>
+
+    <div class="row" style="width:1225px; display:flex; justify-content:space-between; margin-top:30px">
+        <!--#region details -->
+        <div class="form-group col-md-12">
+          <strong>Details</strong><br><br>
+          <textarea id="details" name="details" class="form-control" style="height: 500px">{{ cashbook_month.details }}</textarea>
+        </div>
+        <!--#endregion -->      
+    </div>
+  </form>
+</div>
+
+{% endblock %}

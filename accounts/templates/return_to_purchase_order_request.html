@@ -1,0 +1,17 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Go to Purchase Order Request{% endblock %}
+
+{% block nav-title %}GO TO PURCHASE ORDER REQUEST{% endblock %}
+
+{% block content %}
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <a href="{% url 'purchase_order_request' library.id purchase_order_request.id %}" id="auto_clicked_button" style="width:400px" class="btn btn-default btn-sm">Go to Purchase Order Request</a>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

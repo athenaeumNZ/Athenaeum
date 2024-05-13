@@ -1,0 +1,38 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Add Audio {{ release }} {{ track.index }}.{% endblock %}
+
+{% block nav-title %}ADD AUDIO <span style="color:green">{{ release }} <span style="text-transform: none;">{{ track.index }}.</span></span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="margin-top:30px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'release_compile' library.id release.id %}" style="width:300px" class="btn btn-secondary btn-sm">Return to Release Compile</a>
+    </span>
+  </header>
+</div>
+<br>
+
+<div style="margin-top:100px; display:flex; justify-content:center">
+  <form action="{% url 'track_audio_add_submission' library.id release.id track.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+    {% csrf_token %}
+
+    <!--audio-->
+    <div class="form-group col-md-12">
+      <input class="form-control" id="audio" type="file" name="audio">
+    </div>
+    <br>
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Add Audio" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+
+{% endblock %}

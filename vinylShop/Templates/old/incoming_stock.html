@@ -1,0 +1,209 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Incoming Stock{% endblock %} 
+
+
+{% block nav-title %}{{ library }} <span style="color:green">ON ORDER</span>{% endblock %}
+
+{% block content %}
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:25px;">
+  <span style="display:flex; justify-content:space-between">
+    <div class="row">
+      <div class="column">
+        <table>
+          <form action="{% url 'incoming_stock_search' library.id %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <tbody>
+            <tr>
+              <td style="width:100px; padding-right:5px">
+                {% if search_member and search_member != 'Member...' %}
+                  <select id="search_member" style="width:100px; height:30px; border:3px solid green " name="search_member">
+                {% else %}
+                  <select id="search_member" style="width:100px; height:30px;" name="search_member">
+                {% endif %}
+                {% if search_member and search_member != 'Member...' %}
+                  <option selected>{{ search_member }}</option>
+                  <option></option>
+                {% else %}
+                  <option selected>Member...</option>
+                {% endif %}
+                {% for member in members %}
+                  <option value="{{ member }}">{{ member }}</option>
+                {% endfor %}
+                </select>
+              </td>
+              
+              <!-- search artist -->
+              <td style="width:150px; padding-right:5px">
+                {% if search_artist %}
+                  <input name="search_artist" value="{{ search_artist }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Artist..." name="search_artist">
+                {% endif %}
+              </td>
+
+              <!-- search title -->
+              <td style="width:150px; padding-right:5px">
+                {% if search_title %}
+                  <input name="search_title" value="{{ search_title }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Title..." name="search_title">
+                {% endif %}
+              </td>
+
+              <!-- search label -->
+              <td style="width:150px; padding-right:5px">
+                {% if search_label %}
+                  <input name="search_label" value="{{ search_label }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Label..." name="search_label">
+                {% endif %}
+              </td>
+
+              <!-- search catalog -->
+              <td style="width:150px; padding-right:5px">
+                {% if search_catalog %}
+                  <input name="search_catalog" value="{{ search_catalog }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Catalog..." name="search_catalog">
+                {% endif %}
+              </td>
+
+              <!--#region query sort -->
+              <td style="width:100px; padding-right:5px"> 
+                {% if search_order_by and search_order_by != 'Sort...' %}
+                  <select id="search_order_by" style="width:100px; height:30px; border:3px solid green" name="search_order_by">
+                {% else %}
+                  <select id="search_order_by" style="width:100px; height:30px;" name="search_order_by">
+                {% endif %}
+                {% if search_order_by and search_order_by != 'Sort...' %}
+                  <option value="{{ search_order_by }}" selected>{{ search_order_by }}</option>
+                  <option></option>
+                {% else %}
+                  <option selected>Sort...</option>
+                {% endif %}
+                {% for order_query in query_order_by %}
+                  <option value="{{ order_query }}">{{ order_query }}</option>
+                {% endfor %}
+                </select>
+              </td>
+              <!--#endregion -->
+
+              <!--#region search_distributor -->
+              <td style="width:110px; padding-right:5px">
+                {% if search_distributor and search_distributor != 'Dist...' %}
+                  <select id="search_distributor" style="width:110px; height:30px; border:3px solid green" name="search_distributor">
+                {% else %}
+                  <select id="search_distributor" style="width:110px; height:30px;" name="search_distributor">
+                {% endif %}
+                  {% if search_distributor and search_distributor != 'Dist...' %}
+                    <option value="{{ search_distributor }}" selected>{{ search_distributor }}</option>
+                    <option></option>
+                  {% else %}
+                    <option selected>Dist...</option>
+                  {% endif %}
+                  {% for distributor in distributors %}
+                    <option value="{{ distributor.distributor_code }}">{{ distributor.distributor_code }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <!--#endregion -->
+
+              <td>
+                <button type="submit" class="btn btn-secondary btn-sm" style="height:30px; margin-right:5px"><i class="fas fa-search"></i></button>
+              </td>
+              <td>
+                <a href="{% url 'incoming_stock' library.id %}" class="btn btn-secondary btn-sm" style="height:30px;">Reset Search</a>
+              </td>
+            </tr>
+          </tbody>
+          </form>
+        </table>
+      </div>
+    </div>
+  </span>
+  <span style="display:flex; align-items:center">
+  </span>
+</div>
+
+<!--#region plates -->
+  <table class="table" style="margin-top:30px">
+    <thead>
+      <tr>
+        <th class="text-center" style="width:30px">IMG</th>
+        <th style="width:200px;" class="text-center">CATALOG</th>
+        <th class="text-center" style="width:90px">MEMBER</th>
+        <th class="text-center" style="width:100px"></th>
+        <th>ARTIST</th>
+        <th>TITLE</th>
+        <th>LABEL</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for plate in crate_plates %}
+        <tr>
+          <!--#region img -->
+          {% if plate.related_vinyl_plate.related_release.artwork %}
+            <td><a href="{% url 'incoming_stock_budle_plate_change_to_actual_plate' library.id plate.id %}"><img src="{{ plate.related_vinyl_plate.related_release.artwork.url }}" width="30px" height="30px"></a></td>
+          {% else %}
+            <td><a href="{% url 'incoming_stock_budle_plate_change_to_actual_plate' library.id plate.id %}">swap</a></td>
+          {% endif %}
+          <!--#endregion -->
+          
+          <td style="width:200px"><a href="{% url 'release' library.id plate.related_vinyl_plate.related_release.id %}"class="btn btn-secondary btn-sm" style="width:200px;" target="_blank">{{ plate.related_vinyl_plate }}</a></td>
+          
+          {% if search_member and search_member != 'Member...' %}
+            <td style="color:green; width:90px" class="text-center">{{ plate.contributor.membership_number }}</td>
+          {% else %}
+            <td class="text-center" style="width:90px">{{ plate.contributor.membership_number }}</td>
+          {% endif %}
+          <td style="width:100px; text-align:center;">
+            {% if user.member.is_library_shop and user.member == plate.contributor %}
+              <a href="{% url 'incoming_stock_move_to_sale_crate_submission' library.id plate.id %}" class="btn btn-warning btn-sm"><i class="fas fa-truck"></i></a>
+            {% else %}
+              <a href="{% url 'incoming_stock_move_submission' library.id plate.id %}" class="btn btn-warning btn-sm"><i class="fas fa-dolly"></i></a>
+            {% endif %}
+          </td>
+          <td>{{ plate.related_vinyl_plate.related_release.artist }}</td>
+          <td>{{ plate.related_vinyl_plate.related_release.release_title }}</td>
+          <td>{{ plate.related_vinyl_plate.related_release.label }}</td>  
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+<!--#endregion -->
+
+<!-- pagination-->
+<div style="padding-top: 5px;">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if crate_plates.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ crate_plates.previous_page_number }}">&lsaquo;</a></li>
+          {% if crate_plates.number > 2 %}
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+              {% if crate_plates.number > 3 %}
+                <span class="page-link">...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      {% for num in crate_plates.paginator.page_range %}
+        {% if crate_plates.number == num %}
+          <li class="page-item"><a class="page-link active" href="?page={{ num }}">{{ num }}</a></li>
+        {% elif num > crate_plates.number|add:'-2' and num < crate_plates.number|add:'2' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if crate_plates.has_next %}
+        {% if crate_plates.number < crate_plates.paginator.num_pages|add:'-2' %}
+          <span class="page-link">...</span>
+          <li class="page-item"><a class="page-link" href="?page={{ crate_plates.paginator.num_pages }}">{{ crate_plates.paginator.num_pages }}</a></li>
+        {% elif crate_plates.number < crate_plates.paginator.num_pages|add:'-1' %}
+          <li class="page-item"><a class="page-link" href="?page={{ crate_plates.paginator.num_pages }}">{{ crate_plates.paginator.num_pages }}</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link" href="?page={{ crate_plates.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav> 
+</div>
+{% endblock %}

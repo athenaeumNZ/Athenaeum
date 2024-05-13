@@ -1,0 +1,40 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Add Artist Naming Convention{% endblock %}
+
+{% block nav-title %}Add Artist Naming Convention{% endblock %}
+
+{% block content %}
+
+
+<div class="container" style="max-width: 400px; padding-top:65px">
+  <form action="{% url 'artist_naming_convention_add_submission' library.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- real_name -->
+    <div class="form-group col-md-12">
+      <label for="real_name" class="form-label">Real Name</label>
+      <input type="text" id="real_name" name="real_name" class="form-control" required>
+    </div>
+
+    <!-- use_this_artist_name -->
+    <div class="form-group col-md-12">
+      <label for="use_this_artist_name" class="form-label">Artist Name to Use</label>
+      <input type="text" id="use_this_artist_name" name="use_this_artist_name" class="form-control" required>
+    </div>
+
+    <!-- aliases -->
+    <div class="form-group col-md-12">
+      <label for="aliases" class="form-label">Variations</label>
+      <textarea id="aliases" name="aliases" class="form-control" required></textarea>
+    </div>
+    <br>
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Add Convention" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+
+{% endblock %}

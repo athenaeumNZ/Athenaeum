@@ -1,0 +1,31 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Delete {{ library_sale_vinyl }} from {{library.name}} Vinyl Shop{% endblock %}
+
+{% block nav-title %}Delete <span style="color: green">{{ library_sale_vinyl }}</span> from  Vinyl Shop{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:20px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'vinyl_ordering' library.id user.member.id %}" style="width:200px" class="btn btn-secondary btn-sm">Return to Vinyl Shop</a>
+    </span>
+  </header>
+</div>
+
+<div style="display:flex; justify-content:center; margin-top:100px">
+  <form action="{% url 'vinyl_shop_stock_delete_submission' library.id library_sale_vinyl.id %}" method="post" enctype="multipart/form-data" style="width: 400px;">
+    {% csrf_token %}
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Delete {{ library_sale_vinyl }} from Vinyl Shop" class="btn btn-danger btn-sm" style="width:300px"> 
+    </div>
+  </form>
+</div>
+
+{% endblock %}

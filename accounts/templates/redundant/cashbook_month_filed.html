@@ -1,0 +1,61 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Cashbook Month Filed{% endblock %}
+
+{% block nav-title %}CASHBOOK MONTH FILED{% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="margin-top:30px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel</button>
+    </span>
+  </header>
+</div>
+
+
+<div style="display:flex; justify-content:center; margin-top:20px">
+  <form action="{% url 'cashbook_entry_add_submission' library.id %}" method="post" enctype="multipart/form-data">
+    <div class="row" style="width:850px; display:flex; justify-content:space-between">
+      <div class="column" style="width:400px;">
+      
+        {% csrf_token %}
+
+        <!-- gst_return_filed -->
+        <div class="form-group col-md-12" style="margin-top:20px">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gst_return_filed" id="gst_return_filed1" value="True" checked>
+            <label class="form-check-label" for="gst_return_filed1">
+              GST Return Filed
+            </label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gst_return_filed" id="gst_return_filed2" value="False">
+            <label class="form-check-label" for="gst_return_filed2">
+              Not Filed
+            </label>
+          </div>
+        </div>
+
+        <!-- gst_filing_date -->
+        <div class="form-group col-md-12">
+          <label for="gst_filing_date" class="form-label">Date Filed</label>
+          <input type="date" id="gst_filing_date" name="gst_filing_date" class="form-control">
+        </div>
+
+        <!--submit-->
+        <div class="form-group col-md-12" style="margin-top:45px">
+          <input type="submit" value="Add Entry" class="btn btn-secondary btn-sm form-control"> 
+        </div>
+        
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

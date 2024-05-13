@@ -1,0 +1,377 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Vinyl Ordering{% endblock %} 
+
+{% block nav-title %}VINYL ORDERING{% endblock %}
+
+{% block content %}
+<!--#region header -->
+  <div style="padding-top:30px">
+    <table>
+      <form action="{% url 'vinyl_ordering_search' library.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <tbody>
+          <tr>
+            <!--#region search_artist -->
+            <td style="width:110px; padding-right:5px">
+              {% if search_artist %}
+                <input name="search_artist" value="{{ search_artist }}" style="border:3px solid green">
+              {% else %}
+                <input placeholder="Artist..." name="search_artist">
+              {% endif %}
+            </td>
+            <!--#endregion -->
+
+            <!--#region search_label -->
+            <td style="width:110px; padding-right:5px">
+              {% if search_label %}
+                <input name="search_label" value="{{ search_label }}" style="border:3px solid green">
+              {% else %}
+                <input placeholder="Label..." name="search_label">
+              {% endif %}
+            </td>
+            <!--#endregion -->
+
+            <!--#region search_catalog -->
+            <td style="width:110px; padding-right:5px">
+              {% if search_catalog %}
+                <input name="search_catalog" value="{{ search_catalog }}" style="border:3px solid green">
+              {% else %}
+                <input placeholder="Catalog..." name="search_catalog" autofocus>
+              {% endif %}
+            </td>
+            <!--#endregion -->
+
+            <!--#region reset search -->
+            <td>
+              <a href="{% url 'vinyl_ordering' library.id %}" class="btn btn-secondary btn-sm" style="height:30px;">Reset Search</a>
+            </td>
+            <!--#endregion -->
+
+            <!--#region WRS -->
+            <td>
+              <span style="float:right">
+                <a href="{% url 'weekly_release_sheets' library.id %}" class="btn btn-warning btn-sm" target="_blank">WRS</a>
+                <a href="{% url 'update_distributors_stock_submission' library.id %}" class="btn btn-warning btn-sm" onclick="return confirm('Update Distributor Stock Information?')">Update Stock</a>
+              </span>
+            </td>
+            <!--#endregion -->
+          
+          </tr>
+          <tr>
+
+            <!--#region search_distributor -->
+            <td style="width:230px; padding-right:5px">
+              {% if search_distributor and search_distributor != 'Dist...' %}
+                <select id="search_distributor" style="width:230px; height:30px; border:3px solid green" name="search_distributor">
+              {% else %}
+                <select id="search_distributor" style="width:230px; height:30px;" name="search_distributor">
+              {% endif %}
+                {% if search_distributor and search_distributor != 'Dist...' %}
+                  <option value="{{ search_distributor }}" selected>{{ search_distributor }}</option>
+                  <option></option>
+                {% else %}
+                  <option selected>Dist...</option>
+                {% endif %}
+                {% for distributor in distributors %}
+                  <option value="{{ distributor.distributor_code }}">{{ distributor.distributor_code }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <!--#endregion -->
+            
+            <!--#region query sort -->
+            <td style="width:230px; padding-right:5px"> 
+              {% if search_order_by and search_order_by != 'Sort...' %}
+                <select id="search_order_by" style="width:230px; height:30px; border:3px solid green" name="search_order_by">
+              {% else %}
+                <select id="search_order_by" style="width:230px; height:30px;" name="search_order_by">
+              {% endif %}
+              {% if search_order_by and search_order_by != 'Sort...' %}
+                <option value="{{ search_order_by }}" selected>{{ search_order_by }}</option>
+                <option></option>
+              {% else %}
+                <option selected>Sort...</option>
+              {% endif %}
+              {% for order_query in query_order_by %}
+                <option value="{{ order_query }}">{{ order_query }}</option>
+              {% endfor %}
+              </select>
+            </td>
+            <!--#endregion -->
+
+            <!--#region query filter -->
+            <td style="width:230px; padding-right:5px">
+              {% if search_query_filter and search_query_filter != 'Filter...' %}
+                <select id="search_query_filter" style="width:230px; height:30px; border:3px solid green" name="search_query_filter">
+              {% else %}
+                <select id="search_query_filter" style="width:230px; height:30px;" name="search_query_filter">
+              {% endif %}
+              {% if search_query_filter and search_query_filter != 'Filter...' %}
+                <option value="{{ search_query_filter }}" selected>{{ search_query_filter }}</option>
+                <option></option>
+              {% else %}
+                <option selected>Filter...</option>
+              {% endif %}
+              {% for filt in query_filter %}
+                <option value="{{ filt }}">{{ filt }}</option>
+              {% endfor %}
+              </select>
+            </td>
+            <!--#endregion  -->
+
+            <!--#region submit-->
+            <td>
+              <button type="submit" class="btn btn-secondary btn-sm" style="height:30px; margin-right:5px"><i class="fas fa-search"></i></button>
+            </td>
+
+            <!--#endregion -->
+          
+            <!--#region Add Release -->
+            <td style="width:100%">
+              <a href="{% url 'vinyl_release_add_check_catalog_number' library.id %}" class="btn btn-warning btn-sm" target="_blank"  style="float: right"><i class="fas fa-plus"></i> Release</a>
+            </td>
+            <!--#endregion -->
+          
+          </tr>
+        </tbody>
+      </form>
+    </table>
+  </div>
+<!--#endregion -->
+
+<!--#region releases -->
+{% if vinyl_releases|length >= 1 %}
+  <div style="margin-top:30px;">
+    <table class="table" id="library-crates">
+      <thead>
+        <tr>
+          <th style="text-align: center;"></th>
+
+          <th style="text-align: center;">Catalog Number</th>
+          <th></th>
+          <th>Artist</th>
+          <th>Title</th>
+          <th>Label</th>
+          <th>Released</th>
+          <th style="text-align:center;">STK</th>
+          <th style="text-align:center;">D STK</th>
+          <th style="text-align:center;">Cost</th>        
+          <th style="text-align:center;">Options</th>
+        </tr>
+      </thead>
+      {% for r in vinyl_releases %}
+      <tbody>
+        <tr>
+          <!--#region artwork -->
+          <td style="height:30px; width: 30px; text-align:center;">
+            {% if r.artwork_small %}
+              {% if r.supplier.name == 'Triple Vision Distribution' %}
+                <a href="https://distribution.triplevision.nl/release/{{ r.catalog_number }}/" target="_blank"><img src="{{ r.artwork_small.url }}" width="30" height="30"></a>
+              {% elif r.supplier.name == 'Unearthed Sounds Distribution' %}
+                <a href="https://www.unearthedsounds.co.uk/search/query?q={{ r.link_to_distributors_item }}" target="_blank"><img src="{{ r.artwork_small.url }}" width="30" height="30"></a>
+              {% elif r.supplier.name == 'White Peach' %}
+                <a href="https://www.unearthedsounds.co.uk/search/query?q={{ r.link_to_distributors_item }}" target="_blank"><img src="{{ r.artwork_small.url }}" width="30" height="30"></a>
+              {% else %}
+                <img src="{{ r.artwork_small.url }}" width="30" height="30">
+              {% endif %}
+            {% else %}
+              {% if r.supplier.name == 'Triple Vision Distribution' %}
+                <a href="https://distribution.triplevision.nl/release/{{ r.catalog_number }}/" target="_blank" style="color:black"><div style="text-align:center; font-size: 0.5rem;">No image</div></a>
+              {% elif r.supplier.name == 'Unearthed Sounds Distribution' %}
+                <a href="https://www.unearthedsounds.co.uk/search/query?q={{ r.link_to_distributors_item }}" target="_blank" style="color:black"><div style="text-align:center; font-size: 0.5rem;">No image</div></a>
+              {% elif r.supplier.name == 'White Peach' %}
+                <a href="https://www.unearthedsounds.co.uk/search/query?q={{ r.link_to_distributors_item }}" target="_blank" style="color:green"><div style="text-align:center; font-size: 0.5rem;">No image</div></a>
+              {% else %}
+                <div style="text-align:center; font-size: 0.5rem;">No image</div>
+              {% endif %}
+            {% endif %}
+          </td>
+
+          <!--#endregion -->
+        
+          <!--#region plate count and size -->
+
+          <td style="text-align:center;"><a href="{% url 'release_compile' library.id r.id %}"class="btn btn-secondary btn-sm" target="_blank" style="width:200px;font-style:normal">{{r.catalog_number}}</a></td>
+          {% if  r.plate_count == 1 %}
+            <td class="text-center">{{ r.plate_size }}</td>
+          {% else %}
+            <td class="text-center">{{ r.plate_count }}x{{ r.plate_size }}</td>
+          {% endif %}
+
+          <!--#endregion -->
+
+          <td>{{ r.artist }}</td>
+          <td>{{ r.release_title }}</td>
+          <td>{{ r.label }}</td>
+          <td>{{ r.release_date|date:"d m y" }}</td>
+          <!--#region in stock -->         
+            <td class="text-center">
+              {% if r.quantity_in_stock >= 0 %}
+                <span >{{ r.quantity_in_stock }}</span>
+              {% elif not r.quantity_in_stock %}
+                {% if r.stock_estimation == 0 %}
+                    <span style="color:gainsboro">-</span>
+                  {% else %}
+                <span style="color:gainsboro">0</span>
+                {% endif %}
+              {% endif %}
+              {% if r.quantity_incoming_stock >= 1 %}
+                <sup>+{{ r.quantity_incoming_stock }}</sup>
+              {% endif %}
+            </td>
+            
+          <!--#endregion -->
+          <td class="text-center">
+            {% if r.stock_estimation < 11 and r.stock_estimation >= 6 %}
+              <span style="color:red;">{{ r.stock_estimation }}</span>
+            {% elif r.stock_estimation == 0 %}
+              <span style="color:gainsboro">-</span>
+            {% elif r.stock_estimation < 6 %}
+              <span class="blink" style="color:red;">{{ r.stock_estimation }}</span>
+            {% else %}
+              <span style="color:black;">{{ r.stock_estimation }}</span>
+            {% endif %}
+          </td>
+          {% if r.pre_sale_price_NZ == 0 %}
+            <td class="text-center text-muted">TBC</td>
+          {% else %}
+            <td class="text-center" style="color:lightslategray">{{ r.pre_sale_price_NZ }}</td>
+          {% endif %}
+          
+          <td class="text-center">
+            {% if r in items %}
+              <a href="{% url 'cart' library.id user.member.id %}" class="btn btn-secondary btn-sm" style="color:gold"><i class="fas fa-shopping-cart"></i></a> 
+            {% else %}
+            <form action="{% url 'cart_add_item' library.id r.id previous_url %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-cart-plus"></i></button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>   
+      {% endfor %}
+    </table>
+  </div>
+{% endif %}
+<!--#endregion -->
+
+<!--#region cart-->
+<div style="margin-top:50px; padding:30px; border:1px black solid;">
+  <table class="table">
+      <thead>
+          <tr>
+              <th style="text-align: center;"></th>
+              <th style="text-align: center; width:30px">Catalog</th>
+              <th>Artist</th>
+              <th>Title</th>
+              <th>Label</th>
+              <th style="width:80px; text-align:center">Price</th>
+              <th style="width:80px; text-align:center"></th> 
+          </tr>
+      </thead>
+      
+      <tbody>
+          {% for item in cart %}
+              <tr>
+                  <!--#region artwork -->
+                      <td style="height:30px; width: 30px; text-align:center;">
+                          {% if item.vinyl_release.artwork %}
+                              <img src="{{ item.vinyl_release.artwork.url }}" width="30" height="30">
+                          {% else %}
+                          <div style="text-align:center; font-size: 0.5rem;">No image</div>
+                          {% endif %}
+                      </td>
+                  <!--#endregion -->
+
+
+                  <td style="text-align:center;"><a href="{% url 'release' library.id item.vinyl_release.id %}"class="btn btn-secondary btn-sm" target="_blank" style="width:200px;font-style:normal">{{item.vinyl_release.catalog_number}}</a></td>
+                  <td>{{ item.vinyl_release.artist }}</td>
+                  <td>{{ item.vinyl_release.release_title }}</td>
+                  <td>{{ item.vinyl_release.label }}</td>
+                  <td style="color:gray; text-align:center">${{ item.price }}</td>
+                  <td style="text-align:center">
+                      <a href="{% url 'cart_remove_item' library.id item.vinyl_release.id %}" class="btn btn-danger btn-sm"><i class="fas fa-skull-crossbones"></i></a>
+                  </td>   
+              </tr>
+          {% endfor %}
+          <tr>
+              <td colspan="3"></td>
+              <td style="font-size:1.8rem; text-align:right" colspan="1"><strong>Total</strong></td>
+              <td style="font-size:2rem; text-align:right;" colspan="2"><strong>${{ cart.get_total_price }}</strong></td>
+              <td></td>
+          </tr>
+
+          <!--#region make order request -->
+          <tr>
+            <td colspan="3">Make Order Request</td>
+            <form action="" method="post">
+              <td colspan="2" style="text-align:right">
+                {% csrf_token %}
+                <select id="search_member" name="search_member" onchange="detectChange(this)" style="width:250px">
+                    <option>Choose Member...</option>
+                    {% for member in members %}
+                        <option value="{{ member.id }}">{{ member }}</option>
+                    {% endfor %}
+                </select>
+              </td>
+              <td colspan="3" style="text-align:center">
+                <input id="hidden_checkout" type="submit" value="Submit Order" class="btn btn-success btn-sm" style="display: none; width:220px">
+                <input id="shown_checkout" value="" class="btn btn-secondary btn-sm" style="display:inline-block; width:220px;">
+              </td>
+            </form>
+        </tr>
+        <!--#endregion -->
+
+          <!--#region choose member and sell items that are already in stock -->
+          <!--
+            <tr>
+                <td colspan="3">Selling stock</td>
+                <form action="{% url 'cart_submission' library.id user.member.id %}" method="post">
+                    <td colspan="2" style="text-align:right">
+                        {% csrf_token %}
+                        <select id="search_member" name="search_member" onchange="detectChangeStock(this)" style="width:250px">
+                            <option>Choose Stockpile...</option>
+                            {% for member in move_and_swap_crates %}
+                                <option value="{{ member.id }}">{{ member }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td colspan="3" style="text-align:center">
+                        <input id="hidden_stock_sale" type="submit" value="Sell In Stock Items" class="btn btn-success btn-sm" onclick="return confirm('You are selling records that you have in stock to THIS MEMBER.')" style="display: none; width:220px">
+                        <input id="shown_stock_sale" value="Sell From Stock To Member" class="btn btn-secondary btn-sm" style="display:inline-block; width:220px;">
+                    </td>
+                </form>
+            </tr>
+            -->
+          <!--#endregion -->
+
+      </tbody>
+  </table>
+</div>
+<!--#endregion -->
+
+<script>
+  function detectChange() {
+      document.getElementById('hidden_checkout')
+      hidden_checkout.style.display = 'inline-block';
+      document.getElementById('shown_checkout')
+      shown_checkout.style.display = 'none';
+  }
+</script>
+
+<script>
+  function detectChangeStock() {
+      document.getElementById('hidden_stock_sale')
+      hidden_stock_sale.style.display = 'inline-block';
+      document.getElementById('shown_stock_sale')
+      shown_stock_sale.style.display = 'none';
+  }
+</script>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+{% endblock %}

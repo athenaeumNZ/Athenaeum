@@ -1,0 +1,22 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Delete {{ plate }}{% endblock %}
+
+{% block nav-title %}DELETE {{ library_plate }}{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:40px; display:flex; justify-content:space-between">
+  <span>
+  </span>
+  <span>
+    <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel Delete</button>
+  </span>
+</div>
+
+<div style="padding-top: 200px; display:flex; justify-content:center">
+  <a href="{% url 'library_plate_delete_submission' library.id sub_crate.id library_plate.id %}"><button class="btn btn-danger btn-sm" style="width:300px">Delete {{ library_plate }}</button></a>
+</div>
+
+{% endblock %}

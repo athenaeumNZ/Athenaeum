@@ -1,0 +1,197 @@
+{% extends 'library_base.html' %} {% block title %}Add Plate to {{ library.name }}{% endblock %}
+
+{% block nav-title %}ADD PLATE to {{ sub_crate }}{% endblock %}
+
+{% block content %}
+
+{{ library_sub_crates_for_this_crate }}
+<!-- release info -->
+<div style=" padding-top: 50px; display:flex; justify-content:center">
+  <div class="row" style="width:800px; border: 1px solid lightgray; padding:15px">
+    <div class="column">
+      <div style="height:150px; display:flex; column-gap: 20px;">
+        <!-- release artwork -->
+        <div style="width:150px;">
+          {% if  vinyl_plate.related_release.artwork %}
+            <img src="{{  vinyl_plate.related_release.artwork.url }}" width="150px" height="150px">
+          {% else %}
+          <div>
+            <h5 style="text-align:center">No image</h5>
+          </div>
+          {% endif %}
+        </div>
+        <!-- release / plate info -->
+        <div>
+          <table id="rel-top">
+            <tbody>
+              <tr>
+                <td><strong>Artist/s</strong></td>
+                <td>{{  vinyl_plate.related_release.artist }}</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Title</strong>
+                </td>
+                <td>
+                  {{ vinyl_plate.related_release.release_title}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Catalog Number</strong>
+                </td>
+                <td>
+                  {{vinyl_plate.related_release.catalog_number}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Plate Index</strong>
+                </td>
+                <td style="color:green">
+                  <strong>{{ vinyl_plate.plate_index }}</strong>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Label</strong>
+                </td>
+                <td>
+                  {{vinyl_plate.related_release.label}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form action="{% url 'library_plate_add_submission' library.id library_crate.id sub_crate.id %}" method="post">
+  {% csrf_token %}
+  <!--related_vinyl_plate-->
+    <input type="text" id="related_vinyl_plate" class="form-control" name="related_vinyl_plate" value="{{ vinyl_plate.id }}" placeholder="{{ vinyl_plate }}" readonly>
+  <!--related_library_crate-->
+    <input type="text" id="related_library_crate" name="related_library_crate" value="{{ library_crate.id }}">
+  <!--related_member_crate_id-->
+  {% if member.membership_number in sub_crate.sub_crate_id %}
+    <input type="text" id="related_member_crate" name="related_member_crate" value="{{ sub_crate.id }}">
+  {% endif %}
+  <!-- inputs-->
+  <div style=" display:flex; justify-content:center">
+    <div class="row" style="width:800px;  margin-top:15px">
+      <div class="column" style="width:395px; margin-right:5px">
+        {% if member %}
+          <!-- when member adds plate -->
+          <div class="form-group">
+            <select id="contributor" class="form-control" name="contributor" readonly>
+                <option value="{{ member.id }}" > {{ member.membership_number }}</span>
+            </select>
+          </div>
+        {% elif user.member.membership_number in sub_crate.sub_crate_id %}
+          <!-- when member adds plate -->
+          <div class="form-group">
+            <select id="contributor" class="form-control" name="contributor" readonly>
+                <option value="{{ user.member.id }}" > {{ user.member.membership_number }}</span>
+            </select>
+          </div>
+        {% else %}
+          <!--contributor-->
+          <div class="form-group">
+            <select id="contributor" class="form-control" name="contributor" >
+              <option selected>Contributor...</option>
+              {% for contributor in members %}
+                <option value="{{ contributor.id }}" required> {{ contributor.membership_number }}</span>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+        <!--plate_size-->
+        <div class="form-group">
+          <select id="plate_size" class="form-control" name="plate_size" required>
+            {% if vinyl_plate.related_release.plate_size %}
+              <option selected value="{{ vinyl_plate.related_release.plate_size }}">{{ vinyl_plate.related_release.plate_size }}</option>
+              <option></option>
+            {% else %}
+              <option selected>Plate Size...</option>
+            {% endif %}
+            {% for plate_size in plate_sizes %}
+              <option value="{{ plate_size }}">{{ plate_size }} </option>
+            {% endfor %}
+          </select>
+        </div>
+        <!--media_condition-->
+        <div class="form-group">
+          <select id="media_condition" class="form-control" name="media_condition" required>
+            <option selected>Plate Condition...</option>
+            {% for condition in conditions %}
+              <option value="{{ condition }}">{{ condition }} </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="column" style="width:395px; margin-left:5px">
+        <!--cover-->
+        <div class="form-group">
+          <select id="cover" class="form-control" name="cover" required>
+            {% if vinyl_plate.related_release.sleeve_type %}
+              <option selected value="{{ vinyl_plate.related_release.sleeve_type }}">{{ vinyl_plate.related_release.sleeve_type }}</option>
+              <option></option>
+            {% else %}
+              <option selected>Sleeve Type...</option>
+            {% endif %}
+            {% for sleeve in sleeve_types %}
+              <option value="{{ sleeve.id }}">{{ sleeve }} </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!--release_type-->
+        <div class="form-group">
+          <select id="release_type" class="form-control" name="release_type" required>
+            {% if vinyl_plate.related_release.release_type %}
+              <option selected value="{{ vinyl_plate.related_release.release_type }}">{{ vinyl_plate.related_release.release_type }}</option>
+              <option></option>
+            {% else %}
+              <option selected>Release Type...</option>
+            {% endif %}
+            {% for type in release_types %}
+              <option value="{{ type.id }}">{{ type }} </option>
+            {% endfor %}
+          </select>
+        </div> 
+        <!--vinyl_colour-->
+        <div class="form-group">
+          <select id="vinyl_colour" name="vinyl_colour" class="form-control" required>
+            {% if vinyl_plate.related_release.vinyl_colour %}
+              <option selected value="{{ vinyl_plate.related_release.vinyl_colour }}">{{ vinyl_plate.related_release.vinyl_colour }}</option>
+              <option></option>
+            {% else %}
+              <option selected>Vinyl Colour...</option>
+            {% endif %}
+            {% for colour in colours %}
+            <option value="{{ colour.id }}">{{ colour }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <br>
+      </div>
+      <p class="text-muted">* Please make sure all feilds are filled in correctly. In the future the only feilds that can be changed will be sleeve type & plate condition.</p>
+    </div>
+  </div>
+  <!-- submit button -->
+  <div style=" padding-top: 15px; display:flex; justify-content:center">
+    <div class="row">
+      <div class="column" style="width:800px">
+        <!--submit-->
+        <div class="form-group" style="display:flex; justify-content:center">
+          <input type="submit" value="Add Plate" class="btn btn-secondary btn-sm" style="width:395px"> 
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+{% endblock %}

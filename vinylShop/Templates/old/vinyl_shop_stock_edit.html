@@ -1,0 +1,49 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Edit Vinyl Stock levels for {{ library_sale_vinyl }}{% endblock %}
+
+{% block nav-title %}Edit <span style="color: green">{{ library_sale_vinyl }}</span> Stock Levels{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:20px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'vinyl_ordering' library.id %}" style="width:200px" class="btn btn-secondary btn-sm">Return to Vinyl Shop</a>
+    </span>
+  </header>
+</div>
+
+<div style="display:flex; justify-content:center; margin-top:100px">
+  <form action="{% url 'vinyl_shop_stock_edit_submission' library.id library_sale_vinyl.id %}" method="post" enctype="multipart/form-data" style="width: 400px;">
+    {% csrf_token %}
+
+    <!--stock-->
+    <div class="form-group col-md-12">
+      <label for="stock" class="form-label">Stock Count</label>
+      <input type="number" id="stock" name="stock" class="form-control" value="{{ library_sale_vinyl.stock }}">
+    </div>
+    <br>
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Edit stock levels for {{ library_sale_vinyl }}" class="btn btn-secondary btn-sm" style="width:300px"> 
+    </div>
+  </form>
+</div>
+
+<script>
+  function autoCalculateSalePrice() {
+    document.getElementById("sale_price").value = 
+    (parseFloat(document.getElementById("cost_price").value)) / 
+    100 * (100 - parseFloat(document.getElementById("supplier_discount").value)) *
+    parseFloat(document.getElementById("currency").value) /
+    100 * (100 + parseFloat(document.getElementById("markup").value)) +
+    parseFloat(document.getElementById("shipping").value)
+  }
+</script>
+
+{% endblock %}

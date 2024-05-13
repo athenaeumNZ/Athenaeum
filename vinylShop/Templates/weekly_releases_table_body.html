@@ -1,0 +1,167 @@
+<!--#region tr -->
+{% if release.crate_id.0 == '! UNCATERGORIZED !' %}
+<tr style="color:red">
+{% elif release.on_previous_weekly_release_sheet == True  %}
+<tr style="color:black">
+{% else %}
+<tr style="color:green">
+{% endif %}
+<!--#endregion -->
+  <!--#region artwork -->
+  <td style="border-left: solid 1px lightgray;">
+    {% if release.artwork_small %}
+    <img src="{{ release.artwork_small.url }}" width="25" height="25">
+    {% else %}
+    &nbsp;
+    {% endif %}
+  </td>
+  <!--#endregion -->
+  <!--#region catalog -->
+  <td>
+    {% if release.crate_id.0 == '! UNCATERGORIZED !' %}
+    <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: red">{{ release.catalog_number }}</a>
+    {% elif release.on_previous_weekly_release_sheet != True  %}
+    <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: green">{{ release.catalog_number }}</a>
+    {% else %}
+    <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: black">{{ release.catalog_number }}</a>
+    {% endif %}
+  </td>
+  <!--#endregion -->
+  <!--#region artist, title, label -->  
+  <td>{{ release.artist }} - {{ release.release_title }} - {{ release.label }}</td>
+  <!--#endregion -->
+  <!--#region crate_id -->
+  <td style="border-right: solid 1px lightgray;">
+    {% for i in release.crate_id %}
+    {% if i %}
+    {% if forloop.last %}
+    {% if i.0.0 == '*' %}
+    <span style="color:red">{{ i }}</span>
+    {% else %}
+    {{ i }}
+    {% endif %}
+    {% else %}
+    {{ i }},
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+  </td>
+  <!--#endregion -->
+  <!--#region Avg. -->
+  <td class="text-center minimize-td">
+    {% if release.average_tracks_per_side_is_above_2 == False %}
+    <span style="color:green">{{ release.average_tracks_per_side }}</span>
+    {% else %}
+    <span style="color:red">{{ release.average_tracks_per_side }}</span>
+    {% endif %}
+  </td>
+  <!--#endregion -->
+  <!--#region Blk. -->
+  <td class="text-center minimize-td">
+    {% if release.not_black == True %}
+    <span style="color:red"><i class="fa fa-exclamation fa-xs"></i></span>
+    {% elif release.not_black == False %}
+    <span style="color:green"><i class="fas fa-check fa-xs"></i></span>
+    {% else %}
+    {% endif %}
+  </td>
+  <!--#endregion -->
+  <!--#region Plate Count -->
+  <td class="text-center minimize-td">
+    {% if release.plate_count == 1 %}
+    {{ release.plate_size }}
+    {% else %}
+    {{ release.plate_count }}x{{ release.plate_size }}
+    {% endif %}
+  </td>
+  <!--#endregion -->
+  <!--#region Price -->
+  <td class="minimize-td text-center" style="border-right: solid 1px lightgray;">
+    {% if release.stock_item %}
+    $ {{ release.stock_item.price }}
+    {% endif %}
+  </td>
+  <!--#endregion -->
+  {% if release.stock_item != None %}
+  <!--#region in stock quantity -->
+  <td style="text-align: center; color:black" class="no-print minimize-td">
+    <a href="{% url 'stock_item_add_edit' library.id release.id %}" target="_blank" style="text-decoration: none; ">
+    {% if release.stock_item.quantity >= 1 %}
+    <span style="color:black">{{ release.stock_item.quantity }}</span>
+    {% else %}
+    <span style="color: lightgray;">0</span>
+    {% endif %}
+    </a>
+  </td>
+  <!--#endregion -->
+  <!--#region in stock quantity incoming -->
+  <td style="text-align: center; color:black" class="no-print minimize-td">
+    {% if release.stock_item.quantity_incoming >= 1 %}
+    {{ release.stock_item.quantity_incoming }}
+    {% else %}
+    <span style="color: lightgray;">.</span>
+    {% endif %}
+  </td>
+  <!--#endregion -->
+  <!--#region in stock in want list -->
+  <td style="text-align: center; color:black" class="no-print minimize-td">
+    {% if release.stock_item.in_library_shop_want_list == True %}
+    W
+    {% else %}
+    <span style="color: lightgray;">.</span>
+    {% endif %}
+  </td>
+  <!--#endregion -->
+  <!--#region in stock auto-restock -->
+  <td style="text-align: center; color:black" class="no-print minimize-td">
+    {% if release.stock_item.auto_restock == True %}
+    A
+    {% else %}
+    <span style="color: lightgray;">.</span>
+    {% endif %}
+  </td>
+  <!--#endregion -->
+  {% else %}
+  <!--#region no stock item yet. -->
+  <td class="minimize-td no-print" colspan="4" style="text-align: center; border-left: solid 1px lightgray;" class="no-print">
+    <a href="{% url 'stock_item_add_edit' library.id release.id %}?source=weekly_releases" onclick="window.open(this.href, 'newwindow', 'width=1200,height=1000'); return false;" style="color:black; text-decoration:none">Add Stock Item</a>
+  </td>
+  <!--#endregion -->
+  {% endif %}
+  <!--#region order -->
+  {% if release.stock_estimation >= 1 and release.distributor.active %}
+  <td class="minimize-td no-print" >
+    <span style="display:flex;">
+      {% if release.stock_estimation >= 1 and release.distributor.active %}
+      <input class="two-char-input quantity_to_order" type="number" maxlength="2" min="0" max="99" name="quantity_to_order">
+      {% endif %}
+      <input class="release_id" type="hidden" value="{{ release.id }}" name="release_id">
+      <input class="library_id" type="hidden" value="{{ library.id }}" name="library_id">
+      <input class="weekly_release_sheet_id" type="hidden" value="{{ weekly_release_sheet.id }}" name="weekly_release_sheet_id">
+      <input type="hidden" name="search_start_date" value="{{ search_start_date }}">
+      <input type="hidden" name="search_end_date" value="{{ search_end_date }}">
+      <input type="hidden" class="scroll_position_input" name="scroll_position" steps="0">
+      {% if release.stock >= 1 %}
+      <input type="submit" class="place-order-btn" value="{{ release.distributor.distributor_code }}" onclick="placeOrder(event)" style="color:black; background-color:white; border:none; margin-left:5px">
+      {% endif %}
+    </span>
+  </td>
+  <!--#endregion -->
+  <!--#region cost_price -->
+  <td class="minimize-td no-print" style="border-right: solid 1px lightgray;">
+    {% if release.cost_price != 0.00 %}
+    {{ release.distributor.currency_symbol }} {{ release.cost_price }}
+    {% else %}
+    TBD
+    {% endif %}
+  </td>
+  <!--#endregion -->
+  {% else %}
+  <!--#region unavailable-->
+  <td colspan="2" class="text-center no-print" style="border-right: solid 1px lightgray; color:lightgray">
+    Unavailable
+  </td>
+  <!--#endregion -->
+  {% endif %}
+</tr>
+

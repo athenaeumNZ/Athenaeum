@@ -1,0 +1,89 @@
+{% extends 'library_base.html' %} {% block title %}Add Plate to Library{% endblock %} 
+
+{% block nav-title %}ADD NEW PLATE TO {{ sub_crate.master_library_crate.related_crate }}{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding:20px 0px; display:flex; justify-content:space-between">
+  <span>
+  </span>
+  <form method="post" action="{% url 'library_plate_add_select_plate_catalog_search' library.id library_crate.id sub_crate.id %}">
+    {% csrf_token %}
+    <span style="display:flex; justify-content:space-between">
+      <input type="text" placeholder="Search by Catalog Number" name="search_catalog" id="search_catalog" class="form-control form-control-sm" style="margin-right:5px; width:200px" autofocus>
+      <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-search"></i></button>
+    </span>
+  </form>
+</div>
+
+<!-- plates -->
+<div id="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>IMG</th>
+        <th class="text-center">CATALOG</th>
+        <th>INDEX</th>
+        <th>ARTIST</th>
+        <th>TITLE</th>  
+        <th></th>
+      </tr>
+    </thead>     
+
+    <tbody>
+      {% for plate in v_plates %}
+      <tr>
+        <td style="height:30px; width: 30px; text-align:center;">
+          {% if plate.related_release.artwork %}
+            <img src="{{ plate.related_release.artwork.url }}" width="30" height="30">
+          {% else %}
+          <div style="text-align:center; font-size: 0.5rem;">No image</div>
+          {% endif %}
+        </td>
+        <td>{{ plate.related_release }} - <span style="color:green">{{ plate.plate_index }}</span></td>
+        <td>{{ plate.related_release.artist }}</td>
+        <td>{{ plate.related_release.release_title }}</td>
+        <td>{{ plate.related_release.label }}</td>
+        <td><a href="{% url 'library_plate_add' library.id library_crate.id sub_crate.id plate.id %}" class="btn btn-warning btn-sm"><i class="far fa-clone"></i></a></td>
+      </tr>
+    </tbody>   
+    {% endfor %}
+  </table>
+</div>
+<br>
+
+<!-- pagination-->
+<div style="padding-top: 5px;">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if v_plates.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ v_plates.previous_page_number }}">&lsaquo;</a></li>
+          {% if v_plates.number > 2 %}
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+              {% if v_plates.number > 3 %}
+                <span class="page-link">...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      {% for num in v_plates.paginator.page_range %}
+        {% if v_plates.number == num %}
+          <li class="page-item"><a class="page-link active" href="?page={{ num }}">{{ num }}</a></li>
+        {% elif num > v_plates.number|add:'-2' and num < v_plates.number|add:'2' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if v_plates.has_next %}
+        {% if v_plates.number < v_plates.paginator.num_pages|add:'-2' %}
+          <span class="page-link">...</span>
+          <li class="page-item"><a class="page-link" href="?page={{ v_plates.paginator.num_pages }}">{{ v_plates.paginator.num_pages }}</a></li>
+        {% elif v_plates.number < v_plates.paginator.num_pages|add:'-1' %}
+          <li class="page-item"><a class="page-link" href="?page={{ v_plates.paginator.num_pages }}">{{ v_plates.paginator.num_pages }}</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link" href="?page={{ v_plates.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav> 
+</div>
+
+{% endblock %}

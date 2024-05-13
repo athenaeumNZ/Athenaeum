@@ -1,0 +1,88 @@
+{% if plate.related_release.distributor.active == True and plate.related_release.stock_estimation >= 1 and stock_item == None and member_plate == None %}
+    <!--#region create stock item -->
+    <div style="display:inline-block">
+        <h3 style="margin-top:20px">{{ plate.plate_index }}</h3>
+        {% include 'member_release_create_form.html' %}
+        <!--#region         Stock Item Create & Add to Cart               -->
+        {% include 'stock_item_create_and_add_to_cart_form.html' %}
+        <!--#endregion -->
+    </div>
+    <!--endregion -->
+{% elif member_plate.member_release.status == in_coming %}
+    <!--#region release incoming -->
+    <div style="display:inline-block">
+      <span style="font-size:1.6rem; margin-right:10px; color:gray">Release Incoming</span>
+      {% if member_plate.member_release.order_request_item.stockpiled == True %}
+      <span>In Stockpile</span>
+      {% elif member_plate.member_release.order_request_item.ordered == True %}
+      <span>Ordered</span>
+      {% else %}
+      <span>Processing Order</span>
+      {% endif %}
+    </div>
+    <!--#endregion -->
+    {% elif member_plate != None %}
+    <!--#region           MEMBER PLATE                                  -->
+    <span style="display:block">
+      <!--#region plate location -->
+      {% if member_plate.crate_parent != None %}
+      <span style="display:flex; align-items:baseline">
+        <!--#region location -->
+        <span style="margin-right:5px">Location:</span>
+        <span style="display:flex; align-items:center; justify-content:space-between">
+          <!--#region crate parent crate_id -->
+          {% if member_plate.crate_parent.crate_id == crate_id %}
+          <span style="font-size:1.5rem;color:green">{{ member_plate.crate_parent.crate_id }}</span>
+          {% else %}
+          <span style="font-size:1.5rem;">
+          <form action="{% url 'plate_sorter' library.id %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input name="crate_id"                                  value="{{ member_plate.crate_parent.crate_id }}"                type="hidden">
+            <input name="crate_parent_id"                           value="{{ member_plate.crate_parent.id }}"                      type="hidden">
+            <input name="display_stock"                             value="{{ display_stock }}"                                     type="hidden">
+            <input name="display_unallocated"                       value="do_not_display_unallocated"                               type="hidden">
+            <input name="member_id"                                 value="{{ member.id }}"                                         type="hidden">
+            <input name="previous_url"                              value="{{ previous_url }}"                                      type="hidden">
+            <input name="previous_vertical_location"                value="0"                                                       type="hidden">
+            <button name="submit"                                                                                                   type="submit"          style="border:none; background: none"><span style="font-size:1.5rem">{{ member_plate.crate_parent.crate_id }}</span></button>
+          </form>
+          </span>
+          {% endif %}
+          <!--#endregion -->
+          <!--#region crate_parent_desired_option -->
+          {% if member_plate.crate_parent_desired_option == True and member_plate.desired_crate_parent_option_crate_parent == member_plate.crate_parent %}
+          {% if member_plate.crate_parent.crate_id == crate_id %}
+          <span style="margin-left:5px; color:green"><i class="fas fa-check"></i></span>
+          {% else %}
+          <span style="margin-left:5px"><i class="fas fa-check"></i></span>
+          {% endif %}
+          {% else %}
+          {% include 'member_plate_crate_parent_set.html' %}
+          {% endif %}
+          <!--#endregion -->
+        </span>
+        <!--#endregion -->
+      </span>
+      {% endif %}
+      <!--#endregion -->
+      {% include 'move_plate_form.html' %}
+    </span>
+    <!--#endregion MEMBER PLATE-->
+    {% elif stock_item in items %}
+    <!--#region           Release In Cart -> Go To Shopping Cart        -->
+    <span>
+    <span>
+    {% include 'go_to_shopping_cart_form.html' %}
+    </span>
+    <!--#endregion -->
+    {% include 'remove_vinyl_release_from_shopping_cart_form.html' %}
+    </span>
+    {% else %}
+    <span>
+      {% include 'member_release_create_form.html' %}
+      {% if stock_item and member_plate == None %}
+      {% include 'add_release_to_cart_form.html' %}
+      {% endif %}
+    </span>
+    {% endif %}
+  </span>

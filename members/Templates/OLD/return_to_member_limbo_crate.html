@@ -1,0 +1,18 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Return to Limbo Crate{% endblock %}
+
+{% block nav-title %}Return to Limbo Crate{% endblock %}
+
+{% block content %}
+
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <a href="{% url 'member_limbo_crate' library.id member.id %}" id="auto_clicked_button" style="width:400px">Return to Limbo Crate</a>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

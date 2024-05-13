@@ -1,0 +1,26 @@
+{% extends 'library_base.html' %}
+
+{% block title %}CHECK FOR CATALOG NUMBER{% endblock %}
+
+{% block nav-title %}CHECK IF CATALOG NUMBER EXISTS{% endblock %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:center;">
+  <div class="row" style="display:flex; margin-top:80px">
+    <div class="column" style="width:900px; ">
+      <!--#region catalog_number -->
+      <form action="{% url 'vinyl_release_add_check_catalog_number_submission' library.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group col-md-12">
+          <span style="display:flex; justify-content: space-between; align-items:center">
+            <input type="text" id="catalog_number" name="catalog_number" style="width:500px" class="form-control" oninput="this.value = this.value.toUpperCase()" autofocus required>
+            <input type="submit" class="btn btn-secondary btn-sm" value="Check Release Catalog Number" style="margin-left:10px; height:30px; width:300px">
+          </span>
+        </div>
+      </form>
+      <!--#endregion-->
+    </div>
+</div>
+
+{% endblock %}

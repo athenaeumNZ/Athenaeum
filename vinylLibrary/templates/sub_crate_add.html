@@ -1,0 +1,71 @@
+{% extends 'library_base.html' %} {% block title %}Add Sub Crate{% endblock %}
+
+{% block nav-title %}ADD SUBCRATE{% endblock %}
+
+{% block content %}
+
+<div id="center-box">
+    <form action="{% url 'sub_crate_add_submission' library.id library_crate.id %}" method="post" style="width: 400px">
+      {% csrf_token %}
+      <!-- master_library_crate -->
+      <input type="hidden" id="master_library_crate" name="master_library_crate" value="{{ library_crate.id }}">
+
+      <!-- master_library_crate_name -->
+      <input type="hidden" id="master_library_crate_name" value="{{ library_crate.related_crate.crate_id }}">
+
+      <!-- library_name -->
+      <input type="hidden" id="library_name" value="{{ library.name }}">
+
+      <!-- crate_index_start -->
+      <div class="form-group col-md-12">
+        <label for="crate_index_start" class="form-label">Crate Index Start</label><br>
+        <input type="text" placeholder="e.g. A" id="crate_index_start" name="crate_index_start" class="form-control" oninput="this.value = this.value.toUpperCase()">
+      </div>
+
+      <!-- crate_index_end -->
+      <div class="form-group col-md-12">
+        <label for="crate_index_end" class="form-label">Crate Index End</label><br>
+        <input type="text" placeholder="e.g. Z" id="crate_index_end" name="crate_index_end" class="form-control" oninput="this.value = this.value.toUpperCase()">
+      </div>
+      
+      <!-- sub_crate_id -->
+      <div class="form-group col-md-12">
+        <input type="checkbox" id="autofill" name="autofill" onchange="autoCreateCrateID()" />
+        <label for="checkbox" class="form-label"> Auto Create Crate ID </label>
+      </div>
+
+      <div class="form-group col-md-12">
+        <label for="sub_crate_id" class="form-label">Crate ID</label><br>
+        <input type="text" id="sub_crate_id" name="sub_crate_id" class="form-control">
+      </div>
+      <br>
+       
+      <!-- issued -->
+      <input type="hidden" value="Available"  name="issued">
+
+      <!-- reserved -->
+      <input type="hidden" value="Available"  name="reserved">
+
+      <!--submit-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:center">
+        <input type="submit" value="Add Sub Crate" class="btn btn-secondary btn-sm" style="width:400px;">
+      </div>
+        
+    </form>
+</div>
+
+<script>
+  function autoCreateCrateID() {
+    document.getElementById("sub_crate_id").value = 
+    document.getElementById("master_library_crate_name").value +
+    ' ' +
+    document.getElementById("library_name").value.toUpperCase().slice(0, 3) +
+    ' ' +
+    document.getElementById("crate_index_start").value +
+    '-' +
+     document.getElementById("crate_index_end").value;
+    
+  }
+</script>
+
+{% endblock %}

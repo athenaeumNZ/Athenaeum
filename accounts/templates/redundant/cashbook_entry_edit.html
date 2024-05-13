@@ -1,0 +1,251 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Cashbook Entry Edit{% endblock %}
+
+{% block nav-title %}CASHBOOK ENTRY EDIT{% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="margin-top:20px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel</button>
+    </span>
+  </header>
+</div>
+
+<div style="display:flex; justify-content:center">
+  <form action="{% url 'cashbook_entry_edit_submission' library.id cashbook_month.id cashbook_entry.id %}" method="post" enctype="multipart/form-data">
+    <div class="row" style="width:850px; display:flex; justify-content:space-between">
+      <div class="column" style="width:400px;">
+      
+        {% csrf_token %}
+        <!--#region amount_NZD -->
+        <div class="form-group col-md-12">
+          <label for="amount_NZD" class="form-label">Amount NZD</label>
+          <input type="text" value="{{ cashbook_entry.amount_NZD }}" id="amount_NZD" name="amount_NZD" class="form-control" required autofocus>
+        </div>
+        <!--#endregion -->
+
+        <!--#region gst_included -->
+        {% if cashbook_entry.gst_included == True %}
+          <div class="form-group col-md-12" style="margin-top:20px">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="gst_included" id="gst_included1" value="True" checked>
+              <label class="form-check-label" for="gst_included1">
+                GST Included
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="gst_included" id="gst_included2" value="False">
+              <label class="form-check-label" for="gst_included2">
+                Not
+              </label>
+            </div>
+          </div>
+        {% else %}
+          <div class="form-group col-md-12" style="margin-top:20px">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="gst_included" id="gst_included1" value="True">
+              <label class="form-check-label" for="gst_included1">
+                GST Included
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="gst_included" id="gst_included2" value="False" checked>
+              <label class="form-check-label" for="gst_included2">
+                Not
+              </label>
+            </div>
+          </div>
+        {% endif %}   
+        <!--#endregion -->     
+        
+        <!--#region gst_should_be_included -->
+        {% if cashbook_entry.gst_should_be_included == True %}
+          <div class="form-group col-md-12" style="margin-top:20px">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="gst_should_be_included" id="gst_should_be_included1" value="True" checked>
+              <label class="form-check-label" for="gst_should_be_included1">
+                GST Should be Included
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="gst_should_be_included" id="gst_should_be_included2" value="False">
+              <label class="form-check-label" for="gst_should_be_included2">
+                Not
+              </label>
+            </div>
+          </div>
+        {% else %}
+          <div class="form-group col-md-12" style="margin-top:20px">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="gst_should_be_included" id="gst_should_be_included1" value="True">
+              <label class="form-check-label" for="gst_should_be_included1">
+                GST Should be Included
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="gst_should_be_included" id="gst_should_be_included2" value="False" checked>
+              <label class="form-check-label" for="gst_should_be_included2">
+                Not
+              </label>
+            </div>
+          </div>
+        {% endif %}
+        <!--#endregion -->
+
+        <!--#region is_expense -->
+        {% if cashbook_entry.is_expense == True %}
+          <div class="form-group col-md-12" style="margin-top:20px">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="is_expense" id="is_expense2" value="False">
+              <label class="form-check-label" for="is_expense2">
+                Income
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="is_expense" id="is_expense1" value="True" checked>
+              <label class="form-check-label" for="is_expense1">
+                Expense
+              </label>
+            </div>
+          </div>
+        {% else %}
+          <div class="form-group col-md-12" style="margin-top:20px">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="is_expense" id="is_expense2" value="False" checked>
+              <label class="form-check-label" for="is_expense2">
+                Income
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="is_expense" id="is_expense1" value="True">
+              <label class="form-check-label" for="is_expense1">
+                Expense
+              </label>
+            </div>
+          </div>
+        {% endif %}
+        <!--#endregion -->
+        
+        <!--#region invoice_date -->
+        <div class="form-group col-md-12">
+          <label for="invoice_date" class="form-label">Invoice Date :: {{ cashbook_entry.invoice_date|date:'d m Y' }}</label>
+          <input type="date" value="{{ cashbook_entry.invoice_date }}" id="invoice_date" name="invoice_date" class="form-control">
+        </div>
+        <!--#endregion -->
+        
+        <!--#region processing_date -->
+        <div class="form-group col-md-12">
+          <label for="processing_date" class="form-label">Processing Date :: {{ cashbook_entry.processing_date|date:'d m Y' }}</label>
+          <input type="date" value="{{ cashbook_entry.processing_date|date }}" id="processing_date" name="processing_date" class="form-control">
+        </div>
+        <!--#endregion --> 
+
+        <!--#region invoice_reference -->
+        <div class="form-group col-md-12">
+          <label for="invoice_reference" class="form-label">Reference</label>
+          <input type="text" value="{{ cashbook_entry.invoice_reference }}" id="invoice_reference" name="invoice_reference" class="form-control" required>
+        </div>
+        <!--#endregion -->
+      
+      </div>
+      <div class="column" style="width:400px;">
+
+        <!--#region bank_account_used  -->
+        <div class="form-group col-md-12">
+          <label for="bank_account_used" class="form-label">Bank Account Used</label>
+          <select id="bank_account_used" name="bank_account_used" class="form-control" >
+            {% if cashbook_entry.bank_account_used %}
+              <option value="{{ cashbook_entry.bank_account_used.id }}" selected>{{ cashbook_entry.bank_account_used }}</option>
+              <option></option>
+            {% else %}
+              <option selected>Choose...</option>
+            {% endif %}
+            {% for account in bank_accounts %}
+              <option value="{{ account.id }}">{{ account.account_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <!--#endregion -->
+
+        <!--#region reconciled -->
+        {% if cashbook_entry.reconciled == True %}
+          <div class="form-group col-md-12" style="margin-top:20px">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="reconciled" id="reconciled1" value="True" checked>
+              <label class="form-check-label" for="reconciled1">
+                Reconciled
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="reconciled" id="reconciled2" value="False">
+              <label class="form-check-label" for="reconciled2">
+                Need To Find
+              </label>
+            </div>
+          </div>
+        {% else %}
+          <div class="form-group col-md-12" style="margin-top:20px">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="reconciled" id="reconciled1" value="True">
+              <label class="form-check-label" for="reconciled1">
+                Reconciled
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="reconciled" id="reconciled2" value="False" checked>
+              <label class="form-check-label" for="reconciled2">
+                Need To Find
+              </label>
+            </div>
+          </div>
+        {% endif %}
+        <!--#endregion -->
+
+        <!--#region invoice_type  -->
+        <div class="form-group col-md-12">
+          <label for="invoice_type" class="form-label">Invoice Type</label>
+          <select id="invoice_type" name="invoice_type" class="form-control" required value="{{ cashbook_entry.invoice_type }}">
+            {% if cashbook_entry.invoice_type %}
+              <option value="{{ cashbook_entry.invoice_type.id }}">{{ cashbook_entry.invoice_type }}</option>
+              <option></option>
+            {% else %}
+              <option>Choose...</option>
+            {% endif %}
+            {% for t in invoice_types %}
+              <option value="{{ t.id }}">{{ t.type }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <!--#endregion -->
+        
+        <br>
+        <hr>
+        Uploads<br><br>
+        <span>
+          {% for i in cashbook_entry.invoices.all %}
+            {{ i.uploaded_invoice|cut:"static/accounts/cashFlowUploadedInvoices/" }}<br>
+          {% endfor %}
+        </span>
+        <hr>
+
+      </div>
+    </div>
+    <div class="row" style="width:850px; justify-content:center; margin-top:10px">
+      <div class="column" style="width:400px;">
+        <!--submit-->
+        <div class="form-group col-md-12" style="margin-top:45px">
+          <input type="submit" value="Edit Entry" class="btn btn-secondary btn-sm form-control"> 
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

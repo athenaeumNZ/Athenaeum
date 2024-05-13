@@ -1,0 +1,106 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Shipment {{ shipment.id|stringformat:"04d"}} Edit{% endblock %}
+
+{% block nav-title %}SHIPMENT {{ shipment.id|stringformat:"04d"}} EDIT{% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="margin-top:10px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel</button>
+    </span>
+  </header>
+</div>
+
+
+<div style="display:flex; justify-content:center; margin-top:10px">
+  <form action="{% url 'shipment_edit_submission' library.id shipment.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <span style="display:flex; justify-content:space-between">
+      <span style="width:400px; margin:5px">
+        <!--#region distributor -->
+          <div class="form-group col-md-12">
+            <label for="distributor" class="form-label">Distributor</label>
+            <select id="distributor" name="distributor" class="form-control" required>
+              <option value="{{ shipment.distributor.id }}" selected>{{ shipment.distributor }}</option>
+              <option></option>
+              {% for d in distributors %}
+                <option value="{{ d.id }}">{{ d }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        <!--#endregion -->
+
+        <!--#region eta -->
+          <div class="form-group col-md-12">
+            <label for="eta" class="form-label">E.T.A.</label>
+            <input value="{{ shipment.eta|date:'Y-m-d' }}" type="date" id="eta" name="eta" class="form-control">
+          </div>
+        <!--#endregion --> 
+
+        <!--#region provider -->
+          <div class="form-group col-md-12">
+            <label for="provider" class="form-label">Provider</label>
+            <input value="{{ shipment.provider }}"  type="text" id="provider" name="provider" class="form-control">
+          </div>
+        <!--#endregion -->     
+
+        <!--#region tracking_number -->
+          <div class="form-group col-md-12">
+            <label for="tracking_number" class="form-label">Tracking Number</label>
+            <input value="{{ shipment.tracking_number }}"  type="text" id="tracking_number" name="tracking_number" class="form-control">
+          </div>
+        <!--#endregion -->  
+
+        <!--#region cost_NZD -->
+        <div class="form-group col-md-12">
+          <label for="cost_NZD" class="form-label">Cost (NZD)</label>
+          <input value="{{ shipment.cost_NZD }}" type="number" id="cost_NZD" name="cost_NZD" class="form-control">
+        </div>
+      <!--#endregion -->          
+      </span>
+      <span style="width:400px; margin:5px"> 
+        <!--#region notes -->
+          <div class="form-group col-md-12">
+            <label for="notes" class="form-label">Notes</label>
+            <textarea id="notes" name="notes" class="form-control" cols="20" rows="9">{{ shipment.notes }}</textarea>
+          </div>
+        <!--#endregion -->
+
+        <!--#region open -->
+          <div class="form-group col-md-12" style="margin-top:15px; ">
+            <label>Shipment Open</label>
+            <select class="form-control" id="open" name="open">
+              {% if shipment.open == True %}
+                <option value="True" selected>Yes</option>
+                <option value="False">No</option>
+              {% else %}
+                <option value="True">Yes</option>
+                <option value="False" selected>No</option>
+              {% endif %}
+            </select>
+          </div>
+        <!--#endregion -->
+
+        <!--#region submit-->
+          <div class="form-group col-md-12" style="margin-top:15px; width:400px">
+            <input type="submit" value="Edit Shipment" class="btn btn-secondary btn-sm form-control"> 
+          </div>
+        <!--#endregion -->
+
+      </span>  
+    </span>     
+  
+
+    
+
+  </form>
+</div>
+
+{% endblock %}

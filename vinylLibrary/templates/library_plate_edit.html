@@ -1,0 +1,125 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Edit {{ plate }}{% endblock %}
+
+{% block nav-title %}EDIT {{ library_plate }}{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:40px; display:flex; justify-content:space-between">
+    <span>
+      <a href="{% url 'library_plate_delete' library.id sub_crate.id  library_plate.id %}" class="btn btn-danger btn-sm" style="width:200px; margin-right:5px"><i class="fas fa-skull-crossbones"></i> Plate</a>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel Editing</button>
+    </span>
+</div>
+
+{% if library.librarian == user %}
+  <div style="padding-top: 20px; display:flex; justify-content:center">
+{% else %}
+  <div style="padding-top: 45px; display:flex; justify-content:center">
+{% endif %}
+
+  <form action="{% url 'library_plate_edit_submission' library.id sub_crate.id library_plate.id %}" method="post">
+    {% csrf_token %}
+
+    <!--cover-->
+    <div class="form-group col-md-12">
+      <label for="cover" class="form-label">Sleeve Type</label>
+      <select id="cover" class="form-control" name="cover">
+        <option selected>{{ library_plate.cover }}</option>
+        <option></option>
+        {% for sleeve in sleeve_types %}
+          <option value="{{ sleeve }}">{{ sleeve }} </option>
+        {% endfor %}
+      </select>
+    </div>
+    {% if library.librarian == user %}
+      <!-- release_type -->
+      <div class="form-group col-md-12">
+        <label for="release_type" class="form-label">Release Type</label>
+        <select id="release_type" class="form-control" name="release_type">
+          {% if library_plate.release_type %}
+            <option selected ">{{ library_plate.release_type }}</option>
+            <option></option>
+            {% for type in release_types %}
+              <option vlaue="{{ type }}">{{ type }}</option>
+            {% endfor %}
+          {% else %}
+            <option>Choose...</option>
+            {% for type in release_types %}
+              <option value="{{ type }}">{{ type }}</option>
+            {% endfor %}
+          {% endif %}
+        </select>
+      </div>
+
+      <!-- plate_size -->
+      <div class="form-group col-md-12">
+        <label for="plate_size" class="form-label">Plate Size</label>
+        <select id="plate_size" class="form-control" name="plate_size">
+          {% if library_plate.plate_size %}
+            <option selected value="{{ library_plate.plate_size }}">{{ library_plate.plate_size }}</option>
+            <option></option>
+            {% for size in plate_sizes %}
+              <option vlaue="{{ size }}">{{ size }}</option>
+            {% endfor %}
+          {% else %}
+            <option>Choose...</option>
+            {% for size in plate_sizes %}
+              <option value="{{ size }}">{{ size }}</option>
+            {% endfor %}
+          {% endif %}
+        </select>
+      </div>
+
+      <!-- vinyl_colour -->
+      <div class="form-group col-md-12">
+        <label for="vinyl_colour" class="form-label">Plate Colour</label>
+        <select id="vinyl_colour" class="form-control" name="vinyl_colour">
+          {% if library_plate.vinyl_colour %}
+            <option selected value="{{ library_plate.vinyl_colour }}">{{ library_plate.vinyl_colour }}</option>
+            <option></option>
+            {% for colour in vinyl_colours %}
+              <option value="{{ colour }}">{{ colour }}</option>
+            {% endfor %}
+          {% else %}
+            <option>Choose...</option>
+            {% for colour in vinyl_colours %}
+              <option value="{{ colour }}">{{ colour }}</option>
+            {% endfor %}
+          {% endif %}
+        </select>
+      </div>
+    {% endif %}
+
+    <!-- media_condition -->
+    <div class="form-group col-md-12">
+      <label for="media_condition" class="form-label">Condition</label>
+      <select id="media_condition" class="form-control" name="media_condition">
+        {% if library_plate.media_condition %}
+          <option selected>{{ library_plate.media_condition }}</option>
+          <option></option>
+          {% for condition in conditions %}
+            <option value="{{ condition }}">{{ condition }}</option>
+          {% endfor %}
+        {% else %}
+          <option>Choose...</option>
+          {% for condition in conditions %}
+            <option value="{{ condition }}">{{ condition }}</option>
+          {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+    <br>
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Edit Plate" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+
+{% endblock %}

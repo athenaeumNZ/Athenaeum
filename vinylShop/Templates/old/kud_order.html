@@ -1,0 +1,88 @@
+{% extends 'library_base.html' %}
+
+{% block title %}KUD Order{% endblock %}
+
+{% block nav-title %}<span style="color:green">KUD ORDER </span>{% if order_releases_count %}<span style="color:red">DO NOT REFRESH!!</span>{% endif %}{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:30px;">
+  <span>
+  </span>
+  <span>
+    <a href="{% url 'kud_order_placed' library.id %}" class="btn btn-danger btn-sm" style="width:250px" onclick="return confirm('Please confirm these plates have been ordered before clicking OK!')">All Releases Ordered</a>
+  </span>
+</div>
+
+<!-- releases -->
+<div style="padding-top:30px">
+  <table class="table">
+    <thead>
+      <tr>
+        <th style="width:30px">IMG</th>
+        <th style="text-align:center; width:250px">CATALOG</th>
+        <th style="text-align:center; width:20px">#</th>
+        <th style="width:10px"></th>
+        <th>Artist/s</th>
+        <th>Release Title</th>
+        <th>Label</th>     
+      </tr>
+    </thead>
+    {% for release in order_releases %}
+    <tbody>
+      <tr>
+        <td style="height:30px; width: 30px; text-align:center;">
+          {% if release.artwork %}
+            <img src="{{ release.artwork.url }}" width="30" height="30">
+          {% else %}
+            <div style="text-align:center; font-size: 0.5rem;">No image</div>
+          {% endif %}
+        </td>
+        <td style="text-align:center"><a href="https://www.uneartheddistribution.co.uk/products/?query={{ release.catalog_number }}" class="btn btn-secondary btn-sm clicked_tvd" target="_blank" style="width:250px">{{ release.catalog_number }}</a></td>
+        <td style="text-align:center; width:20px">{{ release.quantity }}</td>
+        <td style="width:10px"><input type="checkbox"></td>
+        <td>{{ release.artist }}</td>
+        <td>{{ release.release_title }}</td>
+        <td>{{ release.label }}</td>
+        
+      </tr>
+    </tbody>   
+    {% endfor %}
+  </table>
+</div>
+<br>
+
+<!-- pagination-->
+<div style="padding-top: 5px;">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if releases.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ releases.previous_page_number }}">&lsaquo;</a></li>
+          {% if releases.number > 2 %}
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+              {% if releases.number > 3 %}
+                <span class="page-link">...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      {% for num in releases.paginator.page_range %}
+        {% if releases.number == num %}
+          <li class="page-item"><a class="page-link active" href="?page={{ num }}">{{ num }}</a></li>
+        {% elif num > releases.number|add:'-2' and num < releases.number|add:'2' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if releases.has_next %}
+        {% if releases.number < releases.paginator.num_pages|add:'-2' %}
+          <span class="page-link">...</span>
+          <li class="page-item"><a class="page-link" href="?page={{ releases.paginator.num_pages }}">{{ releases.paginator.num_pages }}</a></li>
+        {% elif releases.number < releases.paginator.num_pages|add:'-1' %}
+          <li class="page-item"><a class="page-link" href="?page={{ releases.paginator.num_pages }}">{{ releases.paginator.num_pages }}</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link" href="?page={{ releases.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav> 
+</div>
+{% endblock %}

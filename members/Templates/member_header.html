@@ -1,0 +1,72 @@
+<!--#region###############################################         HEADER                        ###############################################-->
+<span style="display:flex; justify-content:right; margin-top:30px">
+{% if 'plate_sorter' not in request.build_absolute_uri %}
+<span style="width:5px"></span>
+<form action="{% url 'plate_sorter' library.id %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input name="crate_id"                              type="hidden" value="{{ crate_id }}">
+  <!--#region crate_parent_id -->
+  {% if crate_parent %}
+  <input name="crate_parent_id"                       type="hidden" value="{{ crate_parent.id }}">
+  {% else %}
+  <input name="crate_parent_id"                       type="hidden" value="{{ crate_parent_id }}">
+  {% endif %}
+  <!--#endregion -->
+  <!--#region display_stock -->
+  {% if display_stock %}
+  <input name="display_stock"                         type="hidden" value="{{ display_stock }}">
+  {% else %}
+  <input name="display_stock"                         type="hidden" value="do_not_display_stock_plates">
+  {% endif %}
+  <!--#endregion -->
+  <!--#region display_unallocated -->
+  {% if display_unallocated %}
+  <input name="display_unallocated"                   type="hidden" value="{{ display_unallocated }}">
+  {% else %}
+  <input name="display_unallocated"                   type="hidden" value="do_not_display_unallocated_plates">
+  {% endif %}
+  <!--#endregion -->
+  <input name="member_id"                             type="hidden" value="{{ member.id }}">
+  <input name="member_plate_id"                       type="hidden" value="{{ member_plate.id }}">
+  <!--#region member_release_id -->
+  {% if member_release %}
+  <input name="member_release_id"                     type="hidden" value="{{ member_release.id }}">
+  {% else %}
+  <input name="member_release_id"                     type="hidden" value="{{ member_release_id }}">
+  {% endif %}
+  <!--#endregion -->
+  <input name="previous_url"                          type="hidden" value="{{ previous_url }}">
+  <input name="previous_vertical_location"            type="hidden" value="{{ previous_vertical_location }}" class="page_vertical_location">
+  <input name="stock_item_id"                         type="hidden" value="{{ stock_item.id }}">               
+  <!--#region vinyl_release_id -->
+  {% if plate %}
+  <input name="vinyl_release_id"                      type="hidden" value="{{ plate.related_release.id }}">
+  {% elif vinyl_release %}
+  <input name="vinyl_release_id"                      type="hidden" value="{{ vinyl_release.id }}">
+  {% endif %}
+  <!--#endregion -->
+  <button type="submit"                               class="btn btn-sm btn-secondary" style="padding-right:15px; padding-left:15px">Plate Sorter</button>
+</form>
+{% endif %}
+{% if 'member_dashboard' not in request.build_absolute_uri %}
+<span style="width:5px"></span>
+<form action="{% url 'member_dashboard' library.id %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input name="crate_id"                              type="hidden" value="None">
+  <input name="crate_parent_id"                       type="hidden" value="">
+  <input name="display_stock"                         type="hidden" value="do_not_display_stock_plates">
+  <input name="display_unallocated"                   type="hidden" value="do_not_display_unallocated_plates">
+  <input name="member_id"                             value="{{ member.id }}" type="hidden">
+  <button   name="submit"                             type="submit" class="btn btn-secondary btn-sm" style="padding-right:15px; padding-left:15px">Dashboard</button>
+</form>
+{% endif %}
+{% if 'shopping_cart' not in request.build_absolute_uri %}
+{% if items %}
+<span style="width:5px"></span>
+{% include 'go_to_shopping_cart_form.html' %}
+{% endif %}
+{% endif %}
+<span style="width:5px"></span>
+<a href="{% url 'member_address_print_out' library.id member.id %}" class="btn btn-secondary btn-sm" style="padding-right:15px; padding-left:15px" target="_blank"><i class="fas fa-print"></i> Address</a>
+</span>
+<!--#endregion -->

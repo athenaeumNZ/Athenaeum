@@ -1,0 +1,248 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{library.name}} Crates{% endblock %} 
+
+{% block nav-title %}CRATES{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:25px; margin-bottom:20px">
+  <span>
+    <!-- search -->
+    <div style="display:flex; justify-content:space-between">
+      <div class="row">
+        <div class="column">
+          <table>
+            <tbody>
+              <tr>
+                <form method="get" action="{% url 'library_crate_search_by_crate_id' library.id %}" style="padding-right:10px">
+                  {% csrf_token %}
+                  <input type="hidden" value="{{ library.id }}" name="query_library_id" id="query_library_id">
+                  <td style="padding-right:5px">
+                    <input type="text" placeholder="Search by Crate ID" name="query_library_crate_id" id="query_library_crate_id">
+                  </td>
+                  <td style="padding-right:5px">
+                    <button type="submit" class="btn btn-secondary btn-sm" style="height:30px"><i class="fas fa-search"></i></button>
+                  </td>
+                </form>
+
+                <form method="get" action="{% url 'library_crate_search_by_crate_name' library.id %}" style="padding-right:10px">
+                  <input type="hidden" value="{{ library.id }}" name="query_library_id" id="query_library_id">
+                  <td style="padding-right:5px">
+                    <input type="text" placeholder="Search by Crate Name" name="query_library_crate_name" id="query_library_crate_name">
+                  </td>
+                  <td style="padding-right:5px">
+                    <button type="submit" class="btn btn-secondary btn-sm" style="height:30px"><i class="fas fa-search"></i></button>
+                  </td>
+                </form>
+                <td style="padding-right:5px">
+                  <a class="btn btn-secondary btn-sm" href="{% url 'crates' library.id user.member.id %}" style="height:31px">Reset</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </span>
+  <span>
+    {% if library.librarian == user %}
+      {% if library.l2l_count|length <= 0 %}
+        <a href="{% url 'library_default_crates_add' library.id %}" class="btn btn-warning btn-sm"><i class="fas fa-plus"></i> Default Crates</a>
+      {% endif %}
+      {% if crates_not_in_library|length >= 1 %}
+        <a href="{% url 'library_crate_add' library.id %}" class="btn btn-warning btn-sm"><i class="fas fa-plus"></i> Crate</a>
+      {% else %}
+        <a class="btn btn-sm" style="background-color:whitesmoke">No New Crates Availible</a>
+      {% endif %}
+    {% endif %}
+    </span>
+</div>
+
+{% if library.librarian == user %}
+  <!-- to library crates -->
+  <div style="border: 1px solid black; margin-bottom:10px; padding:10px">
+    <div style="display:flex; justify-content:space-between; align-items:center">
+      <span>
+        <strong style="font-size:1.5rem">To {{ library }} Crates</strong> 
+      </span>
+      <span>
+      </span>
+    </div>
+    <table class="table" style="margin-top:15px">
+      <thead>
+        <th style="width:250px; text-align:center">Crate ID</th>
+        <th></th>
+        <th></th>
+        <th style="text-align:center; width:100px">Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- pending crate -->
+        <tr>
+          <td style="display:flex; align-items:center">
+            <a href="{% url 'sub_crate' library.id pending_crate.id user.member.id %}" class="btn btn-secondary btn-sm" style="width:250px" >{{ pending_crate.sub_crate_id }}</a>
+          </td>
+          <td>{{ pending_crate.plate_count }}</td>
+          <td>{{ pending_crate.description }}</td>
+          <td style="text-align:center">
+            <a href="{% url 'sub_crate_divider_insert_printing' library.id pending_crate.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print" style="width:15px"></i></a>
+          </td>
+        </tr>
+        {% if to_library_crates.valid_crates|length >= 1 %}
+          {% for sub_crate in to_library_crates %}
+            {% if sub_crate.plate_count != 0 %}
+              <tr>
+                <td style="display:flex; align-items:center">
+                  <a href="{% url 'sub_crate' library.id sub_crate.id user.member.id %}" class="btn btn-secondary btn-sm" style="width:250px" >{{ sub_crate.sub_crate_id }}</a>
+                </td>
+                <td>{{ sub_crate.plate_count }}</td>
+                <td></td>
+                <td style="text-align:center">
+                  <a href="{% url 'sub_crate_divider_insert_printing' library.id sub_crate.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print" style="width:15px"></i></a>
+                </td>
+              </tr>
+            </tbody>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </table> 
+  </div>
+
+  <!-- library to library crates -->
+  {% if library_to_library_crates.valid_crates|length >= 1 %}
+    <div style="border: 1px solid black; margin-bottom:10px; padding:10px">
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <span>
+          <strong style="font-size:1.5rem">Trade Crates</strong> 
+        </span>
+        <span>
+        </span>
+      </div>
+      <table class="table" style="margin-top:15px">
+        <thead>
+          <th style="width:250px; text-align:center">Crate ID</th>
+          <th></th>
+          <th></th>
+          <th style="text-align:center; width:100px">Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sub_crate in library_to_library_crates %}
+            {% if sub_crate.plate_count != 0 %}
+              <tr>
+                <td style="display:flex; align-items:center">
+                  <a href="{% url 'sub_crate' library.id sub_crate.id user.member.id %}" class="btn btn-secondary btn-sm" style="width:250px" >{{ sub_crate.master_library_crate.library }}</a>
+                </td>
+                <td>{{ sub_crate.plate_count }}</td>
+                <td>{{ sub_crate.master_library_crate.library.city }}, {{ sub_crate.master_library_crate.library.country }}</td>
+                <td style="text-align:center">
+                  <a href="{% url 'sub_crate_divider_insert_printing' library.id sub_crate.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print" style="width:15px"></i></a>
+                </td>
+              </tr>
+            </tbody>
+          {% endif %}
+        {% endfor %} 
+      </table> 
+    </div>
+  {% endif %}
+{% endif %}
+
+<!--#region sale crates-->
+  <div style="border: 1px solid black; margin-bottom:10px; padding:10px">
+    <div style="display:flex; justify-content:space-between; align-items:center">
+      <span>
+        <strong style="font-size:1.5rem">In Stock</strong> 
+      </span>
+      <span>
+      </span>
+    </div>
+    <table class="table" style="margin-top:15px">
+      <thead>
+        <th style="width:250px; text-align:center">Crate ID</th>
+        <th></th>
+        <th></th>
+        <th style="text-align:center; width:100px">Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sub_crate in sale_sub_crates %}
+          {% if sub_crate.plate_count != 0 %}
+            <tr>
+              <td style="display:flex; align-items:center">
+                <a href="{% url 'sub_crate' library.id sub_crate.id user.member.id %}" class="btn btn-secondary btn-sm" style="width:250px" >{{ sub_crate.master_library_crate.library }} Shop</a>
+              </td>
+              <td>{{ sub_crate.plate_count }}</td>
+              <td>{{ sub_crate.master_library_crate.library.city }}, {{ sub_crate.master_library_crate.library.country }}</td>
+              <td style="text-align:center">
+                <a href="{% url 'sub_crate_divider_insert_printing' library.id sub_crate.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print" style="width:15px"></i></a>
+              </td>
+            </tr>
+          </tbody>
+        {% endif %}
+      {% endfor %} 
+    </table> 
+  </div>
+<!--#endregion -->
+
+<!-- crates -->
+{% for master_crate in library_crates %}
+
+  <div style="border: 1px solid black; margin-bottom:10px; padding:10px">
+    <div style="display:flex; justify-content:space-between; align-items:center">
+      <span>
+        <span style="text-transform:uppercase;"><strong style="font-size:1.5rem">{{master_crate.related_crate.genre}} {{master_crate.related_crate.vibe}} {{master_crate.related_crate.get_energy_level_display}}</strong></span>
+      </span>
+      {% if library.librarian == user %}
+        <span style="display:flex; float:right">
+          {% if master_crate.crate_sub_crates|length <= 0 %}
+            <a href="{% url 'library_crate_delete' library.id master_crate.id %}" class="btn btn-sm btn-danger" style="margin-right: 5px"><i class="fas fa-skull-crossbones"></i> Master Crate</a>
+          {% endif %}
+            <a href="{% url 'sub_crate_add' library.id master_crate.id %}" class="btn btn-sm btn-warning"><i class="fas fa-plus"></i> Sub-Crate</a>
+        </span>
+      {% endif %}
+    </div>
+    <div style="margin-top:20px">
+      {{ master_crate.related_crate.description }}
+    </div>
+      
+    <table class="table" style="margin-top:15px">
+      <thead>
+        <th style="width:250px; text-align:center">Crate ID</th>
+        <th></th>
+        <th></th>
+        <th style="text-align:center; width:230px">Options</th>
+        </tr>
+      </thead>
+      {% for sub_crate in master_crate.sub_crates.all %}
+        <tbody>
+          <tr>
+            <td><a href="{% url 'sub_crate' library.id sub_crate.id user.member.id %}" class="btn btn-secondary btn-sm" style="width:250px" >{{ sub_crate.sub_crate_id }}</a></td>
+            <td>{{ sub_crate.plate_count }}</td>
+            {% if sub_crate.reserved == 'Reserved' %}
+              <td style="color:red;">{{sub_crate.reserved}}</td>
+            {% else %}
+              <td></td>
+            {% endif %}
+            <td style="text-align:center">
+              {% if library.librarian == user %}
+                <span>
+                  {% if sub_crate.issued == 'Issued' %}
+                  <a href="{% url 'return_crate' library.id sub_crate.id %}"class="btn btn-light btn-sm" style="width:60px">Return</a>
+                  {% else %}
+                    <a href="{% url 'issue_crate' library.id sub_crate.id %}" class="btn btn-secondary btn-sm" style="width:60px">Issue</a>
+                  {% endif %}
+                </span>
+                <a href="" class="btn btn-secondary btn-sm">Reserve</a>
+                <a href="{% url 'sub_crate_divider_insert_printing' library.id sub_crate.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print" style="width:15px"></i></a>
+              {% endif %}
+              </td>
+          </tr>
+        </tbody>   
+      {% endfor %}
+    </table>
+  </div>
+{% endfor %}
+
+{% endblock %}

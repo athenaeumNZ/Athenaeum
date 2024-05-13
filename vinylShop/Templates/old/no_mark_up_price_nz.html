@@ -1,0 +1,49 @@
+{% extends 'library_base.html' %}
+
+{% block title %}No Mark Up Price NZ{% endblock %}
+
+{% block nav-title %}<span style="color:red">NO MARK UP PRICE </span><span style="color: green;">NZ</span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:20px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'sale_vinyl_options' library.id release.id %}" style="width:300px" class="btn btn-secondary btn-sm">Return to Sale Vinyl Options</a>
+    </span>
+  </header>
+</div>
+<br>
+
+<div style="display:flex; justify-content:center; margin-top:45px">
+  <form action="{% url 'no_mark_up_price_nz_submission' library.id release.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row" style="width:400px">
+      <!-- no mark up price nz -->
+      <div class="form-group col-md-12">
+        <label for="no_mark_up_price_NZ" class="form-label">No Mark Up Price</label>
+        <input type="text" value="{{ no_mark_up_price_nz }}" name="no_mark_up_price_NZ" class="form-control" readonly>
+      </div>
+    </div>
+     <!-- is_bundle -->
+     <div class="form-group col-md-12">
+      <label for="is_bundle" class="form-label">Is Bundle?</label>
+      <select class="form-control" name="is_bundle">
+        <option selected value="False">No</option>
+        <option value="True">Yes</option>
+      </select>
+    </div>
+
+    <div class="row" style="width:400px; margin-top:30px">
+      <!--submit-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:center">
+        <input type="submit" value="Create Non Markup Price" class="btn btn-warning btn-sm" style="width:400px"> 
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

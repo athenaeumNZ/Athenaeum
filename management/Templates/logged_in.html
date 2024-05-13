@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <a href="{% url 'libraries' %}" id="auto_clicked_button" style="width:400px">Continue</a>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

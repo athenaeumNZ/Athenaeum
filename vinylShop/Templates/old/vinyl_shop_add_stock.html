@@ -1,0 +1,57 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Add Vinyl Stock to {{library.name}}{% endblock %}
+
+{% block nav-title %}ADD <span style="color: green">{{ release }}</span> to <span style="color: green">{{ library }}</span> Shop{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:20px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'vinyl_ordering' library.id user.member.id %}" style="width:200px" class="btn btn-secondary btn-sm">Return to Vinyl Shop</a>
+    </span>
+  </header>
+</div>
+
+<div style="display:flex; justify-content:center; margin-top:45px">
+  <form action="{% url 'vinyl_shop_add_stock_submission' library.id release.id previous_url %}" method="post" enctype="multipart/form-data" style="width: 400px;">
+    {% csrf_token %}
+
+    <!-- sale_price_NZ -->
+    {% if library.country == 'New Zealand' %}
+      <input type="hidden" value="{{ release.sale_price_NZ }}" name="sale_price" id="sale_price">
+    {% else %}
+      <input type="text" value="100000.00" name="sale_price" id="sale_price">
+    {% endif %}
+
+    <br>
+    <!--stock-->
+    <div class="form-group col-md-12">
+      <label for="stock" class="form-label">Stock Count</label>
+      <input type="number" value="0" id="stock" name="stock" class="form-control" required>
+    </div>
+    <br>
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Add stock to {{ library }} Shop" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+
+<script>
+  function autoCalculateSalePrice() {
+    document.getElementById("sale_price").value = 
+    (parseFloat(document.getElementById("cost_price").value)) / 
+    100 * (100 - parseFloat(document.getElementById("supplier_discount").value)) *
+    parseFloat(document.getElementById("currency").value) /
+    100 * (100 + parseFloat(document.getElementById("markup").value)) +
+    parseFloat(document.getElementById("shipping").value)
+  }
+</script>
+
+{% endblock %}

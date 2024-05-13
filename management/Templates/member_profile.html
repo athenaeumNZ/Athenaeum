@@ -1,0 +1,31 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{ user.member.membership_number }} Dashboard{% endblock %} 
+
+{% block nav-title %}{{ user.member.membership_number }} Dashboard{% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:30px;">
+  <!-- search -->
+  <span style="display:flex; justify-content:space-between">
+  </span>
+  <!-- options -->
+  <span>
+    <a href="{% url 'member_invoices' library.id user.member.id %}" class="btn btn-warning btn-sm">My Stockpile</a>
+    <a href="{% url 'members_crates' user.member.library.id user.member.id %}" class="btn btn-warning btn-sm">Personal Crates</a>
+    <a href="{% url 'member_plates' library.id user.member.id %}" class="btn btn-warning btn-sm">My Library Plates</a>
+    <a href="{% url 'member_invoices' library.id user.member.id %}" class="btn btn-warning btn-sm">My Invoices</a>
+  </span>
+</div>
+
+
+
+<div style="margin-top:30px">
+
+</div>      
+
+
+{% endblock %}

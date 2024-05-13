@@ -1,0 +1,50 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Pseudo Invoice Edit {% endblock %}
+
+{% block nav-title %}Edit Pseudo INV{{ invoice.id|stringformat:"04d" }}{% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="margin-top:10px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel</button>
+    </span>
+  </header>
+</div>
+
+
+<div style="display:flex; justify-content:center; margin-top:10px">
+  <form action="{% url 'invoice_pseudo_edit_submission' library.id invoice.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+    {% csrf_token %}
+
+    <!--#region pseudo_invoice_total -->
+      <div class="form-group col-md-12">
+        <label for="pseudo_invoice_total" class="form-label">Total</label>
+        <input type="number" step=".01" id="pseudo_invoice_total" name="pseudo_invoice_total" class="form-control" >
+      </div>
+    <!--#endregion -->    
+    
+    <!--#region created -->
+      <div class="form-group col-md-12">
+        <label for="created" class="form-label">Date</label>
+        <input type="date" id="created" name="created" class="form-control" >
+      </div>
+    <!--#endregion -->  
+
+    
+    <!--#region submit-->
+      <div class="form-group col-md-12" style="margin-top:45px">
+        <input type="submit" value="Add Notes" class="btn btn-secondary btn-sm form-control"> 
+      </div>
+    <!--#endregion -->
+
+  </form>
+</div>
+
+{% endblock %}

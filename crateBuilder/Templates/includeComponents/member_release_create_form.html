@@ -1,0 +1,6 @@
+<form action="{% url 'member_release_create' library.id %}" method="post"  enctype="multipart/form-data" style="margin:0px; padding:0px; display:inline;">
+    {% csrf_token %}
+    {% include 'form_variables.html' %}
+    {% include 'form_search_fields.html' %}
+    <button type="submit" class="btn btn-sm " style="border:1px solid black" onclick="return confirm('This will add this release to your collection. Please make sure you have the following plates before clicking OK.\n\n{% for j in plate.related_release.vinyl_plates %}{{ j }}\n\n{% endfor %}')">Add to Collection</button>
+</form>

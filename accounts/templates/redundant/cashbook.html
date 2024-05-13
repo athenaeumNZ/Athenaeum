@@ -1,0 +1,319 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{library.name}} {{ cashbook_month.start_date|date:'F Y' }}{% endblock %} 
+
+{% block nav-title %}CASHBOOK{% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+  <!-- search -->
+  <span style="font-size:2rem; text-transform:uppercase">
+    <strong>{{ cashbook_month.start_date|date:'F Y' }}</strong>
+  </span>
+  <!-- options -->
+  <span>
+    <a href="{% url 'cashbook_entry_add' library.id cashbook_month.id %}" class="btn btn-warning btn-sm"><i class="fas fa-plus"></i> Cashbook Entry</a>
+  </span>
+</div>
+
+<div style="display:flex; justify-content:space-between">
+  <!-- period info -->
+  <span style="width:30%">
+    <table class="table" id="library-crates">
+      <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Start Date</td>
+          <td>:</td>
+          <td style="text-align:right">{{ cashbook_month.start_date|date:'d m Y' }}</td>
+        </tr>
+        <tr>
+          <td>End Date</td>
+          <td>:</td>
+          <td style="text-align:right">{{ cashbook_month.end_date|date:'d m Y' }}</td>
+        </tr>
+        {% if cashbook_month.gst_return_filed == True %}
+          <tr>
+            <td>GST Filing Date</td>
+            <td>:</td>
+            <td style="text-align:right">{{ cashbook_month.gst_filing_date|date:'d m Y' }}</td>
+          </tr>
+        {% else %}
+          <tr>
+            <td>GST Return Filed</td>
+            <td>:</td>
+            <td style="color:red; text-align:right">
+              <a href="{% url 'cashbook_month_filed' library.id cashbook_month.id %}" style="color:red">
+                <i class="fas fa-times"></i>
+              </a>
+            </td>
+          </tr>
+        {% endif %}
+        <tr>
+          <td>Opening Balance</td>
+          <td>:</td>
+          <td style="text-align:right">{{ cashbook_month.opening_balance }}</td>
+        </tr>        
+      </tbody>
+    </table>
+  </span>
+  <!-- expenses -->
+  <span style="width:30%">
+    <table class="table" id="library-crates">
+      <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Expenses</td>
+          <td>:</td>
+          <td style="text-align:right">{{ expenses }}</td>
+        </tr>
+        <tr>
+          <td>GST Paid</td>
+          <td>:</td>
+          <td style="text-align:right">{{ gst_paid }}</td>
+        </tr>
+        <tr>
+          <td>GST Outstanding</td>
+          <td>:</td>
+          <td style="text-align:right">{{ gst_outstanding }}</td>
+        </tr>
+        <tr>
+          <td>Total GST to Pay</td>
+          <td>:</td>
+          <td style="text-align:right">{{ total_gst_on_expenses }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </span>
+
+  <!-- income -->
+  <span style="width:30%">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Income</td>
+          <td>:</td>
+          <td style="text-align:right">{{ sales_and_income }}</td>
+        </tr>
+        <tr>
+          <td>GST Recieved</td>
+          <td>:</td>
+          <td style="text-align:right">{{ gst_recieved }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </span>
+</div>
+
+<style>
+  .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 2px;
+}
+</style>
+<div style="margin-top:10px">
+  <table class="table table-striped-columns" id="library-crates" >
+    <thead class="table-dark">
+      <tr>
+        <th style="text-align:center; width:90px">Inv.D</th>
+        <th style="text-align:center; width:90px">Pro.D</th>
+        <th style="text-align:center; width:30px">I/E</th>
+        <th style="text-align:center; width:30px">Acc.</th>
+        <th style="text-align:center; width:30px">Up</th>
+        <th style="text-align:center; width:30px">Rec</th>
+        <th>Reference</th>
+        <th style="text-align: center;">Bank</th>
+        <th style="text-align: center;">GST P</th>
+        <th style="text-align: center;">GST R</th>
+        {% for i in invoice_types %}
+          <th style="text-align: center;">{{ i.type_code }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for cbe in cashbook_entries %}
+        <tr>
+          <td>{{ cbe.invoice_date|date:'d m y' }}</td>
+          <td>{{ cbe.processing_date|date:'d m y' }}</td>
+          {% if cbe.is_expense == True %}
+            <td class="text-center">
+              E
+            </td>
+          {% else %}
+            <td class="text-center">
+              I
+            </td>
+          {% endif %}
+          <td style="text-align:center;">{{ cbe.bank_account_used.account_id }}</td>
+          {% if cbe.invoice_has_been_uploaded %}
+            <td class="text-center">
+              <a href="{% url 'cashbook_invoice_add' library.id cashbook_month.id cbe.id %}" style="color:green">
+                <i class="fas fa-check"></i>
+              </a>
+            </td>
+          {% else %}
+            <td class="text-center">
+              <a href="{% url 'cashbook_invoice_add' library.id cashbook_month.id cbe.id %}" style="color:red">
+                <i class="fas fa-times"></i>
+              </a>
+            </td>
+          {% endif %}
+          {% if cbe.reconciled == True %}
+            <td style="color:green" class="text-center">
+              <i class="fas fa-check"></i>
+            </td>
+          {% else %}
+            <td style="color:red" class="text-center">
+              <a href="{% url 'cashbook_entry_reconciled_submission' library.id cashbook_month.id cbe.id %}" style="color:red">
+                <i class="fas fa-times"></i>
+              </a>
+            </td>
+          {% endif %}
+          <td><a href="{% url 'cashbook_entry_edit' library.id cashbook_month.id cbe.id %}">{{ cbe.invoice_reference }}</a></td>
+          {% if cbe.is_expense %}
+            <td style="text-align: center; color:red">{{ cbe.get_amount_by_invoice_type }}</td>
+          {% else %}
+            <td style="text-align: center;">{{ cbe.get_amount_by_invoice_type }}</td>
+          {% endif %}
+
+          <!-- gst recieved -->
+          <td style="text-align: center;">
+            {% if cbe.is_expense %}
+              {% if cbe.gst_included %}
+                {% if cbe.gst_should_be_included %}
+                  <span style="color:red">{{ cbe.get_gst }}</span>
+                {% else %}
+                  <span><strong>!</strong></span>
+                {% endif %}
+              {% else %}
+                {% if cbe.gst_should_be_included %}
+                  <span><strong>!</strong></span>
+                {% else %}
+                  <span></span>
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          </td>
+          <td style="text-align: center;">
+            {% if not cbe.is_expense %}
+              {% if cbe.gst_included %}
+                {% if cbe.gst_should_be_included %}
+                  <span>{{ cbe.get_gst }}</span>
+                {% else %}
+                  <span><strong>! {{ cbe.get_gst }} !</strong></span>
+                {% endif %}
+              {% else %}
+                {% if cbe.gst_should_be_included %}
+                  <span><strong>!</strong></span>
+                {% else %}
+                  <span></span>
+                {% endif %}
+              {% endif %}            
+            {% endif %}
+          </td>
+          
+
+
+          {% for i in invoice_types %}
+            {% if i.type_code == cbe.invoice_type.type_code %}
+              {% if cbe.is_expense == True %}
+                <td style="color:red; text-align: center;">
+              {% else %}
+                <td style="text-align: center;">
+              {% endif %}
+                {{ cbe.get_amount }}
+              </td>
+            {% else %}
+              <td style="text-align: center;"></td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>   
+    <tfoot class="table-dark" style="background-color: black;">
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="text-align: center;"><strong>TOTAL:</strong></td>
+        {% if page_total >= 0 %}
+          <td style="text-align:center;">{{ page_total }}</td>
+        {% else %}
+          <td style="text-align:center; color:red">{{ page_total }}</td>
+        {% endif %}
+        <td style="text-align: center; color:red">{{ gst_paid }}</td>
+        <td style="text-align: center;">{{ gst_recieved }}</td>
+        {% for i in invoice_types %}
+          {% if i.total >= 0 %}
+            <td style="text-align: center;">
+          {% else %}
+            <td style="text-align:center; color:red">
+          {% endif %}
+            {% if i.total == 0 %}
+            {% else %}
+              {{ i.total|cut:"-" }}
+            {% endif %}
+          </td>
+        {% endfor %}
+      </tr>
+    </tfoot>
+  
+  </table>
+</div>
+
+<!-- pagination-->
+<div style="padding-top: 5px;">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if vinyl_releases.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ vinyl_releases.previous_page_number }}">&lsaquo;</a></li>
+          {% if vinyl_releases.number > 2 %}
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+              {% if vinyl_releases.number > 3 %}
+                <span class="page-link">...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      {% for num in vinyl_releases.paginator.page_range %}
+        {% if vinyl_releases.number == num %}
+          <li class="page-item"><a class="page-link active" href="?page={{ num }}">{{ num }}</a></li>
+        {% elif num > vinyl_releases.number|add:'-2' and num < vinyl_releases.number|add:'2' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if vinyl_releases.has_next %}
+        {% if vinyl_releases.number < vinyl_releases.paginator.num_pages|add:'-2' %}
+          <span class="page-link">...</span>
+          <li class="page-item"><a class="page-link" href="?page={{ vinyl_releases.paginator.num_pages }}">{{ vinyl_releases.paginator.num_pages }}</a></li>
+        {% elif vinyl_releases.number < vinyl_releases.paginator.num_pages|add:'-1' %}
+          <li class="page-item"><a class="page-link" href="?page={{ vinyl_releases.paginator.num_pages }}">{{ vinyl_releases.paginator.num_pages }}</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link" href="?page={{ vinyl_releases.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav> 
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+{% endblock %}

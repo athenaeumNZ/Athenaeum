@@ -1,0 +1,34 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Add Plate to {{release.catalog_number}}{% endblock %}
+
+{% block nav-title %}Add Plate to {{release.catalog_number}}{% endblock %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:center">
+<div style="max-width: 400px; margin-top:150px">
+  <form action="{% url 'release_plate_add_submission' library.id release.id %}" method="post">
+    {% csrf_token %}
+
+    <!--plate_index-->
+
+    <div class="form-group col-md-12">
+      <label for="plate_index">Plate Index</label>
+      <select id="plate_index" class="form-control" name="plate_index" required>
+        <option selected>Choose...</option>
+        {% for index in indexes %}
+          <option value="{{ index }}">{{ index }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <br>
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Add plate to {{release.catalog_number}}" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+</div>
+{% endblock %}

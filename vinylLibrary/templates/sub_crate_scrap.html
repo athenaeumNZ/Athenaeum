@@ -1,0 +1,27 @@
+<td class="text-center">
+    {% if 'Stockpile' in sub_crate.sub_crate_id or 'Shipping Requested' in sub_crate.sub_crate_id %}
+      {% if library.librarian == user %}
+        <a href="{% url 'member_plate_move_to_en_route_submission' library.id sub_crate.id plate.id %}" class="btn btn-success btn-sm"><i class="fas fa-plane"></i></a>
+      {% endif %}            
+    {% elif 'En Route' in sub_crate.sub_crate_id %}
+      <a href="{% url 'member_plate_move_to_limbo_submission' library.id sub_crate.id plate.id %}" class="btn btn-success btn-sm"><i class="fas fa-cloud"></i></a>
+    {% elif 'Processing Order' in sub_crate.sub_crate_id or 'Placing Order' in sub_crate.sub_crate_id or 'On Order' in sub_crate.sub_crate_id or 'Shipping Requested' in sub_crate.sub_crate_id %}
+      {% if library.librarian == user %}  
+        <a href="{% url 'member_plate_move' library.id sub_crate.id plate.id previous_url %}" class="btn btn-warning btn-sm"><i class="fas fa-dolly"></i></a> 
+      {% endif %}
+    {% elif 'To Library' in sub_crate.sub_crate_id %}
+      <a href="{% url 'library_plate_move' library.id sub_crate.id plate.id %}" class="btn btn-secondary btn-sm"><i class="fas fa-dolly"></i></a>
+    {% elif sub_crate.crate_type == 'Member' %}
+      <a href="{% url 'member_plate_move' library.id sub_crate.id plate.id previous_url %}" class="btn btn-warning btn-sm"><i class="fas fa-dolly"></i></a>
+    {% elif sub_crate.crate_type == 'Library to Library' %}
+      {% if sub_crate.master_library_crate.library.librarian == user %}
+        <a href="{% url 'trade_plate_move' library.id sub_crate.id plate.id %}" class="btn btn-danger btn-sm"><i class="fas fa-exchange-alt"></i></a>
+        <a href="{% url 'library_plate_move' library.id sub_crate.id plate.id %}" class="btn btn-warning btn-sm"><i class="fas fa-dolly"></i></a>
+      {% endif %}
+    {% elif library.librarian == user %}
+      <a href="{% url 'library_plate_move' library.id sub_crate.id plate.id %}" class="btn btn-secondary btn-sm"><i class="fas fa-dolly"></i></a>
+    {% endif %}
+    {% if sub_crate.master_library_crate.library.librarian == user or user.member.membership_number in sub_crate.sub_crate_id and 'To Library' not in sub_crate.sub_crate_id %}
+      <a href="{% url 'library_plate_edit' library.id sub_crate.id  plate.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+    {% endif %}
+  </td>

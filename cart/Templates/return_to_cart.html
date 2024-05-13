@@ -1,0 +1,23 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Return to Cart{% endblock %}
+
+{% block nav-title %}RETURN TO CART{% endblock %}
+
+{% block content %}
+
+{% if 'cart' in request.session and cart.items_list %}
+  <span style="display:flex; justify-content:center; padding-top:250px">
+    <a href="{% url 'cart' library.id user.member.id %}" id="auto_clicked_button" style="width:400px" class="btn btn-secondary btn-sm">Go to Cart</a>
+  </span>
+{% else %}
+  <span style="display:flex; justify-content:center; padding-top:250px">
+    <a href="{% url 'vinyl_ordering' library.id user.member.id %}" id="auto_clicked_button" style="width:400px" class="btn btn-secondary btn-sm">Return to Vinyl Shop</a>
+  </span>
+{% endif %}
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

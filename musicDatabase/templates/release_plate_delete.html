@@ -1,0 +1,28 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Delete {{ plate }}{% endblock %}
+
+{% block nav-title %}Delete {{ plate }}{% endblock %}
+
+{% block content %}
+
+<header style="display:flex; justify-content:space-between; margin-top:30px">
+  <span>
+  </span>
+  <span>
+    <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:300px">Return to Release Compile</button>
+  </span>
+</header>
+
+<div style="display:flex; justify-content:center; padding-top:165px">
+  <form action="{% url 'release_plate_delete_submission' library.id release.id plate.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+    {% csrf_token %}
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Delete {{ plate }} ?" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+
+{% endblock %}

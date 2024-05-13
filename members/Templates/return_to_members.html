@@ -1,0 +1,18 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Return to Members{% endblock %}
+
+{% block nav-title %}Return to Members{% endblock %}
+
+{% block content %}
+
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <a href="{% url 'members' user.member.library.id %}" id="auto_clicked_button" style="width:400px">Return to Members</a>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

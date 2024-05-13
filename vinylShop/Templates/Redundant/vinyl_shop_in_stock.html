@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <title>{{ library }} In Stock {% now "d F y" %}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+    <style>
+      @media print
+        {    
+            .no-print, .no-print *
+            {
+                display: none !important;
+            }
+        }
+      </style>
+  </head>
+  <body style="background-color:white; width:210mm; height:297mm; margin: 0px auto;">
+    <span style="display:flex; justify-content:space-between; align-items:baseline">
+      <span style="font-size:4rem; text-transform:uppercase; font-weight:900">
+        <i class="fas fa-university"></i>
+        <span style="font-size:3rem; margin-left:3mm; margin-top:2mm">{{ library }}</span>
+      </span>
+      <span style="font-size:1.5rem;">
+        {{ count }} RELEASES <span style="font-size:1.8rem">IN STOCK </span>
+      </span>
+    </span>
+    <p style="margin-top:5mm">
+      There is no international shipping to pay.
+      However, G.S.T. is NOT included in these prices, nor is domestic postage fees.
+    </p>
+    <p >
+      KEY: 
+      <span style="color:blue;">Recently added or restocked.</span>
+      <span style="color:green;">Incoming.</span>
+      <span style="color:red;">Recently out of stock.</span>
+    </p>
+    <span class="no-print">
+      <a href="{% url 'vinyl_shop_in_stock_update_status_submission' library.id %}" class="btn btn-sm btn-danger" style="margin-right: 5px">Update Stock Status</a>
+      <a href="{% url 'vinyl_shop_in_stock_update_most_common_submission' library.id %}" class="btn btn-sm btn-secondary">Update Most Common Genres</a>
+    </span>
+    <!--#region in stock items -->
+      <table class="table" style="font-size:0.7rem; margin-top:5mm; width:100%">
+        <thead>
+          <tr>
+            <th>ART</th>
+            <th>Genre</th>
+            <th>View</th>
+            <th>Artist</th>
+            <th>Title</th>
+            <th>Label</th> 
+            <th class="text-center">Release Date</th> 
+            <th class="text-center">Price</th> 
+          </tr>
+        </thead>
+        <tbody>
+          {% for release in vinyl_in_stock %}
+            {% if release.status == 0 %}
+              <tr style="color:red">
+            {% elif release.status == 1 %}
+              <tr style="color:green">
+            {% elif release.status == 2 %}
+              <tr style="color:blue">
+            {% elif release.status == 3 %}
+              <tr style="color:blue">
+            {% else %}
+              <tr>
+            {% endif %}
+              {% if release.vinyl_release.artwork_small %}
+                <td>
+                  <img src="{{ release.vinyl_release.artwork_small.url }}" width="25" height="25">
+                </td>
+              {% else %}
+                <td></td>
+              {% endif %}
+              <td>{{ release.vinyl_release.most_common }}</td>
+              <td>{{ release.vinyl_release.catalog_number }}</td>
+              <td>{{ release.vinyl_release.artist }}</td>
+              <td>{{ release.vinyl_release.release_title }}</td>
+              <td>{{ release.vinyl_release.label }}</td>
+              <td class="text-center">{{ release.vinyl_release.release_date|date:"m Y" }}</td>
+              <td style="text-align:center;">${{ release.price }}</td>
+            </tr>
+          {% endfor %} 
+        </tbody> 
+      </table>
+    <!--#endregion -->
+  </body>
+</html>

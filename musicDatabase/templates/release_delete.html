@@ -1,0 +1,30 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Delete {{ release }}.{% endblock %}
+
+{% block nav-title %}<span style="color:red">DELETE {{ release }}</span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="margin-top:30px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'release_compile' library.id release.id %}" style="width:300px" class="btn btn-secondary btn-sm">Return to Release Compile</a>
+    </span>
+  </header>
+</div>
+
+<div style="margin-top:180px; display:flex; justify-content:center">
+  <form action="{% url 'release_delete_submission' library.id release.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Delete {{ release }}" class="btn btn-danger btn-sm" style="width:400px" onclick="return confirm('Are you really sure you want to delete {{ release }}?')"> 
+    </div>
+  </form>
+</div>
+
+{% endblock %}

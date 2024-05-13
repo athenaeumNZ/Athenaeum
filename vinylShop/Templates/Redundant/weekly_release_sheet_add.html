@@ -1,0 +1,46 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Add Weekly Release Sheet{% endblock %}
+
+{% block nav-title %}<span style="color: green;">ADD RELEASE SHEET</span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="margin-top:30px">
+  <header>
+    <span>
+    </span>
+    <span>
+    </span>
+  </header>
+</div>
+<br>
+
+<div style="display:flex; justify-content:center; margin-top:80px">
+  <form action="{% url 'weekly_release_sheet_add_submission' library.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div style="width:400px">
+      <!-- week start date -->
+      <div class="form-group col-md-12">
+        <label for="search_start_date" class="form-label">Week Start</label>
+        <input type="date" class="form-control" name="search_start_date">
+      </div>
+      <!-- week ending date -->
+      <div class="form-group col-md-12">
+        <label for="search_end_date" class="form-label">Week End</label>
+        <input type="date" class="form-control" name="search_end_date">
+      </div>
+
+    </div>
+
+    <div style="margin-top:30px"> 
+      <!--submit-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:center">
+        <input type="submit" value="Create Weekly Release Sheet" class="btn btn-secondary btn-sm" style="width:400px"> 
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Edit {{ sub_crate }}{% endblock %}
+
+{% block nav-title %}EDIT {{ sub_crate }}{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:20px">
+  <header>
+    <span>
+      <a href="{% url 'sub_crate_delete' library.id sub_crate.id member.id %}" class="btn btn-danger btn-sm" style="width:200px"><i class="fas fa-skull-crossbones"></i> Sub Crate</a>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel Editing</button>
+    </span>
+  </header>
+</div>
+
+<div style="padding-top: 45px; display:flex; justify-content:center">
+    <form action="{% url 'sub_crate_edit_submission' library.id library_crate.id sub_crate.id %}" method="post" style="width: 400px">
+      {% csrf_token %}
+
+      <!-- master_library_crate_name -->
+      <input type="hidden" id="master_library_crate_name" value="{{ sub_crate.master_library_crate.related_crate.crate_id }}">
+
+      <!-- library_name -->
+      <input type="hidden" id="library_name" value="{{ library.name }}">
+
+      <!-- crate_index_start -->
+      <div class="form-group col-md-12">
+        <label for="crate_index_start">Crate Index Start:</label><br>
+        <input type="text" value="{{ sub_crate.crate_index_start }}" id="crate_index_start" name="crate_index_start" class="form-control" oninput="this.value = this.value.toUpperCase()">
+      </div>
+
+      <!-- crate_index_end -->
+      <div class="form-group col-md-12">
+        <label for="crate_index_end">Crate Index End:</label><br>
+        <input type="text" value="{{ sub_crate.crate_index_end }}" id="crate_index_end" name="crate_index_end" class="form-control" oninput="this.value = this.value.toUpperCase()">
+      </div>
+
+      <!-- sub_crate_id -->
+      <div class="form-group col-md-12">
+        <input type="checkbox" id="autofill" name="autofill" onchange="autoCreateCrateID()" />
+        <label for="same"> Auto Create Crate ID </label>
+      </div>
+      
+      <!-- sub_crate_id -->
+      <div class="form-group col-md-12">
+        <label for="sub_crate_id">Crate ID:</label><br>
+        <input type="text" value="{{ sub_crate.sub_crate_id }}" id="sub_crate_id" name="sub_crate_id" class="form-control" oninput="this.value = this.value.toUpperCase()">
+      </div>
+      <br>
+
+      <p>* <span style="color:red">WARNING</span> This process can not be reversed and the old barcode will no longer work!! Please reprint the sub crate insert when altering these values!!</p>
+      <br>
+      <!--submit-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:center">
+        <input type="submit" value="Edit Sub Crate" class="btn btn-danger btn-sm" style="width:400px;">
+      </div>
+        
+    </form>
+</div>
+
+<script>
+  function autoCreateCrateID() {
+    document.getElementById("sub_crate_id").value = 
+    document.getElementById("master_library_crate_name").value +
+    ' ' +
+    document.getElementById("library_name").value.toUpperCase().slice(0, 3) +
+    ' ' +
+    document.getElementById("crate_index_start").value +
+    '-' +
+     document.getElementById("crate_index_end").value;
+    
+  }
+</script>
+
+{% endblock %}

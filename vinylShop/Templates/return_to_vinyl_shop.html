@@ -1,0 +1,18 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Return to Vinyl Shop{% endblock %}
+
+{% block nav-title %}RETURN TO VINYL SHOP{% endblock %}
+
+{% block content %}
+
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <a href="{% url 'vinyl_shop' library.id %}" id="auto_clicked_button" style="width:400px" class="btn btn-secondary btn-sm">Return to Vinyl Shop</a>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

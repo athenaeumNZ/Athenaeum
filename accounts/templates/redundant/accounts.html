@@ -1,0 +1,604 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{ library }} Accounts{% endblock %} 
+
+{% block nav-title %}<span style="color:green">ACCOUNTS</span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:30px;">
+  <span>
+  </span>
+  <!-- options -->
+  <span>
+  </span>
+</div>
+
+<span style="display:flex; justify-content:space-between">
+  <!-- Weight on Order -->
+  <span style="width: 500px">
+    {% if tvd_order_count != 0 or ues_order_count != 0 or wp_order_count != 0 %}
+      {% if library.librarian == user %}
+      <!-- to library crates -->
+      <div style="border: 1px solid black; margin:20px 0px; padding:10px">
+        <div style="display:flex; justify-content:space-between; align-items:center">
+          <span>
+            <strong style="font-size:1.5rem">On Order From Distributors</strong> 
+          </span>
+          <span>
+          </span>
+        </div>
+        <table class="table" style="margin-top:15px">
+          <thead>
+            <tr>
+              <th>Distributor</th>
+              <th style="text-align:center;">Total</th>
+              <th style="text-align:center;">Today</th>
+              <th style="text-align:center;">1</th>
+              <th style="text-align:center;">2</th>
+              <th style="text-align:center;">3</th>
+              <th style="text-align:center;">4</th>
+            </tr>
+          </thead>
+          <tbody>
+          
+            <!-- #region TVD available to order -->
+            {% if tvd_order_count != 0 %}
+              <tr>
+                <td>TVD</td>
+                <!-- total -->
+                <td style="text-align:center">{{ tvd_order_count }}</td>
+                <!-- today -->
+                {% if tvd_order_count_availible_today > 20.00 %}
+                  <td style="text-align:center; color:red">
+                {% elif tvd_order_count_availible_today >= 15.00 %}
+                  <td style="text-align:center; color:green">
+                {% else %}
+                  <td style="text-align:center; color:black">
+                {% endif %}
+                {{ tvd_order_count_availible_today }}
+                </td>
+                <!-- 1 week -->
+                {% if tvd_order_count_availible_today == tvd_order_count_availible_one_week %}
+                  <td></td>
+                {% else %}
+                  {% if tvd_order_count_availible_one_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif tvd_order_count_availible_one_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ tvd_order_count_availible_one_week }}
+                  </td>
+                {% endif %}
+                <!-- 2 weeks -->
+                {% if tvd_order_count_availible_two_week == tvd_order_count_availible_one_week %}
+                  <td></td>
+                {% else %}
+                  {% if tvd_order_count_availible_two_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif tvd_order_count_availible_two_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ tvd_order_count_availible_two_week }}
+                {% endif %}
+                </td>
+                <!-- 3 weeks -->
+                {% if tvd_order_count_availible_two_week == tvd_order_count_availible_three_week %}
+                  <td></td>
+                {% else %}
+                  {% if tvd_order_count_availible_three_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif tvd_order_count_availible_three_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ tvd_order_count_availible_three_week }}
+                  </td>
+                {% endif %}
+                <!-- 4 weeks -->
+                {% if tvd_order_count_availible_three_week == tvd_order_count_availible_four_week %}
+                  <td></td>
+                {% else %}
+                  {% if tvd_order_count_availible_four_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif tvd_order_count_availible_four_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ tvd_order_count_availible_four_week }}
+                  </td>
+                {% endif %}
+              </tr>
+            {% endif %}
+            <!-- #endregion -->
+
+            <!-- #region UES available to order -->
+            {% if ues_order_count != 0 %}
+              <tr>
+                <td>UES</td>
+                <!-- total -->
+                <td style="text-align:center">{{ ues_order_count }}</td>
+                <!-- today -->
+                {% if ues_order_count_availible_today > 20.00 %}
+                  <td style="text-align:center; color:red">
+                {% elif ues_order_count_availible_today >= 15.00 %}
+                  <td style="text-align:center; color:green">
+                {% else %}
+                  <td style="text-align:center; color:black">
+                {% endif %}
+                {{ ues_order_count_availible_today }}
+                </td>
+                <!-- 1 week -->
+                {% if ues_order_count_availible_today == ues_order_count_availible_one_week %}
+                  <td></td>
+                {% else %}
+                  {% if ues_order_count_availible_one_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif ues_order_count_availible_one_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ ues_order_count_availible_one_week }}
+                  </td>
+                {% endif %}
+                <!-- 2 weeks -->
+                {% if ues_order_count_availible_two_week == ues_order_count_availible_one_week %}
+                  <td></td>
+                {% else %}
+                  {% if ues_order_count_availible_two_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif ues_order_count_availible_two_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ ues_order_count_availible_two_week }}
+                {% endif %}
+                </td>
+                <!-- 3 weeks -->
+                {% if ues_order_count_availible_two_week == ues_order_count_availible_three_week %}
+                  <td></td>
+                {% else %}
+                  {% if ues_order_count_availible_three_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif ues_order_count_availible_three_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ ues_order_count_availible_three_week }}
+                  </td>
+                {% endif %}
+                <!-- 4 weeks -->
+                {% if ues_order_count_availible_three_week == ues_order_count_availible_four_week %}
+                  <td></td>
+                {% else %}
+                  {% if ues_order_count_availible_four_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif ues_order_count_availible_four_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ ues_order_count_availible_four_week }}
+                  </td>
+                {% endif %}
+              </tr>
+            {% endif %}
+            <!-- #endregion -->
+
+            <!-- #region WP available to order -->
+            {% if wp_order_count != 0 %}
+              <tr>
+                <td>WP</td>
+                <!-- total -->
+                <td style="text-align:center">{{ wp_order_count }}</td>
+                <!-- today -->
+                {% if wp_order_count_availible_today > 20.00 %}
+                  <td style="text-align:center; color:red">
+                {% elif wp_order_count_availible_today >= 15.00 %}
+                  <td style="text-align:center; color:green">
+                {% else %}
+                  <td style="text-align:center; color:black">
+                {% endif %}
+                {{ wp_order_count_availible_today }}
+                </td>
+                <!-- 1 week -->
+                {% if wp_order_count_availible_today == wp_order_count_availible_one_week %}
+                  <td></td>
+                {% else %}
+                  {% if wp_order_count_availible_one_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif wp_order_count_availible_one_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ wp_order_count_availible_one_week }}
+                  </td>
+                {% endif %}
+                <!-- 2 weeks -->
+                {% if wp_order_count_availible_two_week == wp_order_count_availible_one_week %}
+                  <td></td>
+                {% else %}
+                  {% if wp_order_count_availible_two_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif wp_order_count_availible_two_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ wp_order_count_availible_two_week }}
+                {% endif %}
+                </td>
+                <!-- 3 weeks -->
+                {% if wp_order_count_availible_two_week == wp_order_count_availible_three_week %}
+                  <td></td>
+                {% else %}
+                  {% if wp_order_count_availible_three_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif wp_order_count_availible_three_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ wp_order_count_availible_three_week }}
+                  </td>
+                {% endif %}
+                <!-- 4 weeks -->
+                {% if wp_order_count_availible_three_week == wp_order_count_availible_four_week %}
+                  <td></td>
+                {% else %}
+                  {% if wp_order_count_availible_four_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif wp_order_count_availible_four_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ wp_order_count_availible_four_week }}
+                  </td>
+                {% endif %}
+              </tr>
+            {% endif %}
+            <!-- #endregion -->
+
+            <!-- #region KUD available to order -->
+            {% if kud_order_count != 0 %}
+              <tr>
+                <td>KD</td>
+                <!-- total -->
+                <td style="text-align:center">{{ kud_order_count }}</td>
+                <!-- today -->
+                {% if kud_order_count_availible_today > 20.00 %}
+                  <td style="text-align:center; color:red">
+                {% elif kud_order_count_availible_today >= 15.00 %}
+                  <td style="text-align:center; color:green">
+                {% else %}
+                  <td style="text-align:center; color:black">
+                {% endif %}
+                {{ kud_order_count_availible_today }}
+                </td>
+                <!-- 1 week -->
+                {% if kud_order_count_availible_today == kud_order_count_availible_one_week %}
+                  <td></td>
+                {% else %}
+                  {% if kud_order_count_availible_one_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif kud_order_count_availible_one_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ kud_order_count_availible_one_week }}
+                  </td>
+                {% endif %}
+                <!-- 2 weeks -->
+                {% if kud_order_count_availible_two_week == kud_order_count_availible_one_week %}
+                  <td></td>
+                {% else %}
+                  {% if kud_order_count_availible_two_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif kud_order_count_availible_two_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ kud_order_count_availible_two_week }}
+                {% endif %}
+                </td>
+                <!-- 3 weeks -->
+                {% if kud_order_count_availible_two_week == kud_order_count_availible_three_week %}
+                  <td></td>
+                {% else %}
+                  {% if kud_order_count_availible_three_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif kud_order_count_availible_three_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ kud_order_count_availible_three_week }}
+                  </td>
+                {% endif %}
+                <!-- 4 weeks -->
+                {% if kud_order_count_availible_three_week == kud_order_count_availible_four_week %}
+                  <td></td>
+                {% else %}
+                  {% if kud_order_count_availible_four_week > 20.00 %}
+                    <td style="text-align:center; color:red">
+                  {% elif kud_order_count_availible_four_week >= 15.00 %}
+                    <td style="text-align:center; color:green">
+                  {% else %}
+                    <td style="text-align:center; color:black">
+                  {% endif %}
+                  {{ kud_order_count_availible_four_week }}
+                  </td>
+                {% endif %}
+              </tr>
+            {% endif %}
+            <!-- #endregion -->
+
+          </tbody>
+        </table> 
+      </div>
+      {% endif %}
+    {% endif %}
+  </span>
+  <!-- accounts -->
+  <span style="width: 40%">
+  </span>
+</span>
+
+<div style="margin-top:30px; display:flex; justify-content:space-between">
+
+  <!--#region invoices -->
+    <div style="width:370px">
+      <span><strong>Invoices</strong></span>
+      <table class="table" style="margin-top:20px">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th></th>
+            <th>Date</th>
+            <th class="text-center">$</th>
+            <th class="text-center">O</th>
+            <th class="text-center">P</th>
+            <th></th>
+          </tr>
+        </thead>
+        {% for invoice in invoices %}  
+          <tbody>
+            <tr>
+              <td>{{ invoice.id|stringformat:"03d" }}</td>
+              <td>{{ invoice.member.membership_number }}</td>
+              <td>{{invoice.created|date:"d m" }}</td>
+              <td class="text-center">{{ invoice.get_total_cost }}</td>
+              {% if invoice.on_order == True %}
+                <td style="color:green" class="text-center">
+                  <i class="fas fa-check"></i>
+                </td>
+              {% else %}
+                <td style="color:red" class="text-center">
+                  <i class="fas fa-times"></i>
+                </td>
+              {% endif %}
+
+              {% if invoice.paid == True %}
+                <td style="color:green" class="text-center">
+                  <i class="fas fa-check"></i>
+                </td>
+              {% else %}
+                <td style="color:red" class="text-center">
+                  <i class="fas fa-times"></i>
+                </td>
+              {% endif %}
+              <td style="display:flex">
+                <a href="{% url 'invoice' library.id invoice.id %}" class="btn btn-secondary btn-sm" target="_blank"><i class="fas fa-eye"></i></a>
+                {% if invoice.paid != True and library.librarian == user %}
+                  <form action="{% url 'invoice_pay_submission' library.id invoice.id %}" method="post" style="margin-left:5px">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-money-bill"></i></button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          </tbody> 
+        {% endfor %}
+      </table>
+    </div> 
+  <!--#endregion -->
+
+  <!--#region cashbooks -->
+    <div style="width:500px">
+      <span style="display:flex; justify-content:space-between">
+        <span>
+          <strong>Cashbooks</strong>
+        </span>
+        <span>
+          <a href="{% url 'cashflow_forecast' library.id %}" class="btn btn-secondary btn-sm" target="_blank">Cashflow Forecast</a>
+        </span>
+      </span>
+
+      <table class="table" style="margin-top:20px; text-align:center">
+        <thead>
+          <tr>
+            <th style="text-align:left; width:120px">Date</th>
+            <th>I</th>
+            <th>E</th>
+            <th>D</th>
+            <th>Ia</th>
+            <th>Ea</th>
+            <th>Da</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cb in cashbook_months %}
+              <tr>
+                <td  style="text-align:left">{{ cb.start_date|date:'F Y' }}</td>
+                <td>{{ cb.sales_and_income|floatformat:"0" }}</td>
+                <td>{{ cb.expenses|floatformat:"0" }}</td>
+                {% if cb.difference >= 0 %}
+                  <td style="color:green">{{ cb.difference|floatformat:"0" }}</td>
+                {% else %}
+                  <td style="color:red">{{ cb.difference|floatformat:"0" }}</td>
+                {% endif %}
+                
+
+                <td>{{ cb.incomes_incl_gst|floatformat:"0" }}</td>
+                <td>{{ cb.expenses_incl_gst|floatformat:"0" }}</td>
+                {% if cb.difference_actual >= 0 %}
+                  <td style="color:green">{{ cb.difference_actual|floatformat:"0" }}</td>
+                {% else %}
+                  <td style="color:red">{{ cb.difference_actual|floatformat:"0" }}</td>
+                {% endif %}
+
+              
+                <td style="display:flex">
+                  <a href="{% url 'cashbook' library.id cb.id %}" class="btn btn-secondary btn-sm" target="_blank"><i class="fas fa-book"></i></a>
+                </td>
+              </tr>
+          {% endfor %}
+        </tbody>     
+      </table>
+    </div>
+  <!--#endregion -->  
+
+</div>
+
+<div style="margin-top:30px; display:flex; justify-content:space-between">
+
+  <!--#region purchase orders -->
+  <div style="width:300px">
+    <span><strong>Purchase Orders</strong></span>
+    <table class="table" style="margin-top:20px">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th class="text-center">O</th>
+          <th class="text-center">F</th>
+          <th class="text-center">CBE</th>
+          <th></th>
+        </tr>
+      </thead>
+      {% for order in purchase_orders %}  
+        <tbody>
+          <tr>
+            <td>{{ order.id|stringformat:"03d" }}</td>
+            <td>{{order.created|date:"d m" }}</td>
+            {% if order.on_order == True %}
+              <td style="color:green" class="text-center">
+                <i class="fas fa-check"></i>
+              </td>
+            {% else %}
+              <td style="color:red" class="text-center">
+                <i class="fas fa-times"></i>
+              </td>
+            {% endif %}
+            {% if order.funded == True %}
+              <td style="color:green" class="text-center">
+                <i class="fas fa-check"></i>
+              </td>
+            {% elif order.is_restock == True %}
+              <td style="color:gray" class="text-center">
+                <i class="fas fa-times"></i>
+              </td>
+            {% else %}
+              <td style="color:red" class="text-center">
+                <i class="fas fa-times"></i>
+              </td>
+            {% endif %}
+            {% if order.cashbook_entry_added == True %}
+              <td style="color:green" class="text-center">
+                <i class="fas fa-check"></i>
+              </td>
+            {% elif order.is_restock == True %}
+              <td style="color:gray" class="text-center">
+                <i class="fas fa-times"></i>
+              </td>
+            {% else %}
+              <td style="color:red" class="text-center">
+                <i class="fas fa-times"></i>
+              </td>
+            {% endif %}
+            <td>
+              <a href="{% url 'purchase_order_receipt' library.id order.id %}" class="btn btn-secondary btn-sm" target="_blank"><i class="fas fa-eye"></i></a>
+            </td>
+          </tr>
+        </tbody> 
+      {% endfor %}
+    </table>
+  </div> 
+  <!--#endregion -->
+
+  <!--#region vinyl invoices -->
+    <div style="width:370px">
+      <span><strong>Vinyl Invoices</strong></span>
+      <table class="table" style="margin-top:20px">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th></th>
+            <th>Date</th>
+            <th class="text-center">$</th>
+            <th class="text-center">O</th>
+            <th class="text-center">P</th>
+            <th></th>
+          </tr>
+        </thead>
+        {% for order in invoices_old %}  
+          <tbody>
+            <tr>
+              <td>{{ order.id|stringformat:"03d" }}</td>
+              <td>{{ order.member.membership_number }}</td>
+              <td>{{order.created|date:"d m" }}</td>
+              <td class="text-center">{{ order.get_total_cost }}</td>
+              {% if order.on_order == True %}
+                <td style="color:green" class="text-center">
+                  <i class="fas fa-check"></i>
+                </td>
+              {% else %}
+                <td style="color:red" class="text-center">
+                  <i class="fas fa-times"></i>
+                </td>
+              {% endif %}
+
+              {% if order.paid == True %}
+                <td style="color:green" class="text-center">
+                  <i class="fas fa-check"></i>
+                </td>
+              {% else %}
+                <td style="color:red" class="text-center">
+                  <i class="fas fa-times"></i>
+                </td>
+              {% endif %}
+              <td style="display:flex">
+                <a href="{% url 'member_order' library.id order.id user.member.id %}" class="btn btn-secondary btn-sm" target="_blank"><i class="fas fa-eye"></i></a>
+                {% if order.paid != True and library.librarian == user %}
+                  <form action="{% url 'invoice_pay_submission' library.id order.id %}" method="post" style="margin-left:5px">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-money-bill"></i></button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          </tbody> 
+        {% endfor %}
+      </table>
+    </div> 
+  <!--#endregion -->
+
+
+</div>
+
+{% endblock %}

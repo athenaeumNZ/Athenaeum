@@ -1,0 +1,17 @@
+{% extends 'database_base.html' %}
+{% block title %}Delete Convention{% endblock %}
+{% block content %}
+
+
+<div class="container" style="max-width: 400px; padding-top:65px">
+  <form action="{% url 'artist_naming_convention_delete_submission' library.id artist.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Delete Convention" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+
+{% endblock %}

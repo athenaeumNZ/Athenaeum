@@ -1,0 +1,149 @@
+{% extends "library_base.html" %}
+
+{% block title %} Your Shopping Cart {% endblock %}
+
+{% block nav-title %}SHOPPING CART{% endblock %}
+
+{% block content %}
+
+<!--#region header -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:30px;">
+    <!-- search -->
+    <span>
+    </span>
+    <!-- options -->
+    <span>
+    </span>
+</div>
+<!--#endregion -->
+
+<div style="margin-top:30px">
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="text-align: center;">IMG</th>
+
+                <th style="text-align: center; width:30px">Catalog Number</th>
+                <th>Artist</th>
+                <th>Title</th>
+                <th>Label</th>
+                <th style="width:80px; text-align:center">Price</th>
+                <th style="width:80px; text-align:center"></th> 
+            </tr>
+        </thead>
+        
+        <tbody>
+            {% for item in cart %}
+                <tr>
+                    <!--#region artwork -->
+                        <td style="height:30px; width: 30px; text-align:center;">
+                            {% if item.vinyl_release.artwork %}
+                                <img src="{{ item.vinyl_release.artwork.url }}" width="30" height="30">
+                            {% else %}
+                            <div style="text-align:center; font-size: 0.5rem;">No image</div>
+                            {% endif %}
+                        </td>
+                    <!--#endregion -->
+
+
+                    <td style="text-align:center;"><a href="{% url 'release' library.id item.vinyl_release.id %}"class="btn btn-secondary btn-sm" target="_blank" style="width:200px;font-style:normal">{{item.vinyl_release.catalog_number}}</a></td>
+                    <td>{{ item.vinyl_release.artist }}</td>
+                    <td>{{ item.vinyl_release.release_title }}</td>
+                    <td>{{ item.vinyl_release.label }}</td>
+                    <td style="color:gray; text-align:center">${{ item.price }}</td>
+                    <td style="text-align:center">
+                        <a href="{% url 'cart_remove_item' library.id item.vinyl_release.id %}" class="btn btn-danger btn-sm"><i class="fas fa-skull-crossbones"></i></a>
+                    </td>   
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3"></td>
+                <td style="font-size:1.8rem; text-align:right" colspan="1"><strong>Total</strong></td>
+                <td style="font-size:2rem; text-align:right;" colspan="2"><strong>${{ cart.get_total_price }}</strong></td>
+                <td></td>
+            </tr>
+            {% if user != library.librarian %}
+                <!-- checkout with current member -->
+                <tr>
+                    <td colspan="5">Member Checkout</td>
+                    <td style="text-align:center" colspan="3">
+                        <a href="{% url 'cart_submission' library.id user.member.id %}" style="width:220px" class="btn btn-warning btn-sm" onclick="return confirm('By clicking Place Order you are agreeing to follow through with payment of these items.')">Member Checkout</a>
+                    </td>
+                </tr>
+            {% else %}
+                <!-- make purchase order for shop -->
+                <tr>
+                    <td colspan="5">Shop Purchase Order</td>
+                    <td style="text-align:center" colspan="3">
+                        {% if library.librarian == user %}
+                            <form action="{% url 'cart_purchase_order_submission' library.id user.member.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ user.member.id }}" name="search_member">
+                                <input type="submit" value="Create Purchase Order" class="btn btn-secondary btn-sm" style="width:220px" onclick=" return confirm('This will create a purchase order not an invoice!')">
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                <!-- choose member to checkout with -->
+                <tr>
+                    <td colspan="3">Choose Member To Checkout With</td>
+                    <form action="{% url 'cart_submission' library.id user.member.id %}" method="post">
+                        <td colspan="2" style="text-align:right">
+                            {% csrf_token %}
+                            <select id="search_member" name="search_member" onchange="detectChange(this)" style="width:250px">
+                                <option>Choose Member...</option>
+                                {% for member in members %}
+                                    <option value="{{ member.id }}">{{ member }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td colspan="3" style="text-align:center">
+                            <input id="hidden_checkout" type="submit" value="Place Order" class="btn btn-success btn-sm" onclick="return confirm('You are creating an invoice for THIS MEMBER.')" style="display: none; width:220px" target="_blank">
+                            <input id="shown_checkout" value="Checkout for Member" class="btn btn-secondary btn-sm" style="display:inline-block; width:220px;">
+                        </td>
+                    </form>
+                </tr>
+                <!-- choose member and sell items that are already in stock -->
+                <tr>
+                    <td colspan="3">Choose member and sell them items that are already in stock</td>
+                    <form action="{% url 'cart_submission' library.id user.member.id %}" method="post">
+                        <td colspan="2" style="text-align:right">
+                            {% csrf_token %}
+                            <select id="search_member" name="search_member" onchange="detectChangeStock(this)" style="width:250px">
+                                <option>Choose Stockpile...</option>
+                                {% for member in move_and_swap_crates %}
+                                    <option value="{{ member.id }}">{{ member }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td colspan="3" style="text-align:center">
+                            <input id="hidden_stock_sale" type="submit" value="Sell In Stock Items" class="btn btn-success btn-sm" onclick="return confirm('You are selling records that you have in stock to THIS MEMBER.')" style="display: none; width:220px">
+                            <input id="shown_stock_sale" value="Sell From Stock To Member" class="btn btn-secondary btn-sm" style="display:inline-block; width:220px;">
+                        </td>
+                    </form>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    function detectChange() {
+        document.getElementById('hidden_checkout')
+        hidden_checkout.style.display = 'inline-block';
+        document.getElementById('shown_checkout')
+        shown_checkout.style.display = 'none';
+    }
+</script>
+
+<script>
+    function detectChangeStock() {
+        document.getElementById('hidden_stock_sale')
+        hidden_stock_sale.style.display = 'inline-block';
+        document.getElementById('shown_stock_sale')
+        shown_stock_sale.style.display = 'none';
+    }
+</script>
+
+{% endblock %}

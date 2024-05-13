@@ -1,0 +1,47 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Choose Comparision Month{% endblock %}
+
+{% block nav-title %}CHOOSE COMPARISION MONTH{% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="margin-top:30px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel</button>
+    </span>
+  </header>
+</div>
+
+<div style="display:flex; justify-content:center; margin-top:100px">
+  <form action="{% url 'cashbook_month_edit_forecast' library.id cashbook_month.id %}" method="post" enctype="multipart/form-data">
+      <div style="width:400px;">
+      
+      {% csrf_token %}
+
+      <!--#region comparison_cashbook_month_id  -->
+      <div class="form-group col-md-12">
+        <label for="comparison_cashbook_month_id" class="form-label">Choose Comparison Month</label>
+        <select id="comparison_cashbook_month_id" name="comparison_cashbook_month_id" class="form-control" >
+          {% for cashbook in comparison_cashbook_months %}
+            <option value="{{ cashbook.id }}">{{ cashbook.start_date|date:'F y' }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <!--#endregion -->
+      <!--submit-->
+      <div class="form-group col-md-12" style="margin-top:45px">
+        <input type="submit" value="Continue" class="btn btn-secondary btn-sm form-control"> 
+      </div>
+      
+
+    </div>
+  </form>
+</div>
+
+{% endblock %}

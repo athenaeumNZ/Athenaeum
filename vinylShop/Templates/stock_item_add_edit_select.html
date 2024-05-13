@@ -1,0 +1,222 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Select Stock to Add{% endblock %} 
+
+{% block nav-title %}SELECT STOCK TO ADD{% endblock %}
+
+{% block content %}
+
+<!--#region header -->
+  <div style="margin-top:30px; display:flex; justify-content:space-between; align-items:center">
+    <table style="border-spacing: 0px 3px; border-collapse: separate">
+      <form action="{% url 'stock_item_add_edit_select_search' library.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <tbody>
+          <tr>
+            <!--#region search_artist -->
+              <td style="padding-right:5px">
+                {% if search_artist %}
+                  <input name="search_artist" value="{{ search_artist }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Artist..." name="search_artist">
+                {% endif %}
+              </td>
+            <!--#endregion -->
+
+            <!--#region search_title -->
+              <td style="padding-right:5px">
+                {% if search_title %}
+                  <input name="search_title" value="{{ search_title }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Title..." name="search_title">
+                {% endif %}
+              </td>
+            <!--#endregion -->
+            <td><button type="submit" class="btn btn-secondary btn-sm" style="height:30px; width:95px"><i class="fas fa-search"></i></button></td>
+          </tr>
+          <tr>
+            <!--#region search_label -->
+              <td style="padding-right:5px">
+                {% if search_label %}
+                  <input name="search_label" value="{{ search_label }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Label..." name="search_label">
+                {% endif %}
+              </td>
+            <!--#endregion -->
+
+            <!--#region search_catalog -->
+              <td style="padding-right:5px">
+                {% if search_catalog %}
+                  <input name="search_catalog" value="{{ search_catalog }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Catalog..." name="search_catalog" autofocus>
+                {% endif %}
+              </td>
+            <!--#endregion -->
+            <td>
+              <a href="{% url 'stock_item_add_edit_select' library.id %}" class="btn btn-secondary btn-sm" style="height:30px; width:95px">Reset Search</a>
+            </td>
+          </tr>
+            <!--#region submit and reset -->
+            <td style="display:flex; justify-content:space-between">
+                
+                
+            <!--#endregion -->
+                
+          </tr>
+        </tbody>
+      </form>
+    </table>
+    <span>
+      <a href="{% url 'return_to_vinyl_shop' library.id %}" class="btn btn-sm btn-secondary">Return to Vinyl Shop</a>
+    </span>
+  </div>
+<!--#endregion -->
+
+{% if releases|length >= 1 %}
+  <div style="margin-top:10px;">
+    {% if search_artist != 'Artist...' or search_title != 'Title...' or search_label != 'Label...' or search_catalog != 'Catalog...'%}
+      <span class="text-center" style="font-size:2rem">Your search has returned {{ search_results_count }} results.</span>
+    {% endif %}
+{% elif search_results_count == 0 %}
+  <div style="margin-top:30px;">
+  <span style="font-size:1.5rem">Your search has returned <span style="color:red">zero</span> results.</span>
+  <span> </span>
+{% else %}
+  <div style="margin-top:30px;">
+  <span style="font-size:2rem">Perform search to find release.</span>
+{% endif %}
+</div>
+
+<!--#region releases -->
+  {% if releases|length >= 1 %}
+    <div style="margin-top:30px">
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th>Artist</th>
+            <th>Title</th>
+            <th>Label</th>  
+            <th></th>
+          </tr>
+        </thead>     
+
+        <tbody>
+          {% for release in releases %}
+          <tr style="vertical-align:middle; font-size: 0.9rem;">
+            <td style="height:30px; width: 30px; text-align:center;">
+              {% if release.artwork_small %}
+                <img src="{{ release.artwork_small.url }}" width="30" height="30">
+              {% else %}
+              <div style="text-align:center; font-size: 0.5rem;">No image</div>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'release_compile' library.id release.id %}" class="btn btn-secondary btn-sm" target="_blank" style="width:200px;font-style:normal">{{ release.catalog_number }}</a>
+            </td>
+            <td>{{ release.artist }}</td>
+            <td>{{ release.release_title }}</td>
+            <td>{{ release.label }}</td>
+            <td>
+              {% if release.catalog_number in stock_items_quantities %}
+                <form action="{% url 'vinyl_shop_search_from_stock_add_edit' library.id %}" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <input type="hidden" name="search_catalog" value="{{ release.catalog_number }}">
+                  <input type="submit" class="btn btn-light btn-sm" style="width:220px; border: 0.1px solid black" value="In Stock">
+                </form>
+              {% elif release.catalog_number in stock_items_quantities_incoming %}
+                <form action="{% url 'vinyl_shop_search_from_stock_add_edit' library.id %}" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <input type="hidden" name="search_catalog" value="{{ release.catalog_number }}">
+                  <input type="submit" class="btn btn-light btn-sm" style="width:220px; border: 0.1px solid black" value="In Coming to Shop">
+                </form>
+              {% elif release.catalog_number in stock_items %}
+                <form action="{% url 'vinyl_shop_search_from_stock_add_edit' library.id %}" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <input type="hidden" name="search_catalog" value="{{ release.catalog_number }}">
+                  <input type="submit" class="btn btn-light btn-sm" style="width:220px; border: 0.1px solid black" value="Order Through Shop">
+                </form>
+                
+              {% elif release.stock_estimation >= 1 %}
+                <a href="{% url 'stock_item_member_add_submission' library.id release.id %}"><button  class="btn btn-light btn-sm" style="width:220px; border: 0.1px solid black; color:green">Create Shop Item</button></a>
+              {% else %}
+                <span style="color:red"></span>
+                <form action="{% url 'release_request_repress_submission' library.id %}" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <input type="hidden" name="vinyl_release" value="{{ release.id }}">
+                  <input type="hidden" name="member" value="{{ request.user.member.id }}">
+                  <input type="submit" class="btn btn-light btn-sm" style="width:220px; border: 0.1px solid black; color:red" value="Request Repress">
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>   
+        {% endfor %}
+      </table>
+    </div>
+  {% endif %}
+      <p>
+        You will only be able to find releases that are currently loaded into our system.
+        Unless {{ library }} happens to have copies of a release that is distributed by a distributor outside of our network, the release will not show up.
+        However, our system only has a fraction of the releases available from our distributors.
+        Follow this link to download our most up to date distributor's stock list.
+        If you find the release you are looking for in the spreadsheet, please begin the process of adding it to the system
+        <a href="{% url 'vinyl_release_add_check_catalog_number' library.id %}">here</a>.
+        Please fill out as much information as you can and {{ library }} will fill out the rest.
+        You will not only be helping to build our database, you'll be playing a crucial role in the strengthening of the vinyl industry.<br><br>
+        KEY:<br><br>
+        <table class="table table-borderless">
+          <tr>
+            <td>
+              <span class="btn btn-light btn-sm" style="width:220px; margin-top:5px; border: 0.1px solid black; color:green">Create Shop Item</span>
+            </td>
+            <td>
+              Click this link to make the release available in the {{ library }} Vinyl Shop. You will be redirected to the {{ library }} vinyl shop and will now be able to place an order for it. However, the price will still need to be set by {{ library }}.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="btn btn-light btn-sm" style="width:220px; border: 0.1px solid black">In Stock</span>
+            </td>
+            <td>
+              The release is in stock at Athenaeum.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="btn btn-light btn-sm" style="width:220px; border: 0.1px solid black; margin-top:5px">In Coming</span>
+            </td>
+            <td>
+              {{ library }} have no copies in stock. However, {{ library }} have ordered this release and it will be arriving soon.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="btn btn-light btn-sm" style="width:220px; border: 0.1px solid black; margin-top:5px">Order In Shop</span>
+            </td>
+            <td>
+              {{ library }} has already added this release to the system and it is available for you to order.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="btn btn-light btn-sm" style="width:220px; border: 0.1px solid black; margin-top:5px; color:red">Request Repress</span>
+            </td>
+            <td>
+              The distributor no longer has this release in stock.
+              By following this link you will be helping distributors, labels & artists know if and when a repress is viable.
+              If you press this link and you have already requested a repress, your previous repress request will be replaced by a new one.
+              You will be notified if the distributor is planning to do a repress and can choose to pre-order the release before the repress happens.
+            </td>
+          </tr>
+        </table>
+      </p>
+
+
+<!--#endregion -->
+
+
+{% endblock %}

@@ -1,0 +1,307 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{ release }}{% endblock %} 
+
+
+{% block nav-title %}<span style="color:green">{{ release }} COMPILE</span>{% endblock %} 
+
+{% block content %}
+
+{% for message in messages %}
+<div class="container-fluid p-0">
+  <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="True">&times;</span>
+    </button>
+    {{ message }}
+  </div>
+</div>
+{% endfor %}
+
+<div style="margin-top: 30px; display:flex; justify-content:space-around; align-items: center;">
+  <div style="width:200px;">
+    {% if release.artwork %}
+      <img src="{{ release.artwork.url }}" width="200px" height="200px">
+    {% else %}
+    <div>
+      <h5 style="text-align:center">No image</h5>
+    </div>
+    {% endif %}
+  </div>
+
+  <div>
+    <table id="rel-top">
+      <tbody>
+        <tr>
+          <td><strong>Artist / Title</strong></td>
+          <td>{{ release.artist }} - {{release.release_title}}</td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Catalog Number</strong>
+          </td>
+          <td>
+            {{release.catalog_number}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Label</strong>
+          </td>
+          <td>
+            {{release.label}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Country</strong>
+          </td>
+          <td>
+            {{release.country}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Release Date</strong>
+          </td>
+          <td>
+            <span style="padding-right:5px">
+              {% if release.release_date == None %}
+              TBC
+              {% else %}
+              {{release.release_date|date:"d F Y" }}
+              {% endif %}
+            </span>
+            {% if release.release_date_confirmed == 'Yes' %}
+              <i class="fa fa-check" style="color:green"></i>
+              {% elif release.release_date_confirmed == 'No' %}
+              <i class="fa fa-question" style="color:rgb(181, 181, 181); font-size:1rem; padding-bottom:3px"></i>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Distributor</strong>
+          </td>
+          <td>
+            {{ release.distributor.distributor_code }}
+            (
+            {% if release.stock_estimation < 11 and release.stock_estimation > 5 %}
+              <span style="color:red;">{{ release.stock_estimation }}</span>
+            {% elif release.stock_estimation < 6 %}
+              <span class="blink" style="color:red;">{{ release.stock_estimation }}</span>
+            {% else %}
+              <span style="color:black;">{{ release.stock_estimation }}</span>
+            {% endif %}
+            )
+            <span style="font-size:1rem">
+              {{ release.cost_price }} {{ release.supplier.currency }}
+            </span>
+            {% if in_stock_at_my_library_quantity >= 1 %}
+            {% else %}
+              <a href="{% url 'stock_item_add_edit' library.id release.id %}" class="btn btn-sm btn-warning" target="_blank"><i class="fas fa-plus"></i> Stock Item</a>
+            {% endif %}
+            {% if release in items %}
+              <a href="{% url 'vinyl_ordering' library.id %}" class="btn btn-success btn-sm" style="float:right; margin-left:5px">Ordered</a> 
+            {% else %}
+              <form action="{% url 'cart_add_item' library.id release.id previous_url %}" method="post" style="margin:0; padding:0; display:inline; margin-left:5px">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning btn-sm" style="float:right">Order</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <table id="rel-top">
+      <tbody>
+        {% if release.plate_size %}
+          <tr>
+            <td><strong>Plates</strong></td>       
+            {% if  release.plate_count == 1 %}
+              <td>{{ release.plate_size }}</td>
+            {% else %}
+              <td>{{ release.plate_count }}x{{ release.plate_size }}</td>
+            {% endif %}
+          </tr>
+        {% endif %}
+        {% if release.sleeve_type %}
+          <tr>
+            <td><strong>Sleeve Type</strong></td>
+            <td>{{ release.sleeve_type }}</td>
+          </tr>
+        {% endif %}
+        {% if release.vinyl_colour %}
+          <tr>
+            <td><strong>Vinyl Colour</strong></td>
+            <td>{{ release.vinyl_colour }}</td>
+          </tr>
+        {% endif %}
+        {% if release.release_type %}
+          <tr>
+            <td><strong>Release Type</strong></td>
+            <td>{{ release.release_type }}</td>
+          </tr>
+        {% endif %}
+        <tr>
+          <td><strong>Options</strong></td>
+          <td>
+            <a class="btn btn-sm btn-warning" href="{% url 'release_edit' library.id release.id release.catalog_number %}"><i class="fas fa-edit"></i></a>
+            <a href="{% url 'release' library.id release.id %}" class="btn btn-warning btn-sm"><i class="fas fa-lock"></i></a>
+            <a class="btn btn-sm btn-danger" href="{% url 'release_delete' library.id release.id %}" onclick="return confirm('Are you sure you want to delete {{ release }}?')"><i class="fas fa-skull-crossbones"></i></a>     
+            <a href="{% url 'vinyl_release_add_check_catalog_number' library.id %}" class="btn btn-secondary btn-sm"><i class="fas fa-plus"></i> Another Release</a>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<br>
+
+<!--add plate-->
+
+<div style="float:right">
+  <a class="btn btn-sm btn-warning" href="{% url 'release_plate_add_submission' library.id release.id %}"><i class="fas fa-plus"></i> Plate</a>
+</div>
+{% for plate in release.related_vinyl_plate.all %}
+
+<div>
+  <table class="table caption-top">
+    <span style="display:flex; justify-content:space-between">
+      <caption>
+        <span class="text-uppercase" style="margin-right:5px">{{plate.plate_index}}</span>
+        <a class="btn btn-sm btn-danger" href="{% url 'release_plate_delete' library.id release.id plate.id %}" style="margin-right:5px"><i class="fas fa-skull-crossbones"></i> Plate</a>
+        <a class="btn btn-sm btn-warning" href="{% url 'track_add' library.id release.id plate.id %}" style="margin-right:5px"><i class="fas fa-plus"></i> Track</a>
+      </caption>
+      
+    </span>
+    
+    <thead>
+      <tr>
+        <th style="width:15px"></th>
+        <th>Artist</th>
+        <th>Title</th>
+        <th>Genre</th>
+        <th>Vibe</th>
+        <th style="text-align:center">Energy</th>
+        <th style="width:300px"></th>  
+        <th style="width:120px"></th> 
+      </tr>
+    </thead>
+
+    
+    {% for track in plate.related_vinyl_track.all %}
+      <tbody>
+        <tr>
+          <td style="width:15px">{{track.index}}.</td>
+          <td style="width: auto;">{{track.artist}}</td>
+          <td>{{track.title}}</td>
+          <td>{{track.genre}}</td>
+          <td>{{track.vibe}}</td>
+          <td style="text-align:center">{{track.energy_level}}</td>
+          {% if track.audio %}
+            <td>
+              <span style="display:flex; justify-content:space-between">
+                <audio controls controlsList="noplaybackrate nodownload" style="width:250px;height:32px; float:right; background-color:whitesmoke" preload="none">
+                  <source src="{{ track.audio.url }}" type="audio/mp3" class='audios'>
+                </audio>
+                <span>
+                  <a class="btn btn-sm btn-danger" href="{% url 'track_audio_add' library.id release.id track.id %}" style="margin-left:5px" onclick="return confirm('Are you sure you want to update audio for {{ track }}?')"><i class="fas fa-exclamation-triangle"></i></a>
+                </span>
+              </span>
+            </td>
+          {% else %}
+            <td class="text-center">
+              <a class="btn btn-sm btn-warning" href="{% url 'track_audio_add' library.id release.id track.id %}" style="margin-right:5px"><i class="fas fa-plus"></i> Audio</a>
+            </td>
+          {% endif %}
+          <td style="width:120px; display:flex; justify-content:space-between">
+            <a class="btn btn-sm btn-danger" href="{% url 'track_delete' library.id release.id track.id %}" style="margin-right:5px"><i class="fas fa-skull-crossbones"></i></a>
+            <a class="btn btn-sm btn-warning" href="{% url 'track_edit' library.id release.id track.id %}" style="margin-right:5px"><i class="fas fa-edit"></i></a>
+            {% if track.catergorization_final == 'Yes' %}
+              <a class="btn btn-sm btn-secondary" href="{% url 'track_categorize_first' library.id release.id track.id %}"><i class="fas fa-list"></i></a>              
+            {% elif track.crate_id == '-' %}
+              <a class="btn btn-sm btn-primary" href="{% url 'track_categorize_first' library.id release.id track.id %}"><i class="fas fa-list"></i></a>              
+            {% else %}
+              <a class="btn btn-sm btn-warning" href="{% url 'track_categorize_first' library.id release.id track.id %}"><i class="fas fa-list"></i></a>              
+            {% endif %}
+          </td>
+        </tr>
+      </tbody> 
+    {% endfor %}  
+  </table>
+</div>
+<br>
+{% endfor %}
+<br>
+
+<h2>IN STOCK</h2>
+<!--#region in stock items -->
+<table class="table table-borderless">
+  <thead>
+    <tr>
+      <th>Location</th>
+      <th class="text-center">Price</th>
+      <th class="text-center">Status</th>
+      <th></th>
+
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for item in in_stock_items %}
+    <tr>
+      <td>
+        {{ item.library }}
+      </td>
+      <td class="text-center">
+        ${{ item.price }} ({{ item.library.currency }})
+      </td>
+      <td class="text-center">
+        {% if item.quantity >= 1 %}
+        <span style="color:green">In Stock</span>
+        {% elif item.quantity_incoming >= 1 %}
+        <span style="color:green">Incoming</span>
+        {% elif item.vinyl_release.stock_estimation >= 1 and item.vinyl_release.distributor.active == True %}
+        Available to Order
+        {% else %}
+        <span style="color:red">Unavailable</span>
+        {% endif %}
+      </td>
+      <td class="text-center">
+        {% if item in items %}
+          <a href="{% url 'vinyl_shop' item.library.id %}" <button class="btn btn-secondary btn-sm" style="color:gold"><i class="fas fa-shopping-cart"></i></button>
+        {% elif item.quantity == 0 and item.quantity_incoming == 0 and item.vinyl_release.stock_estimation == 0 or item.quantity == 0 and item.quantity_incoming == 0 and item.vinyl_release.distributor.active == False %}
+          <span></span>
+        {% else %}
+          <form action="{% url 'add_release_to_cart' library.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-cart-plus"></i></button>
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  var previousAudio;
+    document.addEventListener('play', function(e){
+      if(previousAudio && previousAudio != e.target){
+          previousAudio.pause();
+      }
+      previousAudio = e.target;
+    }, true);
+</script>
+
+{% endblock %}

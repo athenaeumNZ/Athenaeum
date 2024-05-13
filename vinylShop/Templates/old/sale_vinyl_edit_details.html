@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Sale Vinyl Details{% endblock %}
+
+{% block nav-title %}Edit Sale Vinyl Details <span style="color: green;">{{ release.catalog_number }}</span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:20px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'sale_vinyl_options' library.id release.id %}" style="width:200px" class="btn btn-secondary btn-sm">Return to Sale Vinyl Options</a>
+    </span>
+  </header>
+</div>
+
+<div style="display:flex; justify-content:center; padding-top:45px">
+  <div>
+  <form action="{% url 'sale_vinyl_edit_details_submission' library.id release.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row" style="width:400px">
+
+        <!-- supplier -->
+        <div class="form-group col-md-12">
+          <label for="supplier" class="form-label">Supplier</label>
+          <select id="supplier" name="supplier" class="form-control" >
+            <option value="{{ release.supplier_id }}" selected>{{ release.supplier }}</option>
+            <option></option>
+            {% for company in suppliers %}
+              <option value="{{ company.id }}">{{ company.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- stock_estimation -->
+        <div class="form-group col-md-12">
+          <label for="stock_estimation" class="form-label">Distributors Stock Level</label>
+          <input type="number" id="stock_estimation" name="stock_estimation" class="form-control" value="{{ release.stock_estimation }}">
+        </div>
+
+        <!-- cost_price -->
+        <div class="form-group col-md-12">
+          <label for="cost_price" class="form-label">Cost Price</label>
+          <input type="number" step=".01" id="cost_price" name="cost_price" class="form-control" value="{{ release.cost_price }}">
+        </div>
+      </div>
+      <br>
+      <div class="row" style="width:400px"> 
+      <p>* <span style="color:red">WARNING</span> If the cost price of this item has changed then you will need to manually update the sale price.</p>
+</div>
+<br>
+      <div class="row" style="width:400px"> 
+        <!--submit-->
+        <div class="form-group col-md-12" style="display:flex; justify-content:center">
+          <input type="submit" value="Update Details" class="btn btn-secondary btn-sm" style="width:300px"> 
+        </div>
+    </div>
+  </form>
+</div>
+</div>
+
+{% endblock %}

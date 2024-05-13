@@ -1,0 +1,218 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Edit {{ release }}{% endblock %}
+
+{% block nav-title %}Edit {{ release }}{% endblock %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:center; padding-top:30px">
+  <form action="{% url 'release_edit_submission' library.id release.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row" style="width:1203px; display:flex; justify-content:space-between">
+      <div class="column" style="width:400px;">
+        <!--catalog_number-->
+        <div class="form-group col-md-12">
+          <label for="catalog_number" class="form-label">Catalog Number</label>
+          <input type="text" value="{{ release.catalog_number }}" id="catalog_number" name="catalog_number" class="form-control" oninput="this.value = this.value.toUpperCase()" required>
+        </div>
+
+        <!--artist-->
+        <div class="form-group col-md-12">
+          <label for="artist" class="form-label">Artist/s</label>
+          <input type="text" id="artist" name="artist" class="form-control" value="{{ release.artist }}">
+        </div>
+
+        <!--release_title-->
+        <div class="form-group col-md-12">
+          <label for="release_title" class="form-label">Release Title</label>
+          <input type="text" id="release_title" name="release_title" class="form-control" value="{{ release.release_title }}">
+        </div>
+
+        <!--label-->
+        <div class="form-group col-md-12">
+          <label for="label" class="form-label">Label</label>
+          <input type="text" id="label" name="label" class="form-control" value="{{ release.label }}">
+        </div>
+
+        <!--release_date-->
+        <div class="form-group col-md-12">
+          <label for="release_date" class="form-label">Release Date</label>
+          <input type="date" id="release_date" name="release_date" class="form-control" value="{{ release.release_date|date:'Y-m-d' }}" autofocus>
+        </div>
+
+        <!--release_date_confirmed-->
+        <div class="form-group col-md-12">
+          <label for="release_date_confirmed" class="form-label">Release Date Confirmed?</label>
+          <select id="release_date_confirmed" class="form-control" name="release_date_confirmed">
+            <option selected>{{ release.release_date_confirmed }}</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+
+      </div>
+      <div class="column" style="width:400px;">
+
+        <!--is_repress-->
+        <div class="form-group col-md-12">
+          <label for="is_repress" class="form-label">Is a Repress? {{ release.is_repress }}</label>
+          <select id="is_repress" class="form-control" name="is_repress">
+            {% if release.is_repress %}
+              <option value="True" selected>Yes</option>
+              <option value="False">No</option>
+            {% else %}
+              <option value="True">Yes</option>
+              <option value="False" selected>No</option>
+            {% endif %}
+          </select>
+        </div>
+      
+        <!-- supplier -->
+        <div class="form-group col-md-12">
+          <label for="supplier" class="form-label">Supplier</label>
+          <select id="supplier" name="supplier" class="form-control" >
+            {% if release.supplier %}
+              <option selected value="{{ release.supplier.id }}">{{ release.supplier }}</option>
+              <option></option>
+            {% else %}
+              <option selected>Choose...</option>
+              <option></option>
+            {% endif %}
+            {% for company in suppliers %}
+              <option value="{{ company.id }}">{{ company.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- stock_estimation -->
+        <div class="form-group col-md-12">
+          <label for="stock_estimation" class="form-label">Distributors Stock Level</label>
+          {% if release.stock_estimation %}
+            <input type="number" name="stock_estimation" class="form-control"  value="{{ release.stock_estimation }}">
+          {% else %}
+            <input type="number" name="stock_estimation" class="form-control" value="0">
+          {% endif %}
+          
+        </div>
+
+        <!-- cost_price -->
+        <div class="form-group col-md-12">
+          <label for="cost_price" class="form-label">Cost Price</label>
+          {% if release.cost_price %}
+            <input type="number" step=".01" id="cost_price" name="cost_price" class="form-control" value="{{ release.cost_price }}">
+          {% else %}
+            <input type="number" step=".01" id="cost_price" name="cost_price" class="form-control">
+          {% endif %}
+        </div>
+
+        <!-- plate_size -->
+        <div class="form-group col-md-12">
+          <label for="plate_size" class="form-label">Plate Size </label>
+          <select class="form-control" name="plate_size">
+            {% if release.plate_size %}
+              <option selected>{{ release.plate_size }}</option>
+              <option></option>
+              {% for size in plate_sizes %}
+                <option value="{{ size }}">{{ size }}</option>
+              {% endfor %}
+            {% else %}
+              <option selected >Choose...</option>
+              {% for size in plate_sizes %}
+                <option value="{{ size }}">{{ size }}</option>
+              {% endfor %}
+            {% endif %}
+          </select>
+        </div>
+
+        <!-- back_in_stock -->
+
+        <div class="form-group col-md-12">
+          <label for="back_in_stock" class="form-label">Back in Stock </label>
+          <select class="form-control" name="back_in_stock">
+            <option selected>-</option>
+            <option value="True">Yes</option>
+            <option value="False">No</option>
+          </select>
+        </div>
+        
+      </div>
+      <div class="column" style="width:400px;">
+        
+        <!-- plate_count -->
+        <div class="form-group col-md-12">
+          <label for="plate_count" class="form-label">Plate Count</label>
+          <input type="number" value="{{ release.plate_count }}" id="plate_count" name="plate_count" class="form-control">
+        </div>
+
+        <!-- vinyl colour -->
+        <div class="form-group col-md-12">
+          <label for="vinyl_colour" class="form-label">Vinyl Colour</label>
+          <select id="vinyl_colour" class="form-control" name="vinyl_colour">
+            {% if release.vinyl_colour %}
+              <option selected value="{{ release.vinyl_colour }}">{{ release.vinyl_colour }}</option>
+              <option></option>
+            {% else %}
+              <option selected>-</option>
+            {% endif %}
+            {% for colour in vinyl_colours %}
+              <option value="{{ colour }}">{{ colour }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- release type -->
+        <div class="form-group col-md-12">
+          <label for="release_type" class="form-label">Release Type</label>
+          <select id="release_type" class="form-control" name="release_type">
+            {% if release.release_type %}
+              <option selected value="{{ release.release_type }}">{{ release.release_type }}</option>
+              <option></option>
+            {% else %}
+              <option selected>-</option>
+            {% endif %}
+            {% for type in release_types %}
+              <option value="{{ type }}">{{ type }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- sleeve type -->
+        <div class="form-group col-md-12">
+          <label for="sleeve_type" class="form-label">Sleeve</label>
+          <select id="sleeve_type" class="form-control" name="sleeve_type">
+            {% if release.sleeve_type %}
+              <option selected value="{{ release.sleeve_type }}">{{ release.sleeve_type }}</option>
+              <option></option>
+            {% else %}
+              <option selected>-</option>
+            {% endif %}
+            {% for sleeve in sleeve_types %}
+              <option value="{{ sleeve }}">{{ sleeve }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!--country-->
+        <div class="form-group col-md-12">
+          <label for="country" class="form-label">Country</label>
+          <select id="country" class="form-control" name="country">
+            <option selected>{{ release.country }}</option>
+            {% for country in countries %}
+              <option value="{{ country }}">{{ country }}</option>
+            {% endfor %}
+            <option value="OTHER">Other</option>
+          </select>
+        </div>
+
+        <!--submit-->
+        <div class="form-group col-md-12" style="margin-top:45px">
+          <input type="submit" value="Save Changes" class="btn btn-secondary btn-sm form-control"> 
+        </div>
+
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

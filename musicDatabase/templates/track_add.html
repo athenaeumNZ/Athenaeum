@@ -1,0 +1,92 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Add track to {{plate}}{% endblock %}
+
+{% block nav-title %}Add track to {{plate}}{% endblock %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:space-between; padding-top:30px">
+  <span></span>
+  <a href="{% url 'release_compile' library.id release.id %}" style="padding-left:15px; padding-right:15px; float:right" class="btn btn-secondary btn-sm">Return to Track Add</a>
+</div>
+
+<div style="display:flex; justify-content:center; padding-top:30px">
+  <form action="{% url 'track_add_submission' library.id release.id plate.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row" style="width:700px; ">
+      <div class="column" style="width:345px;">
+        <!--related_vinyl_plate-->
+          <input type="hidden" id="related_vinyl_plate" value="{{ plate.id }}" name="related_vinyl_plate" required>
+    
+        <!--index-->
+        <div class="form-group col-md-12">
+          <label for="index" class="form-label">Track Index</label>
+          <input type="text" id="index" name="index" class="form-control" autofocus>
+        </div> 
+
+        <!--artist-->
+        <div class="form-group col-md-12">
+          <label for="artist" class="form-label">Artist</label>
+          <input type="text" value="{{ plate.related_release.artist }}" id="artist" name="artist" class="form-control" required>
+        </div>
+    
+        <!--title-->
+        <div class="form-group col-md-12">
+          <label for="title" class="form-label">Track Title</label>
+          <input type="text" id="title" name="title" class="form-control" >
+        </div>
+
+      </div>
+      <div class="column" style="width:345px;">
+
+        <!--audio-->
+        <div class="form-group col-md-12">
+          <label for="audio" class="form-label">Upload mp3</label>
+          <input class="form-control" id="audio" type="file" name="audio">
+        </div>
+        
+        <!-- same_plate -->
+        <div class="form-group" style="margin-top:25px">
+          <input type="submit" value="Same Plate" name="same_plate" formaction="{% url 'track_add_submission' library.id release.id plate.id %}" class="btn btn-secondary btn-sm" style="width:320px"> 
+        </div>
+
+        <!-- next_plate -->
+        <div class="form-group" style="margin-top:20px">
+          <input type="submit" value="Next Plate" name="next_plate" formaction="{% url 'track_add_submission' library.id release.id plate.id %}" class="btn btn-secondary btn-sm" style="width:320px"> 
+        </div>
+
+        <!-- finished_adding -->
+        <div class="form-group" style="margin-top:20px">
+          <input type="submit" value="Last Track" name="finished_adding" formaction="{% url 'track_add_submission' library.id release.id plate.id %}" class="btn btn-secondary btn-sm" style="width:320px"> 
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="row" style="width:700; padding-top:20px">
+      <div class="column" style="width:345px;">
+        <!--remixer -->
+        <div class="form-group">
+          <input type="text" id="remixer" placeholder="Remixer - if applicable" name="remixer" class="form-control">
+        </div>
+      </div>
+      <div class="column" style="width:345px;">
+        <div style="display:flex">
+          <!--#region bpm -->
+          <div class="form-group col-md-6" style="padding-right:5px">
+            <input type="text" name="bpm" placeholder="BPM" class="form-control">
+          </div>
+          <!--#endregion -->
+          <!--#region bpm -->
+          <div class="form-group col-md-6">
+            <input type="text" name="key" placeholder="KEY" class="form-control">
+          </div>
+          <!--#endregion -->
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

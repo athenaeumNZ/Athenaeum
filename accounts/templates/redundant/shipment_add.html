@@ -1,0 +1,74 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Shipment Add{% endblock %}
+
+{% block nav-title %}SHIPMENT ADD{% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="margin-top:10px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel</button>
+    </span>
+  </header>
+</div>
+
+
+<div style="display:flex; justify-content:center; margin-top:10px">
+  <form action="{% url 'shipment_add_submission' library.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+    {% csrf_token %}
+    <!--#region distributor -->
+      <div class="form-group col-md-12">
+        <label for="distributor" class="form-label">Distributor</label>
+        <select id="distributor" name="distributor" class="form-control" required>
+          <option selected>Choose...</option>
+          {% for d in distributors %}
+            <option value="{{ d.id }}">{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    <!--#endregion -->
+
+    <!--#region eta -->
+      <div class="form-group col-md-12">
+        <label for="eta" class="form-label">E.T.A.</label>
+        <input type="date" id="eta" name="eta" class="form-control">
+      </div>
+    <!--#endregion --> 
+
+    <!--#region provider -->
+      <div class="form-group col-md-12">
+        <label for="provider" class="form-label">Provider</label>
+        <input type="text" id="provider" name="provider" class="form-control">
+      </div>
+    <!--#endregion -->     
+
+    <!--#region tracking_number -->
+      <div class="form-group col-md-12">
+        <label for="tracking_number" class="form-label">Tracking Number</label>
+        <input type="text" id="tracking_number" name="tracking_number" class="form-control">
+      </div>
+    <!--#endregion -->  
+
+    <!--#region cost_NZD -->
+      <div class="form-group col-md-12">
+        <label for="cost_NZD" class="form-label">Cost (NZD)</label>
+        <input type="number" step=".01" id="cost_NZD" name="cost_NZD" class="form-control">
+      </div>
+    <!--#endregion -->          
+    
+    <!--#region submit-->
+      <div class="form-group col-md-12" style="margin-top:45px">
+        <input type="submit" value="Create Shipment" class="btn btn-secondary btn-sm form-control"> 
+      </div>
+    <!--#endregion -->
+
+  </form>
+</div>
+
+{% endblock %}

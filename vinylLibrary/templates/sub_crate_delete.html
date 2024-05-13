@@ -1,0 +1,21 @@
+{% extends 'library_base.html' %}
+{% block title %}Delete {{ sub_crate }}{% endblock %}
+
+{% block nav-title %}DELETE {{ sub_crate }}{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:40px; display:flex; justify-content:space-between">
+  <span>
+  </span>
+  <span>
+    <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel Delete</button>
+  </span>
+</div>
+
+<div style="display:flex; justify-content:center; padding-top:200px">
+  <a href="{% url 'sub_crate_delete_submission' library.id sub_crate.id member.id %}" class="btn btn-danger btn-sm" style="width:300px;">Delete {{ sub_crate }}</a>
+</div>
+
+{% endblock %}

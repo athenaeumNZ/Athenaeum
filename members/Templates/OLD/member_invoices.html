@@ -1,0 +1,181 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{ member.address.first_name }} {{ member.address.last_name }} Invoices{% endblock %} 
+
+{% block nav-title %}<span style="color:green">{{ member.address.first_name }} {{ member.address.last_name }} Invoices</span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:30px;">
+  <span>
+  </span>
+  <!-- options -->
+  <span>
+    <a href="{% url 'members' library.id %}" class="btn btn-secondary btn-sm">Back to Members</a>
+  </span>
+</div>
+
+<!-- admin crates -->
+<div>
+  <table class="table" style="margin-top:15px">
+    <thead>
+      <th style="width:250px; text-align:center">Shop Crates</th>
+      <th></th>
+      <th></th>
+      <th style="text-align:center; width:230px"></th>
+      </tr>
+    </thead>
+      <tbody>
+        {% for crate in admin_crates %}
+          {% if crate.plate_count >= 1 %}
+            <tr>
+              <td>
+                <a href="{% url 'sub_crate' library.id crate.id member.id %}" class="btn btn-secondary btn-sm" style="width:250px" >{{ crate.crate_id }}</a>
+              </td>
+              <td>{{ crate.plate_count }}</td>
+              <td>{{ crate.description }}</td>
+              <td></td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+  </table>
+</div>
+
+<div style="margin-top:30px; display:flex; justify-content:space-between">
+  <!-- vinyl invoices -->
+  <div style="width:700px">
+    <span><strong>Vinyl Invoices</strong></span>
+    <table class="table" style="margin-top:20px">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Total</th>
+          <th class="text-center">Paid</th>
+          <th class="text-center">Recieved</th>
+          <th></th>
+        </tr>
+      </thead>
+      {% for order in invoices %}  
+        <tbody>
+          <tr>
+            <td>ATH-INV-{{ order.id|stringformat:"05d" }}</td>
+            <td>{{order.created|date:"d m Y" }}</td>
+            <td>${{ order.get_total_cost }}</td>
+            {% if order.paid == True %}
+              <td style="color:green" class="text-center">
+                <i class="fas fa-check"></i>
+              </td>
+            {% else %}
+              <td style="color:red" class="text-center">
+                <i class="fas fa-times"></i>
+              </td>
+            {% endif %}
+            {% if order.all_items_recieved == True %}
+              <td style="color:green" class="text-center">
+                <i class="fas fa-check"></i>
+              </td>
+            {% else %}
+              <td style="color:red" class="text-center">
+                <i class="fas fa-times"></i>
+              </td>
+            {% endif %}
+            <td style="display:flex">
+              <a href="{% url 'invoice' library.id order.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-eye"></i></a>
+              {% if order.paid != True and library.librarian == user %}
+                <form action="{% url 'invoice_pay_submission' library.id order.id %}" method="post" style="margin-left:5px">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-info btn-sm"><i class="fas fa-money-bill"></i></button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        </tbody> 
+      {% endfor %}
+    </table>
+  </div> 
+
+
+  <!-- shipping invoices -->
+  <div style="width:700px">
+    <span><strong>Shipping Invoices</strong></span>
+    <table class="table" style="margin-top:20px">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th class="text-center">Total</th>
+          <th class="text-center">Paid</th>
+          <th class="text-center">Packed</th>
+          <th class="text-center">Sent</th>
+          <th class="text-center">Recieved</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for shipment in shipping_invoices %}
+          {% if shipment.shipping_cost or library.librarian == user %}
+            <tr>
+              <td>ATH-SHP-{{ shipment.id|stringformat:"05d" }}</td>
+              <td>{{ shipment.created|date:"d m Y" }}</td>
+              {% if shipment.shipping_cost %}
+                <td class="text-center">${{ shipment.shipping_cost }}</td>
+              {% else %}
+                <td class="text-center">TBC</td>
+              {% endif %}
+              {% if shipment.paid == True %}
+                <td style="color:green" class="text-center">
+                  <i class="fas fa-check"></i>
+                </td>
+              {% else %}
+                <td style="color:red" class="text-center">
+                  <i class="fas fa-times"></i>
+                </td>
+              {% endif %}
+              {% if shipment.all_items_packed == True %}
+                <td style="color:green" class="text-center">
+                  <i class="fas fa-check"></i>
+                </td>
+              {% else %}
+                <td style="color:red" class="text-center">
+                  <i class="fas fa-times"></i>
+                </td>
+              {% endif %}
+              {% if shipment.all_items_sent == True %}
+                <td style="color:green" class="text-center">
+                  <i class="fas fa-check"></i>
+                </td>
+              {% else %}
+                <td style="color:red" class="text-center">
+                  <i class="fas fa-times"></i>
+                </td>
+              {% endif %}
+              {% if shipment.all_items_recieved == True %}
+                <td style="color:green" class="text-center">
+                  <i class="fas fa-check"></i>
+                </td>
+              {% else %}
+                <td style="color:red" class="text-center">
+                  <i class="fas fa-times"></i>
+                </td>
+              {% endif %}
+              <td style="display:flex">
+                <a href="{% url 'shipping_invoice' library.id shipment.id member.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-eye"></i></a>
+                {% if shipment.paid != True and library.librarian == user %}
+                  <form action="{% url 'invoice_pay_submission' library.id shipment.id %}" method="post" style="margin-left:5px">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-info btn-sm"><i class="fas fa-money-bill"></i></button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>     
+    </table>
+  </div>      
+</div>
+
+{% endblock %}

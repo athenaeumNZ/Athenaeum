@@ -1,0 +1,80 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Credit {{ member.membership_number }}{% endblock %}
+
+{% block nav-title %}CREDIT {{ member.membership_number }}{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:30px; display:flex; justify-content:space-between; align-items:center">
+  <span>
+  </span>
+  <span>
+    <button class="btn btn-secondary btn-sm" onclick="history.back()" style="width:300px">Cancel & Return to Members</button>
+  </span>
+</div>
+
+<div style="display:flex; justify-content:center; margin-top:120px">
+    <form action="{% url 'member_credit_account_submission' member.library.id member.id %}" method="post" style="width:300px">
+      {% csrf_token %}
+      <!-- Member name-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:space-between">
+        <span>{{ member.address.first_name }} {{ member.address.last_name }}</span>
+        <span>{{ member.membership_number }}</span>
+      </div>
+
+      <!-- credit amount -->
+      <div class="form-group col-md-12" style="display:flex; justify-content:space-between; margin-top:20px">
+          <span>Current Credit</span>
+          <span>${{ member.account_credit }}</span>
+      </div>
+
+      <!-- credit amount -->
+      <div class="form-group col-md-12" style="display:flex; align-items:center; justify-content:space-between; margin-top:20px">
+        <label class="form-label" for="credit_amount" style="width:200px">Credit Amount</label>
+        <input type="number" value="0.00"name="credit_amount" id="credit_amount" class="form-control" style="width:100px" step=".01" onchange="detectChange(this)">
+      </div>
+
+      <!--submit-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:right; margin-top:20px">
+        <input id="submit_button" type="submit" value="Add Credit" class="btn btn-danger btn-sm" style="width:100px; display:none;" onclick="return confirmCreditAmount()">
+      </div>
+    </form>
+</div>
+
+
+
+<!-- hidden -->
+<input type="hidden" id="first" value="{{ member.address.first_name }}">
+<input type="hidden" id="last" value="{{ member.address.last_name }}">
+<input type="hidden" id="membership_num" value="{{ member.membership_number }}">
+
+<script>
+  function detectChange() {
+      document.getElementById('submit_button')
+      submit_button.style.display = 'block';
+      var credit_amount = document.getElementById("credit_amount").value;
+      if (credit_amount == 0) {
+        submit_button.style.display = 'block';
+      }
+  }
+</script>
+
+<script>
+  function confirmCreditAmount() {
+    var credit_amount = document.getElementById("credit_amount").value;
+    var first_name = document.getElementById("first").value;
+    var last_name = document.getElementById("last").value;
+    var membership_number = document.getElementById("membership_num").value;
+    var r = confirm('Credit ' + first_name + ' ' + last_name + "'s account $" +  credit_amount + '?' );
+    if (r == true) {
+      
+    } else {
+      event.preventDefault();
+    }
+  }
+</script>
+
+
+{% endblock %}

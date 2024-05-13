@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+      <title>New Releases {{ search_end_date }} MASTER</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+
+  </head>
+  <body style="left:0; position:relative; width:210mm; height:297mm; margin: auto; background-color:white; padding:5mm">
+    <span style="display:flex; justify-content:space-between; margin-bottom:5mm">
+      <span style="font-size:3rem; text-transform:uppercase"><strong><i class="fas fa-university"></i> {{ library }}</strong></span>
+      <span>
+        <span><strong>New Releases</strong></span><br>
+        <span>Week Ending {{ search_end_date }}</span>
+      </span>
+    </span>
+
+    <!--#region new releases this week -->
+    {% if releases|length != 0 %}
+        <span style="font-size: 1.5rem; page-break-before: always;">New Releases</span>
+        <table class="table" style="font-size:0.7rem; margin-top:3mm">
+          <thead>
+            <tr>
+              <th>View</th>
+              <th>Artist</th>
+              <th>Title</th>
+              <th>Label</th>
+              <th>Track Crate ID's</th>   
+              <th>Price</th> 
+            </tr>
+          </thead>        
+          <tbody>
+            {% for release in releases %}
+              {% if release.not_all_categorized == True %}
+                <tr style="color:purple">
+              {% else %}
+                <tr style="color:green">
+              {% endif %}
+                <td>
+                  {% if release.not_all_categorized == True %}
+                    <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: purple">{{ release.catalog_number }}</a>
+                  {% elif release.on_previous_weekly_release_sheet == True  %}
+                    <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: green">{{ release.catalog_number }}</a>
+                  {% else %}
+                    <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: black">{{ release.catalog_number }}</a>
+                  {% endif %}
+                </td>
+                <td>{{ release.artist }}</td>
+                <td>{{ release.release_title }}</td>
+                <td>{{ release.label }}</td>
+                <td>
+                  {% for i in release.crate_id %}
+                    {% if forloop.last %}
+                      {{ i }}
+                    {% else %}
+                      {{ i }},
+                    {% endif %}
+                  {% endfor %}
+                </td>
+                {% if release.cost_price == 0 %}
+                  <td style="text-align:right;">TBC&nbsp;&nbsp;</td>
+                {% else %}
+                  <td style="text-align:right;">${{ release.pre_sale_price_NZ }}</td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody> 
+        </table>
+      {% endif %} 
+    <!--#endregion -->
+
+    <!--#region forthcoming releases -->
+      {% if forthcoming_releases|length != 0 %}
+        <span style="font-size: 1.5rem; page-break-before: always;">Forthcoming</span>
+        <table class="table" style="font-size:0.7rem; margin-top:3mm">
+          <thead>
+            <tr>
+              <th>View</th>
+              <th>Artist</th>
+              <th>Title</th>
+              <th>Label</th>
+              <th>Track Crate ID's</th>   
+              <th>Price</th> 
+            </tr>
+          </thead>        
+          <tbody>
+            {% for release in forthcoming_releases %}
+              {% if release.not_all_categorized == True %}
+                <tr style="color:purple">
+              {% else %}
+                <tr style="color:green">
+              {% endif %}
+                <td>
+                  {% if release.not_all_categorized == True %}
+                    <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: purple">{{ release.catalog_number }}</a>
+                  {% elif release.on_previous_weekly_release_sheet == True  %}
+                    <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: green">{{ release.catalog_number }}</a>
+                  {% else %}
+                    <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: black">{{ release.catalog_number }}</a>
+                  {% endif %}
+                </td>
+                <td>{{ release.artist }}</td>
+                <td>{{ release.release_title }}</td>
+                <td>{{ release.label }}</td>
+                <td>
+                  {% for i in release.crate_id %}
+                    {% if forloop.last %}
+                      {{ i }}
+                    {% else %}
+                      {{ i }},
+                    {% endif %}
+                  {% endfor %}
+                </td>
+                {% if release.cost_price == 0 %}
+                  <td style="text-align:right;">TBC&nbsp;&nbsp;</td>
+                {% else %}
+                  <td style="text-align:right;">${{ release.pre_sale_price_NZ }}</td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody> 
+        </table>
+      {% endif %} 
+    <!--#endregion -->
+
+    <!--#region forthcoming releases -->
+      <span style="font-size: 1.5rem; page-break-before: always;">Back Catalog</span>
+      <table class="table" style="font-size:0.7rem; margin-top:3mm">
+        <thead>
+          <tr>
+            <th>View</th>
+            <th>Artist</th>
+            <th>Title</th>
+            <th>Label</th>
+            <th>Track Crate ID's</th>   
+            <th>Price</th> 
+          </tr>
+        </thead>        
+        <tbody>
+          {% for release in back_catalog %}
+            {% if release.not_all_categorized == True %}
+              <tr style="color:purple">
+            {% else %}
+              <tr style="color:green">
+            {% endif %}
+              <td>
+                {% if release.not_all_categorized == True %}
+                  <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: purple">{{ release.catalog_number }}</a>
+                {% elif release.on_previous_weekly_release_sheet != True  %}
+                  <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: green">{{ release.catalog_number }}</a>
+                {% else %}
+                  <a href="{% url 'release_compile' library.id release.id %}" target="_blank" style="color: black">{{ release.catalog_number }}</a>
+                {% endif %}
+              </td>
+              <td>{{ release.artist }}</td>
+              <td>{{ release.release_title }}</td>
+              <td>{{ release.label }}</td>
+              <td>
+                {% for i in release.crate_id %}
+                  {% if forloop.last %}
+                    {{ i }}
+                  {% else %}
+                    {{ i }},
+                  {% endif %}
+                {% endfor %}
+              </td>
+              {% if release.cost_price == 0 %}
+                <td style="text-align:right;">TBC&nbsp;&nbsp;</td>
+              {% else %}
+                <td style="text-align:right;">${{ release.pre_sale_price_NZ }}</td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody> 
+      </table>
+    <!--#endregion -->
+
+  </body>
+</html>

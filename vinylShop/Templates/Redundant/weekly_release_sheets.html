@@ -1,0 +1,69 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Weekly Release Sheets{% endblock %} 
+
+
+{% block nav-title %}<span style="color:green">WEEKLY RELEASE SHEETS</span>{% endblock %}
+
+{% block content %}
+<!-- header -->
+  
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:30px;">
+  <span>
+    {{ email_list }}
+  </span>
+  <span>
+    <a href="{% url 'weekly_release_sheet_add' library.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-plus"></i> Release Sheet</a></td>
+    <a href="{% url 'vinyl_shop_in_stock' library.id %}" class="btn btn-warning btn-sm" target="_blank">In Stock</a></td>
+  </span>
+</div>
+
+<!-- sheets -->
+<table class="table" style="margin-top:30px">
+  <thead>
+    <tr>
+      <th class="text-center">Week Ending</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sheet in release_sheets %}
+      <tr>
+        <td class="text-center">
+          {{ sheet.search_end_date|date:"d m Y"  }}
+        </td>
+        {% if sheet.printable_release_sheet %}
+          <td>
+            <a href="{{ sheet.printable_release_sheet.url }}" target="_blank" class="btn btn-secondary btn-sm">PDF</a>
+            {% if sheet.release_sheet_finalized == False %}
+              <a href="{% url 'weekly_releases_set_to_on_previous_release_sheet_submission' library.id sheet.id sheet.search_start_date|date:'Y-m-d' sheet.search_end_date|date:'Y-m-d' %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure this release sheet is finalized?')">Final</a>
+            {% endif %}
+          </td>
+        {% else %}
+          <td><a href="{% url 'weekly_release_sheet_upload' library.id sheet.id %}" class="btn btn-warning btn-sm" target="_blank">PDF</td></td>
+        {% endif %}
+        <td>
+          <a class="btn btn-secondary btn-sm" href="{% url 'weekly_releases' library.id sheet.id %}" target="_blank">HTML</a>
+        </td>
+        <td style="display:flex;">
+          {% for m in members %}
+            <form action="{% url 'personal_weekly_releases' library.id m.id %}" method="post" enctype="multipart/form-data" target="_blank" style="margin-left:5px">
+              {% csrf_token %}
+              <input type="hidden" name="search_start_date" value="{{ sheet.search_start_date|date:'Y-m-d'  }}" class="form-control">
+              <input type="hidden" name="search_end_date" class="form-control" value="{{ sheet.search_end_date|date:'Y-m-d' }}">
+              <button type="submit" class="btn btn-default btn-sm" style="width:40px">{{ m.membership_number|slice:':2' }}</button>
+            </form>
+          {% endfor %}
+        </td>
+        <td>
+          <a href="{% url 'weekly_release_sheet_edit' library.id sheet.id %}" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

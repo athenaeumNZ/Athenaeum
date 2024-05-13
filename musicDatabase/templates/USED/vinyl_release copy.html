@@ -1,0 +1,173 @@
+<!--#region blocks -->
+{% extends 'library_base.html' %}
+
+{% block title %}{{vinyl_release.release_title}}{% endblock %}
+
+{% block nav-title %}{{ vinyl_release.catalog_number }}{% endblock %}
+
+{% block content %}
+<!--#endregion -->
+
+<!--#region header -->
+<div style="margin-top: 30px; display:flex; align-items:center">
+  <!--#region artwork-->
+  <div>
+    {% if vinyl_release.artwork %}
+    <img id="release_artwork" src="{{ vinyl_release.artwork.url }}" height="0" width="0">
+    {% else %}
+      <h5 style="text-align:center">No image</h5>
+    {% endif %}
+  </div>
+  <!--#endregion-->
+  <div style="width:30px"></div>
+  <div>
+    <table class="table table-sm table-borderless" style="font-size:1.5rem">
+      <tbody id="releaseInformationTable" >
+        <!--#region artist / title -->
+        <tr>
+          <td><strong>Artist / Title</strong></td>
+          <td>{{ vinyl_release.artist }} - {{vinyl_release.release_title}}</td>
+        </tr>
+        <!--#endregion -->
+        <!--#region catalog number-->
+        <tr>
+          <td><strong>Catalog Number</strong></td>
+          <td>
+            {{vinyl_release.catalog_number}}
+            {% if vinyl_release.plate_size %}
+            {% if vinyl_release.plate_count == 1 %}
+            {{ vinyl_release.plate_size }}
+            {% else %}
+            {{ vinyl_release.plate_count }}x{{ vinyl_release.plate_size }}
+            {% endif %}
+            {% endif %}
+          </td>
+        </tr>
+        <!--#endregion -->
+        <!--#region label -->
+        <tr>
+          <td><strong>Label</strong></td>
+          <td>{{vinyl_release.label}}</td>
+        </tr>
+        <!--#endregion -->
+        <!--#region release_date -->
+        <tr>
+          <td><strong>vinyl_Release Date</strong></td>
+          <td><span style="padding-right:5px">{{vinyl_release.release_date|date:"d F Y" }}</span></td>
+        </tr>
+        <!--#endregion -->
+        {% if user != library.library_shop %}
+        <!--#region distributor : VISIBLE TO LIBRARY SHOP USERS -->
+        <tr>
+          <td><strong>Distributor</strong></td>
+          <td>
+            {{ vinyl_release.distributor }}, {{ vinyl_release.cost_price }} {{ vinyl_release.distributor.currency }},
+            {% if vinyl_release.stock_estimation < 11 and vinyl_release.stock_estimation > 5 %}
+              <span style="color:red;">{{ vinyl_release.stock_estimation }}</span>
+            {% elif vinyl_release.stock_estimation < 6 %}
+              <span class="blink" style="color:red;">{{ vinyl_release.stock_estimation}}</span>
+            {% else %}
+              <span style="color:black;">{{ vinyl_release.stock_estimation }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        <!--#endregion-->
+        {% endif %}
+        <tr>
+          <td colspan="2">
+          {% include 'plate_sorter_link_form.html' %}
+          {% if member_release == None %}
+          {% include 'member_release_create_form.html' %}
+          {% endif %}
+          {% if stock_item %}
+          {% if stock_item not in items and stock_item.unavailable != True %}
+          {% if vinyl_release.stock_estimation >= 1 and vinyl_release.distributor.active == True or stock_item.quantity_plus_quantity_incoming_stock != 0 %}
+          {% include 'add_release_to_cart_form.html' %}
+          {% endif %}
+          {% elif stock_item in items %}
+          {% include 'remove_vinyl_release_from_shopping_cart_form.html' %}
+          {% endif %}
+          {% endif %}
+        </td>
+        </tr>
+        <tr>
+          <td>
+          {% include 'release_options.html' %}
+        </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!--#endregion -->
+<!--#region listen -->
+<h3 style="margin-top:20px">LISTEN</h3>
+<table class="table table-borderless">
+  <thead>
+    <tr>
+      <th style="width:15px"></th>
+      <th>Artist</th>
+      <th>Title</th>
+      <th>Genre</th>
+      <th>Vibe</th>
+      <th style="text-align:center">Energy</th>
+      <th style="width:250px" class="text-center">Audio</th>
+    </tr>
+  </thead>
+  {% for plate in vinyl_release.related_vinyl_plate.all %}
+  {% for track in plate.related_vinyl_track.all %}
+  <tbody>
+    <tr>
+      <td style="width:15px">{{track.index}}.</td>
+      <td style="width: auto;">{{track.artist}}</td>
+      <td>{{track.title}}</td>
+      <td>{{track.genre}}</td>
+      <td>{{track.vibe}}</td>
+      <td style="text-align:center">{{track.energy_level}}</td>
+      {% if track.audio %}
+      <td>
+        <audio controls controlsList="noplaybackrate nodownload"
+          style="width:250px;height:32px; float:right; background-color:whitesmoke" preload="none">
+          <source src="{{ track.audio.url }}" type="audio/mp3" class='audios'>
+        </audio>
+      </td>
+      {% else %}
+      <td class="text-center">
+        No Audio
+      </td>
+      {% endif %}
+    </tr>
+  </tbody>
+  {% endfor %}
+  {% endfor %}
+</table>
+<!--#endregion -->
+<!--#region       vinyl_Release Compile                   -->
+<span style="margin-top:30px; display:flex; justify-content:right">
+  <a href="{% url 'release_compile' library.id vinyl_release.id %}" style="text-decoration: none; color:black">π</a>
+</span>
+<!--#endregion -->
+
+<!--#region scripts -->
+<!--#region setImageHeight -->
+<script>
+  window.onload = function setImageHeight() {
+    let height = document.getElementById("releaseInformationTable").clientHeight;
+    document.getElementById("release_artwork").height = height;
+    document.getElementById('release_artwork').width = height;
+  }
+</script>
+<!--#endregion -->
+<!--#region play one track at once -->
+<script>
+  var previousAudio;
+  document.addEventListener('play', function (e) {
+    if (previousAudio && previousAudio != e.target) {
+      previousAudio.pause();
+    }
+    previousAudio = e.target;
+  }, true);
+</script>
+<!--#endregion -->
+<!--#endregion -->
+{% endblock %}

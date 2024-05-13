@@ -1,0 +1,21 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Return to Plate Sorter{% endblock %}
+
+{% block nav-title %}RETURN TO Plate Sorter{% endblock %}
+
+{% block content %}
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <form action="{% url 'shopping_cart_from_plate_sorter' library.id member.id crate_id crate_parent_id display_stock display_unallocated %}"  method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" value="{{ previous_vertical_location }}" name="previous_vertical_location">
+    <button type="submit" id="auto_clicked_button" style="width:400px" class="btn btn-default btn-sm">Return to Plate Sorter</button>
+  </form>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

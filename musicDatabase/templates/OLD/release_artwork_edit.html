@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Edit {{ release.catalog_number }}{% endblock %}
+{% block content %}
+
+<header>
+  <h1>Edit {{ release.catalog_number }} Artwork</h1>
+  <span>
+    <button onclick="history.back()" class="btn btn-secondary bt-sm">Cancel</button>
+  </span>
+</header>
+
+<div class="container" style="max-width: 400px; padding-top:65px">
+  <form action="{% url 'release_artwork_edit_submission' library.id release.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!--artwork-->
+    <div class="form-group col-md-12">
+      <label for="artwork">Artwork</label>
+      <input class="form-control form-control-sm" value="{{ release.artwork }}" id="artwork" type="file" name="artwork" accept="image/*">
+    </div>
+    <br>
+
+    <!--submit-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:center">
+        <input type="submit" value="Update Artwork" class="btn btn-secondary btn-sm" style="width:400px"> 
+      </div>
+  </form>
+</div>
+
+{% endblock %}

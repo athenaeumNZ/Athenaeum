@@ -1,0 +1,177 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{library.name}}{% endblock %} 
+
+{% block nav-title %}DETAILS{% endblock %}
+
+{% block content %}
+<br>
+<br>
+
+{% if library.logo_black_on_white %}
+  <img src="{{ library.logo_black_on_white.url }}" width="150" height="150" style="display: block; margin-left: auto; margin-right: auto;">
+{% else %}
+  <div style="text-align:center; font-size: 0.5rem;">No image</div>
+{% endif %}
+
+<div class="container" style="max-width: 800px;">
+  <table class="table">
+    <tbody>
+      <tr>
+        <td><strong>Library Details:</strong></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Name</td>
+        <td><strong>{{ library.name }}</strong></td>
+      </tr>
+      <tr>
+        <td>Location</td>
+        <td>{{ library.city }}, {{ library.country }}</td>
+      </tr>
+      <tr>
+        <td>Libarian</td>
+        <td style="text-transform:capitalize; ">{{ library.libarian }}</td>
+      </tr>
+      <tr>
+        <td>Description</td>
+        <td>{{ library.description }}</td>
+      </tr>
+      <tr>
+        <td>Plates in Library</td>
+        <td>{{ plate_count }}</td>
+      </tr>
+      <tr>
+        <td>Date Established</td>
+        <td>{{ library.date_established|date:"d F Y" }}</td>
+      </tr>
+      <tr>
+        <td>Options</td>
+        <td><a id="inline" href="" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a></td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="table">
+    <tbody>
+      <tr>
+        <td><strong>Plate Management:</strong></td><td></td>
+      </tr>
+      <tr>
+        <td>All plates have Maxwell cue points?</td>
+        <td>{{ library.cue_points }}</td>
+      </tr>
+      <tr>
+        <td>All outersleeves have catalog number sticker on top?</td>
+        <td>{{ library.sleeve_catalog }}</td>
+      </tr>     
+      <tr>
+        <td>All plates come with Athenaeum cover sheet?</td>
+        <td>{{ library.info_sheet }}</td>
+      </tr>
+      <tr>
+        <td>All plates have non cue point stickers removed?</td>
+        <td>{{ library.plate_stickers }}</td>
+      </tr>
+      <tr>
+        <td>All outersleeves have stickers removed?</td>
+        <td>{{ library.outersleeve_stickers }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="table">
+    <tbody>
+      <tr>
+        <td><strong>Record Playing Rules</strong></td><td></td>
+      </tr>
+      <tr>
+        <td>Members finger nails must be trimmed and filed?</td>
+        <td>{{ library.finger_nails }}</td>
+      </tr>
+      <tr>
+        <td>Records can be played?</td>
+        <td>{{ library.records_playable }}</td>
+      </tr>
+      <tr>
+        <td>Records can be mixed?</td>
+        <td>{{ library.records_mixable }}</td>
+      </tr>
+      <tr>
+        <td>Only members can play or handle or mix records?</td>
+        <td>{{ library.non_members }}</td>
+      </tr>
+      <tr>
+        <td>Records can be played outdoors?</td>
+        <td>{{ library.outdoor_playing }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="container" style="max-width: 800px;">
+  <table class="table">
+    <tbody id="lib-clean">
+      <tr>
+        <td><strong>Cleaning & Environment</strong></td>
+        <td>Library Environment</td>
+        <td>Members Environments</td>
+      </tr>
+      <tr>
+        <td>Environment is a classified cleanroom?</td>
+        <td>{{ library.library_cleanroom }}</td>
+        <td>{{ library.studio_cleanroom }}</td>
+      </tr>
+      <tr>
+        <td>Environment has 24/7 365 temperature control?</td>
+        <td>{{ library.library_controled_temperature }}</td>
+        <td>{{ library.studio_controled_temperature }}</td>
+      </tr>
+      <tr>
+        <td>Tops of crates must be dusted <i class="fa fa-arrow-right"></i></td>
+        <td>{{ library.library_dry_wipe_tops_of_crates }}</td>
+        <td>{{ library.studio_dry_wipe_tops_of_crates }}</td>
+      </tr>
+      <tr>
+        <td>Environment must be dry wiped <i class="fa fa-arrow-right"></i></td>
+        <td>{{ library.library_dry_wiped }}</td>
+        <td>{{ library.studio_dry_wiped }}</td>
+      </tr>
+      <tr>
+        <td>Smoking is allowed?</td>
+        <td>{{ library.library_smoking }}</td>
+        <td>{{ library.studio_smoking }}</td>
+      </tr>
+      <tr>
+        <td>Cotton cloves must be worn when handeling records?</td>
+        <td>{{ library.library_gloves }}</td>
+        <td>{{ library.studio_gloves }}</td>
+      </tr>
+      <tr>
+        <td>Environment can be a thoroughfare?</td>
+        <td>{{ library.library_thoroughfare }}</td>
+        <td>{{ library.studio_thoroughfare }}</td>
+      </tr>
+      <tr>
+        <td>Turntables and mixer must be dusted and vacuumed <i class="fa fa-arrow-right"></i></td>
+        <td>{{ library.library_turntables_dusted_and_vacummed }}</td>
+        <td>{{ library.studio_turntables_dusted_and_vacummed }}</td>
+      </tr>
+      <tr>
+        <td>Environment must be vacuumed <i class="fa fa-arrow-right"></i></td>
+        <td>{{ library.library_vacuumed }}</td>
+        <td>{{ library.studio_vacuumed }}</td>
+      </tr>
+      <tr>
+        <td>Evvironment must be a vestibule?</td>
+        <td>{{ library.library_vestibule }}</td>
+        <td>{{ library.studio_vestibule }}</td>
+      </tr>
+      <tr>
+        <td>Environment must be wet wiped <i class="fa fa-arrow-right"></i></td>
+        <td>{{ library.library_wet_wiped }}</td>
+        <td>{{ library.studio_wet_wiped }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

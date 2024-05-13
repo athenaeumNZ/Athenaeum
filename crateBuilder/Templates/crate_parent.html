@@ -1,0 +1,107 @@
+{% extends 'library_base.html' %}
+
+{% block title %} {{ crate_id }}{% endblock %} 
+
+{% block nav-title %}PLATE SORTER {% if crate_id != 'None' %}: {{ crate_id }}{% endif %}{% endblock %}
+
+{% block content %}
+
+<!--#region plates by crate_id -->
+<div style="padding-top:20px; font-size:2.5rem; font-weight:600">Plates by Crate ID</div>
+<div style="border: 0.1px solid black; padding:10px; margin-top:20px; font-size:0.9rem">
+{% for i in member_plate_crate_ids %}
+{% if i|length >= 4 %}
+  <a href="{% url 'plate_sorter' library.id member.id i %}" class="btn btn-sm">
+    {% if i == crate_id %}
+    <span style="color:green">{{ i }}</span>
+    {% else %}
+    {% if i|slice:":-3" == crate_id|slice:":-3" %}
+    <span style="color:red; float: left;">{{ i|slice:":-3" }}</span>
+    {% else %}
+    <span style="color:black; float: left;">{{ i|slice:":-3" }}</span>
+    {% endif %}
+    {% if i|slice:"-2:-1" == crate_id|slice:"-2:-1" %}
+    <span style="color:white; float: left;">.</span>
+    <span style="color:red; float: left;">{{ i|slice:"-3:-1" }}</span>
+    {% else %}
+    <span style="color:white; float: left;">.</span>
+    <span style="color:black; float: left;">{{ i|slice:"-3:-1" }}</span>
+    {% endif %}
+    {% if i|slice:"-1:" == crate_id|slice:"-1:" %}
+    <span style="color:red; float: left;">{{ i|slice:"-1:" }}</span>
+    {% else %}
+    <span style="color:black; float: left;">{{ i|slice:"-1:" }}</span>
+    {% endif %}
+    {% endif %}
+
+  </a>
+{% endif %}
+{% endfor %}
+</div>
+<!--#endregion -->
+
+<!--#region parent_crates -->
+<div style="padding-top:20px; font-size:2.5rem; font-weight:600">Your Crates</div>
+<div style="border: 0.1px solid black; padding:10px; margin-top:20px; font-size:0.9rem">
+{% for i in crate_parents %}
+<a href="" class="btn btn-sm">{{ i }}</a>
+{% endfor %}
+<a href="{% url 'crate_parent_create_submission' library.id member.id crate_id %}" class="btn btn-sm btn-secondary" onclick="return confirm('You are creating a {{ crate_id }} crate for yourself.')">Create {{ crate_id }} Crate</a>
+</div>
+<!--#endregion -->
+
+<!-- plates -->
+<div style="padding-top:20px; font-size:2.5rem; font-weight:600">Plates</div>
+{% for plate in member_plates %}
+  <div style="border: 0.1px solid black; margin:30px 0px; padding:10px; font-size:0.9rem">
+    <span style="display:flex; justify-content:space-between; align-items:center;">
+      <span>
+        <a href="{% url 'release' library.id plate.member_release.vinyl_release.id %}" class="btn btn-default btn-sm" target="_blank"><span style="font-size:1.2rem; font-weight:300"><span style="font-size:1.6rem;font-weight:600">{{ plate.member_release.vinyl_release }} {{ plate.vinyl_plate.plate_index }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ plate.member_release.vinyl_release.artist }} - {{ plate.member_release.vinyl_release.release_title }} - {{ plate.member_release.vinyl_release.label }} - {{ plate.member_release.vinyl_release.release_date|date:"Y" }}</span></a>
+      </span>
+      <span>
+        <a href="" class="btn btn-warning btn-sm"><i class="fas fa-dolly"></i></a>
+      </span>
+    </span>
+    <table class="table table-borderless table-sm" style="margin-top:10px">
+      <thead>
+        <tr style="background-color: #fcfbfb">
+          <th class="text-center" style="width:60px"></th>
+          <th style="width:300px">Artist</th>
+          <th>Title</th>
+          <th style="width:200px">Genre</th>
+          <th style="width:150px">Vibe</th>
+          <th class="text-center" style="width:100px">Energy</th>
+        </tr>
+      </thead>
+      {% for track in plate.vinyl_plate.related_vinyl_track.all %}
+        <tbody>
+          {% if track.crate_id == crate_id %}
+            <tr style="color:green">
+          {% else %}
+            <tr> 
+          {% endif %}
+          <td class="text-center" style="width:60px">{{track.index}}.</td>
+          <td>{{track.artist}}</td>
+          <td>{{track.title}}</td>
+          {% if track.genre != '-' and track.vibe != '-' and track.energy_level != '-' %}
+            <td>{{track.genre}}</td>
+            <td>{{track.vibe}}</td>
+            <td class="text-center">{{track.energy_level}}</td>
+          {% else %}
+            <td style="color:red">{{track.genre}}</td>
+            <td style="color:red">{{track.vibe}}</td>
+            <td style="color:red" class="text-center">{{track.energy_level}}</td>
+          {% endif %}
+          </tr>
+        </tbody>   
+      {% endfor %}
+    </table>
+  </div>
+{% endfor %}
+<script>
+  function detectChange() {
+    document.getElementById('hidden_checkout')
+    hidden_checkout.style.display = 'inline-block';
+  }
+</script>
+{% endblock %}

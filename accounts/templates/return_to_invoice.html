@@ -1,0 +1,17 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Go to Invoice{% endblock %}
+
+{% block nav-title %}GO TO INVOICE{% endblock %}
+
+{% block content %}
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <a href="{% url 'invoice' library.id invoice.id %}" id="auto_clicked_button" style="width:400px" class="btn btn-default btn-sm">Go to Invoice</a>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

@@ -1,0 +1,697 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Dashboard{% endblock %} 
+
+{% block nav-title %}{{ library }} <span style="color:green">DASHBOARD</span>{% endblock %}
+
+{% block content %}
+
+<!--#region header -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:25px; position: -webkit-sticky; position:sticky; top:-5; left: 0; z-index: 1;">
+    <table style="border-spacing: 0px 3px; border-collapse: separate;">
+      <tbody>
+
+          <!--#region search row 1 -->
+            <tr>
+              <form action="{% url 'dashboard_search' library.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+              <!--#region search artist -->
+              <td style="padding-right:5px">
+                {% if search_artist %}
+                  <input name="search_artist" value="{{ search_artist }}" style="border:3px solid green; width:230px;">
+                {% else %}
+                  <input placeholder="Artist..." name="search_artist" style="width:230px;">
+                {% endif %}
+              </td>
+              <!--#endregion -->
+
+              <!--#region search title -->
+              <td style="padding-right:5px">
+                {% if search_title %}
+                  <input name="search_title" value="{{ search_title }}" style="border:3px solid green; width:230px;">
+                {% else %}
+                  <input placeholder="Title..." name="search_title" style="width:230px;">
+                {% endif %}
+              </td>
+              <!--#endregion -->
+
+              <!--#region search label -->
+              <td style="padding-right:5px">
+                {% if search_label %}
+                  <input name="search_label" value="{{ search_label }}" style="border:3px solid green; width:230px;">
+                {% else %}
+                  <input placeholder="Label..." name="search_label" style="width:230px;">
+                {% endif %}
+              </td>
+              <!--#endregion -->
+
+              <!--#region search catalog -->
+              <td style="padding-right:5px">
+                {% if search_catalog %}
+                  <input name="search_catalog" value="{{ search_catalog }}" style="border:3px solid green; width:230px;s">
+                {% else %}
+                  <input placeholder="Catalog..." name="search_catalog" autofocus style="width:230px;">
+                {% endif %}
+              </td>
+              <!--#endregion -->
+
+              <!--#region WRS -->
+              <td>
+                <span style="float:left">
+                  <a href="{% url 'weekly_release_sheets' library.id %}" class="btn btn-secondary btn-sm" style="width:90px" target="_blank">WRS</a>
+                </span>
+              </td>
+              <!--#endregion -->
+            </tr>
+          <!--#endregion -->
+          <!--#region search row 2 -->
+            <tr>
+              <!--#region search member -->
+                <td style="width:230px; padding-right:5px">
+                  {% if search_member and search_member != 'Member...' %}
+                    <select id="search_member" style="width:230px; height:30px; border:3px solid green " name="search_member">
+                  {% else %}
+                    <select id="search_member" style="width:230px; height:30px;" name="search_member">
+                  {% endif %}
+                  {% if search_member and search_member != 'Member...' %}
+                    <option value="{{ search_member_a }}" selected>{{ search_member_a }} &nbsp;&nbsp;&nbsp; {{ search_member_b }}</option>
+                  {% else %}
+                    <option selected>Member...</option>
+                  {% endif %}
+                  {% for member in members_with_current_order_request_items %}
+                    <option value="{{ member.membership_number }}">{{ member.membership_number}} &nbsp;&nbsp;&nbsp; {{ member.user.first_name }} {{ member.user.last_name|slice:':1' }}.</option>
+                  {% endfor %}
+                  </select>
+                </td>
+              <!--#endregion -->
+
+              <!--#region query sort -->
+              <td style="width:230px; padding-right:5px"> 
+                {% if search_order_by and search_order_by != 'Sort...' %}
+                  <select id="search_order_by" style="width:230px; height:30px; border:3px solid green" name="search_order_by">
+                {% else %}
+                  <select id="search_order_by" style="width:230px; height:30px;" name="search_order_by">
+                {% endif %}
+                {% if search_order_by and search_order_by != 'Sort...' %}
+                  <option value="{{ search_order_by }}" selected>{{ search_order_by }}</option>
+                  <option></option>
+                {% else %}
+                  <option selected>Sort...</option>
+                {% endif %}
+                {% for order_query in query_order_by %}
+                  <option value="{{ order_query }}">{{ order_query }}</option>
+                {% endfor %}
+                </select>
+              </td>
+              <!--#endregion -->
+
+              <!--#region search_distributor -->
+                <td style="width:230px; padding-right:5px">
+                  {% if search_distributor and search_distributor != 'Dist...' %}
+                    <select id="search_distributor" style="width:230px; height:30px; border:3px solid green" name="search_distributor">
+                  {% else %}
+                    <select id="search_distributor" style="width:230px; height:30px;" name="search_distributor">
+                  {% endif %}
+                    {% if search_distributor and search_distributor != 'Dist...' %}
+                      <option value="{{ search_distributor }}" selected>{{ search_distributor }}</option>
+                      <option></option>
+                    {% else %}
+                      <option selected>Dist...</option>
+                    {% endif %}
+                    {% for distributor in distributors %}
+                      <option value="{{ distributor.distributor_code }}">{{ distributor.name }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+              <!--#endregion -->
+
+              <!--#region submit, refresh -->
+                <td style="display:flex; justify-content:space-between; width:232px">
+                  <button type="submit" class="btn btn-secondary btn-sm" style="height:30px;"><i class="fas fa-search"></i></button>
+                  <a href="{% url 'dashboard' library.id %}" class="btn btn-secondary btn-sm" style="height:30px; width:140px">Reset Search</a>
+                </td>
+              <!--#endregion -->
+                
+              <!--#region Add Release -->
+                <td style="width:100%">
+                  <a href="{% url 'vinyl_release_add_check_catalog_number' library.id %}" class="btn btn-secondary btn-sm" target="_blank"  style="float: right; width:90px"><i class="fas fa-plus"></i> Release</a>
+                </td>
+              <!--#endregion -->
+            </form>
+            </tr>
+          <!--#endregion -->
+        
+        <!--#region search row 3 -->
+          <tr>
+            <form action="{% url 'distributors_back_orders' library.id %}" method="post" enctype="multipart/form-data" target="_blank">
+              {% csrf_token %}
+              <td>
+                <span style="display:flex; justify-content:space-between">
+                  <!--#region distributor -->
+                    <select id="distributor_id" style="width:193px; height:30px;" name="distributor_id">
+                      <option>Back Order List...</option>
+                      {% for d in distributors %}
+                        <option value="{{ d.id }}">{{ d.name }}</option>
+                      {% endfor %}
+                    </select>
+                  <!--#endregion -->
+
+                  <!--#region print -->
+                    <button type="Submit" class="btn btn-secondary btn-sm" style="height:30px; margin-left:5px"><i class="fas fa-print"></i>
+                  <!--#endregion -->
+                </span>
+              </td>
+            </form>
+            <form action="{% url 'purchase_order_request_template' library.id %}" method="post" enctype="multipart/form-data" target="_blank">
+              {% csrf_token %}
+              <td colspan="2">
+                <span style="display:flex;">
+                  <!--#region distributor -->
+                    <select id="distributor_id" style="width:430px; height:30px;" name="distributor_id">
+                      <option>Create Purchase Order...</option>
+                      {% for d in distributors_with_unprocessed_purchase_order_requests %}
+                        <option value="{{ d.id }}">{{ d.name }}</option>
+                      {% endfor %}
+                    </select>
+                  <!--#endregion -->
+
+                  <!--#region print -->
+                    <button type="Submit" class="btn btn-secondary btn-sm" style="height:30px; margin-left:5px"><i class="fas fa-print"></i>
+                  <!--#endregion -->
+                </span>
+              </td>
+            </form>
+          </tr>
+          <tr>
+            <td>
+              
+            </td>
+          </tr>
+        <!--#endregion --> 
+      </tbody>
+    </table>
+  </div>
+<!--#endregion -->
+
+<!--#region stock_items_not_updated_by_librarian -->
+  {% if stock_items_not_updated_by_librarian|length != 0 %}
+    <h4 style="margin-top:20px">RECENTLY ADDED BY MEMBERS</h4>
+    <table class="table" style="margin-top:30px">
+      <thead>
+        <tr>
+          <th class="text-center" style="width:30px">IMG</th>
+          <th style="width:200px;" class="text-center">Catalog</th>
+          <th><strong>UPDATE</strong></th>
+          <th>Distributor</th>
+          <th>Artist</th>
+          <th>Title</th>
+          <th>Label</th>
+          <th class="text-center">Release Date</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+        {% for item in stock_items_not_updated_by_librarian %}
+          <tr style="vertical-align:middle; font-size: 0.9rem;">
+            <!--#region img -->
+            {% if item.vinyl_release.artwork_small %}
+              <td>
+                  <img src="{{ item.vinyl_release.artwork_small.url }}" width="25px" height="25px">
+            {% else %}
+              <td>
+            {% endif %}
+          </td>
+            <!--#endregion -->        
+            <!--#region catalog + link -->
+            <td style="width:200px;"><a href="{% url 'release_compile' library.id item.vinyl_release.id  %}"class="btn btn-secondary btn-sm" style="width:200px; font-size: 0.75rem;" target="_blank">{{ item.vinyl_release }}</a></td>
+            <!--#endregion -->
+            <td style="width:200px;"><a href="{% url 'stock_item_add_edit' library.id item.vinyl_release.id %}"class="btn btn-warning btn-sm" style="width:100px; font-weight:600" target="_blank">SKU:{{ item.id|stringformat:'04d' }}</a></td>
+
+            <td style="font-size: 0.6rem;">{{ item.vinyl_release.distributor }}</td>
+            <td>{{ item.vinyl_release.artist }}</td>
+            <td>{{ item.vinyl_release.release_title }}</td>
+            <td>{{ item.vinyl_release.label }}</td>  
+            <td class="text-center" style="font-size: 0.6rem;">{{ item.vinyl_release.release_date|date:'d m y' }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+<!--#endregion -->
+
+<!--#region items -->
+  {% if order_request_items|length != 0 %}
+    {% if order_request_items_ids != None %}
+      <span style="margin-top:30px; display:flex; justify-content:space-between">
+        <span></span>
+        <span>
+          <form action="{% url 'order_request_items_stockpile_submission' library.id %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+              <!--#region order_request_items -->
+                <input type="hidden" value="{{ order_request_items_ids }}" name="order_request_items_ids">
+              <!--#endregion -->
+              <!--#region submit -->
+                <button type="Submit" class="btn btn-danger btn-sm" style="height:30px; margin-left:5px" onclick="return confirm('Stockpile these items.\n\n{% for i in order_request_items_to_stockpile.all %}{{ i.quantity }}x\t{{ i.vinyl_release }}\t{{ i.member }}\n\n{% endfor %}\n\nAdd these to shop stock.\n\n{% for i in order_request_items_to_add_as_stock.all %}{{ i.quantity }}x\t{{ i.vinyl_release }}\t{{ i.member }}\n\n{% endfor %}')">Stockpile & Add Stock For All</button>
+              <!--#endregion -->
+          </form>
+        </span>
+      </span>
+      <table class="table" style="margin-top:10px">
+    {% else %}
+      <table class="table" style="margin-top:30px">
+    {% endif %}
+      <thead>
+        <tr>
+          <th class="text-center" style="width:30px">IMG</th>
+          <th style="width:200px;" class="text-center">CATALOG</th>
+          <th class="text-center">Q</th>
+          <th class="text-center" style="width:30px"></th>
+          <th class="text-center">M</th>
+          <th class="text-center">D</th>
+          <th class="text-center">O</th>
+          <th class="text-center">S</th>
+          
+          <th class="text-center">I</th>
+          <th class="text-center">P</th>
+          <th class="text-center">RELEASED</th>
+          <th>ARTIST</th>
+          <th>TITLE</th>
+          <th>LABEL</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+        {% for item in order_request_items %}
+          {% if item.stock_item.to_become_shop_stock and item.stock_item.has_an_outer_sleeve != True %}
+            <tr style="vertical-align:middle; font-size: 0.9rem; color:red">
+          {% else %}
+            <tr style="vertical-align:middle; font-size: 0.9rem;">
+          {% endif %}
+            <!--#region img -->
+            {% if item.vinyl_release.artwork_small %}
+              <td>
+                  <img src="{{ item.vinyl_release.artwork_small.url }}" width="25px" height="25px">
+            {% else %}
+              <td>
+            {% endif %}
+          </td>
+            <!--#endregion -->        
+            <!--#region catalog + link -->
+            <td style="width:200px;"><a href="{% url 'release' library.id item.vinyl_release.id %}"class="btn btn-secondary btn-sm" style="width:200px; font-size: 0.75rem;" target="_blank">{{ item.vinyl_release }}</a></td>
+            <!--#endregion -->
+            <!--#region quantity & update item -->
+            <td class="text-center">
+              {% if item.ordered == True or item.shop_purchase %}
+                {% if item.stockpiled == True %}
+                  <span style="opacity: 0.3;">
+                {% else %}
+                  <span>
+                {% endif %}
+                  {{ item.quantity }}
+                </span>
+              {% else %}
+                <a href="" style="color:green; text-decoration:none">{{ item.quantity }}</a>
+              {% endif %}
+            </td>
+            <!--#endregion -->
+            <!--#region check -->
+              <td class="text-center">
+                {% if item.stockpiled == False %}
+                  <input type="checkbox">
+                {% else %}
+                {% endif %}
+              </td>
+            <!--#endregion -->
+            <!--#region member -->
+            {% if search_member and search_member != 'Member...' %}
+              <td style="color:green" class="text-center">{{ item.member.membership_number }}</td>
+            {% elif item.member.user == library.librarian %}
+              <td></td>
+            {% else %}
+              <td class="text-center">{{ item.member.membership_number }}</td>
+            {% endif %}
+            <!--#endregion -->
+            <!--#region distributor -->
+            {% if item.shop_purchase %}
+              <td></td>
+            {% else %}
+              <td class="text-center" style="font-size: 0.6rem;">{{ item.vinyl_release.distributor.distributor_code }}</td>
+            {% endif %}
+            <!--#endregion -->
+            <!--#region ordered THIS MIGHT BE WRONG -->
+              {% if item.shop_purchase %}
+                <td class="text-center"></td>
+              {% elif item.ordered %}
+                <td></td>
+              {% else %}
+                <td class="text-center"><a href=""><i class="fas fa-times" style="color:gray"></i></a></td>
+              {% endif %}
+            <!--#endregion --> 
+            <!--#region stockpiled -->
+              {% if item.stockpiled %}
+                <td></td>
+              {% else %}
+                <td class="text-center"><a href=""><i class="fas fa-times" style="color:gray"></i></a></td>
+              {% endif %}
+            <!--#endregion -->  
+
+            <!--#region invoiced -->
+              {% if item.invoiced or item.to_become_shop_stock %}
+                <td></td>
+              {% else %}
+                <td class="text-center"><i class="fas fa-times" style="color:gray"></i></a></td>
+              {% endif %}
+            <!--#endregion --> 
+            <!--#region paid -->
+              {% if item.paid or item.to_become_shop_stock %}
+                <td></td>
+              {% else %}
+                <td class="text-center"><i class="fas fa-times" style="color:gray"></i></a></td>
+              {% endif %}
+            <!--#endregion --> 
+
+            <td class="text-center" style="font-size: 0.6rem;">{{ item.vinyl_release.release_date|date:'d m y' }}</td>
+            <td>{{ item.vinyl_release.artist }}</td>
+            <td>{{ item.vinyl_release.release_title }}</td>
+            <td>{{ item.vinyl_release.label }}</td>  
+          </tr>
+          {% endfor %}
+      </tbody>
+
+    </table>
+  {% endif %}
+<!--#endregion -->
+
+<!--#region purchase order requests -->
+  <h4 style="margin-top:20px">PURCHASE ORDER REQUESTS</h4>
+  <table class="table" style="margin-top:20px">
+    <thead>
+      <tr>
+        <th style="width:130px">Created</th>
+        <th class="text-center" style="width:90px">I.D.</th>
+        <th style="width:400px">Distributor</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in purchase_order_requests %}
+        <tr>
+          <td>{{ s.created|date:"d F" }}</td>
+          <td>
+            <a href="{% url 'purchase_order_request' library.id s.id %}" target="_blank">PO {{ s.id|stringformat:"04d" }}</a>
+          </td>
+          <td>{{ s.distributor }}</td>
+          <td></td> 
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+<!--#endregion -->
+
+<!--#region courier packages -->
+  {% if courier_packages|length != 0 %}
+    <h4>COURIER PACKAGES</h4>
+    <table class="table" style="margin-top:20px">
+      <thead>
+        <tr>
+          <th style="width:80px">Created</th>
+          <th class="text-center" style="width:90px">I.D.</th>
+          <th style="width:250px">Member</th>
+          
+          <th style="width:250px">Tracking Number</th>
+          <th>Address</th>
+          <th class="text-center" style="width:40px">I</th>
+          <th class="text-center" style="width:40px">P</th>
+          <th class="text-center" style="width:40px">C</th>
+          <th class="text-center" style="width:40px">E</th>
+          <th class="text-center" style="width:200px">Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in courier_packages %}
+          <tr>
+            <td>{{ p.created|date:"d F" }}</td>
+            <td class="text-center">
+              <a href="{% url 'courier_package' library.id p.id %}" target="_blank">CP {{ p.id|stringformat:"04d" }}</a>
+            </td>
+            <td>{{ p.member }}</td>
+            <td>{{ p.tracking_number }}</td>
+            <!--#region address -->
+            <td>
+              {% if p.member.address.c_o %}
+                {{ p.member.address.c_o }}<br>
+              {% endif %}
+              {% if p.member.address.unit_number %}
+                {{ p.member.address.unit_number }} / 
+              {% endif %}
+              {{ p.member.address.street_number }} {{ p.member.address.street_name }}<br>
+              {{ p.member.address.suburb }}<br>
+              {{ p.member.address.city }} {{ p.member.address.post_code }}<br>
+            </td>
+            <!--#endregion -->
+
+            
+
+            <!--#region invoiced -->
+              {% if p.invoiced == True %}
+                <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+              {% else %}
+                <td class="text-center" style="width:40px"><a href="{% url 'courier_package_invoiced_submission' library.id p.id %}"><i class="fas fa-times" style="color:red"></i></a></td>
+              {% endif %}
+            <!--#endregion -->   
+
+            <!--#region paid -->
+              {% if p.paid == True %}
+                <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+              {% else %}
+                <td class="text-center" style="width:40px"><a href="{% url 'courier_package_paid_submission' library.id p.id %}"><i class="fas fa-times" style="color:red"></i></a></td>
+              {% endif %}
+            <!--#endregion --> 
+
+            <!--#region packed -->
+              {% if p.packed == True %}
+                <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+              {% else %}
+                <td class="text-center" style="width:40px"><a href="{% url 'courier_package_packed_submission' library.id p.id %}"><i class="fas fa-times" style="color:red"></i></a></td>
+              {% endif %}
+            <!--#endregion --> 
+
+            <!--#region en_route -->
+              {% if p.en_route == True %}
+                <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+              {% else %}
+                <td class="text-center" style="width:40px"><a href="{% url 'courier_package_en_route_submission' library.id p.id %}"><i class="fas fa-times" style="color:red"></i></a></td>
+              {% endif %}
+            <!--#endregion -->   
+
+            <td class="text-center">
+              {% if p.received != True and p.en_route == True %}
+                <a href ="{% url 'courier_package_received_submission' library.id p.id %}" class="btn btn-sm btn-danger">Mark as Received</a>
+              {% else %}
+                ...
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+<!--#endregion -->
+
+<!--#region order requests and invoices -->
+  <div style="display:flex; justify-content:space-between">
+    <!--#region order requests -->
+      <span style="margin-right:5px">
+        <h4>ORDER REQUESTS</h4>
+        <table class="table" style="margin-top:20px">
+          <thead>
+            <tr>
+              <th style="width:130px">Created</th>
+              <th class="text-center" style="width:90px">I.D.</th>
+              <th style="width:250px">Member</th>
+              <th></th>
+              <th class="text-center" style="width:40px">O</th>
+              <th class="text-center" style="width:40px">I</th>
+              <th class="text-center" style="width:40px">P</th>
+              <th class="text-center" style="width:40px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in order_requests %}
+              <tr>
+                <td>{{ s.created|date:"d F" }}</td>
+                <td class="text-center">
+                  <a href="{% url 'order_request' library.id s.id %}" target="_blank">OR {{ s.id|stringformat:"04d" }}</a>
+                </td>
+                <td>
+                  {{ s.member.user.first_name }} {{ s.member.user.last_name }}
+                </td>
+                <td></td>
+                <!--#region ordered -->
+                  {% if s.all_ordered %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+                  {% else %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-times" style="color:gray"></i></a></td>
+                  {% endif %}
+                <!--#endregion -->  
+
+                <!--#region all invoiced -->
+                  {% if s.all_invoiced == True %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+                  {% else %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-times" style="color:red"></i></a></td>
+                  {% endif %}
+                <!--#endregion --> 
+              
+                <!--#region all paid -->
+                  {% if s.all_paid == True %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+                  {% else %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-times" style="color:red"></i></a></td>
+                  {% endif %}
+                <!--#endregion -->
+
+                <!--#region all filled -->
+                  {% if s.all_filled == True and s.all_paid == True %}
+                    <td class="text-center" style="width:40px">
+                      <a href="{% url 'order_request_archive_submission' library.id s.id %}" class="btn btn-sm btn-warning" onclick="return confirm('Archiving order request.')">A</a></td>
+                  {% else %}
+                    <td class="text-center" style="width:40px">...</a></td>
+                  {% endif %}
+                <!--#endregion -->
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </span>
+    <!--#endregion -->
+  
+    <!--#region invoices -->
+      <span style="margin-left:5px">
+        <h4>INVOICES</h4>
+        <table class="table" style="margin-top:20px">
+          <thead>
+            <tr>
+              <th style="width:130px">Created</th>
+              <th class="text-center" style="width:90px">I.D.</th>
+              <th style="width:250px">Member</th>
+              <th></th>
+              <th class="text-center" style="width:40px">$</th>
+              <th class="text-center" style="width:40px">Flattened</th>
+              <th class="text-center" style="width:40px">Paid</th>
+              <th class="text-center" style="width:40px">Stockpiled</th>
+              <th class="text-center" style="width:40px">Options</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in invoices %}
+              <tr>
+                {% if s.direct_shopping_invoice == True and s.all_items_stockpiled == False %}
+                  <td style="color:red">* 
+                {% else %}
+                  <td>
+                {% endif %}{{ s.created|date:"d F" }}</td>
+                <td class="text-center">
+                  <a href="{% url 'invoice' library.id s.id %}" target="_blank">INV {{ s.id|stringformat:"04d" }}</a>
+                </td>
+                <td>
+                  {{ s.member.user.first_name }} {{ s.member.user.last_name }}
+                </td>
+                <td></td>
+                <td style="text-align:right">{{ s.total_invoice }}</td>
+
+                <!--#region flattened -->
+                  {% if s.direct_shopping_invoice %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-minus" style="color:gray"></i></td>
+                  {% elif s.flattened %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+                  {% else %}
+                    <td class="text-center" style="width:40px; opacity:0.1"><i class="fas fa-times" style="color:gray"></i></a></td>
+                  {% endif %}
+                <!--#endregion --> 
+
+                <!--#region paid -->
+                  {% if s.paid == False and s.all_items_stockpiled %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-times" style="color:red"></i></td>
+                  {% elif s.paid %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+                  {% else %}
+                    <td class="text-center" style="width:40px; opacity:0.1"><i class="fas fa-times " style="color:gray"></i></a></td>
+                  {% endif %}
+                <!--#endregion -->  
+
+                <!--#region all stockpiled -->
+                  {% if s.all_items_stockpiled != False %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+                  {% else %}
+                    <td class="text-center" style="width:40px; opacity:0.1"><i class="fas fa-times" style="color:gray"></i></a></td>
+                  {% endif %}
+                <!--#endregion --> 
+              
+                <!--#region archive -->
+                  {% if s.all_items_stockpiled != False and s.paid %}
+                    <td class="text-center" style="width:40px">
+                      <a href="{% url 'invoice_archive_submission' library.id s.id %}" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to archive this invoice?')">Archive</a>
+                    </td>
+                  {% else %}
+                    <td class="text-center" style="width:40px">...</td>
+                  {% endif %}
+                <!--#endregion -->
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <hr>
+        <h4>PROFESSIONAL SERVICES INVOICES</h4>
+        <table class="table" style="margin-top:20px">
+          <thead>
+            <tr>
+              <th style="width:130px">Created</th>
+              <th></th>
+              <th style="width:250px">Client</th>
+              <th class="text-center" style="width:40px">$</th>
+              <th class="text-center" style="width:40px">Paid</th>
+              <th class="text-center" style="width:40px">Options</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in professional_services_invoices %}
+              <tr>
+                <td>{{ i.created|date:"d F" }}</td>
+                <td class="text-center">
+                  <a href="{% url 'professional_services_invoice' library.id i.id %}" target="_blank">PSI {{ i.id|stringformat:"04d" }}</a>
+                </td>
+                <td>{{ i.client.name }}</td>
+                <td style="text-align:right">{{ i.invoice_total }}</td>
+                <!--#region paid -->
+                  {% if i.paid == False %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-times" style="color:red"></i></td>
+                  {% else %}
+                    <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+                  {% endif %}
+                <!--#endregion -->  
+                
+                <td></td>
+                <!--#region archive 
+                  {% if i.paid %}
+                    <td class="text-center" style="width:40px">
+                      
+                      <a href="{% url 'invoice_archive_submission' library.id i.id %}" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to archive this invoice?')">Archive</a>
+                    </td>
+                  {% else %}
+                    <td class="text-center" style="width:40px">...</td>
+                  {% endif %}
+                #endregion -->
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+      </span>
+    <!--#endregion -->
+  
+  </div>
+<!--#endregion -->
+
+{% endblock %}

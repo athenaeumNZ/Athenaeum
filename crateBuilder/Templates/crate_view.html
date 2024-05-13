@@ -1,0 +1,18 @@
+{% block crate-view %}
+<!--#region parent_crates -->
+<div style="padding-top:20px; display:flex; justify-content:space-between">
+  <span style="font-size:2.5rem; font-weight:600;">Your Crates</span>
+</div>
+<div style="border: 0.1px solid black; padding:10px; margin-top:20px; font-size:0.9rem">
+{% for i in crate_parents %}
+<a href="{% url 'plate_sorter' library.id member.id i.crate_id i.id display_stock display_unallocated %}" class="btn btn-sm {% if i.crate_id == crate_id and crate_parent_id != 'None' %} btn-success {% else %}{% endif %}">{{ i.crate_id }}</a>
+{% endfor %}
+{% if crate_parent_does_not_exist == True %}
+<a href="{% url 'crate_parent_create_submission' library.id member.id crate_id 'None' display_stock display_unallocated %}" class="btn btn-sm btn-secondary">Create {{ crate_id }} Crate</a>
+{% endif %}
+{% if crate_parent != None %}
+  <a href="{% url 'plate_sorter' library.id member.id crate_id 'None' display_stock display_unallocated %}" class="btn btn-sm btn-danger">Exit Crates</a>
+{% endif %}
+</div>
+<!--#endregion -->
+{% endblock %}

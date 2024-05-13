@@ -1,0 +1,51 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Calculate vinyl sale price{% endblock %}
+
+{% block nav-title %}CALCULATE VINYL SALE PRICE <span style="color: green;">NZ</span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:20px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'sale_vinyl_options' library.id release.id %}" style="width:300px" class="btn btn-secondary btn-sm">Return to Sale Vinyl Options</a>
+    </span>
+  </header>
+</div>
+<br>
+
+<div style="display:flex; justify-content:center; margin-top:45px">
+  <form action="{% url 'sale_vinyl_calculate_sale_price_nz_submission' library.id release.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+    {% csrf_token %}
+    <div class="row">
+      <!-- no mark up price nz -->
+      <input type="hidden" value="{{ no_mark_up_price_nz }}" name="no_mark_up_price_nz" class="form-control" readonly>
+      <!-- estimated sale price -->
+      <div class="form-group col-md-12">
+        <label for="sale_price" class="form-label">Estimated 30% Markup Sale Price</label>
+        <input type="text" value="{{ sale_price_nz_estimate }}" name="sale_price" class="form-control" readonly>
+      </div>
+      <!-- fixed mark up -->
+      <div class="form-group col-md-12">
+        <label for="sale_price" class="form-label">Fixed Mark Up Price</label>
+        <input type="text" value="{{ sale_price_nz_fixed_markup }}" name="sale_price" class="form-control" readonly>
+      </div>
+      <!-- sale_price_NZ -->
+      <div class="form-group col-md-12">
+        <label for="sale_price_NZ" class="form-label">* Sale Price {% if release.sale_price_NZ %} - Currently ${{ release.sale_price_NZ }} (NZD){% endif %}</label>
+        <input type="text" id="sale_price_NZ" name="sale_price_NZ" class="form-control" required>
+      </div>
+      <br><br>
+      <!--submit-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:center; margin-top:40px">
+        <input type="submit" value="Update NZ Sale Price" class="btn btn-secondary btn-sm form-control" style="width:400px; "> 
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

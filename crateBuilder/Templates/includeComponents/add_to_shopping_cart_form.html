@@ -1,0 +1,19 @@
+<form action="{% url 'add_release_to_cart' library.id %}" method="post"  enctype="multipart/form-data" style="margin:0px; padding:0px; display:inline;">
+    {% csrf_token %}
+    {% include 'form_variables.html' %}
+    {% include 'form_search_fields.html' %}
+    <button type="submit" class="btn btn-warning btn-sm" style="padding-left:15px; padding-right:15px">
+        <i class="fas fa-cart-plus" style="margin-right:5px"></i>
+        {% if stock_item.vinyl_release.plate_count == 1 %}
+        {{ stock_item.vinyl_release.plate_size }}
+        {% else %}
+        {{ stock_item.vinyl_release.plate_count }}x{{ stock_item.vinyl_release.plate_size }}
+        {% endif %}
+        Add to Shopping Cart $
+        {% if stock_item.price != 999.00 %}
+        {{ stock_item.price }} + G.S.T.
+        {% else %}
+        TBD
+        {% endif %}
+    </button>
+</form>

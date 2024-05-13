@@ -1,0 +1,142 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{ track.title }}{% endblock %}
+
+{% block nav-title %}<h3>{{ track.artist }} - {{ track.title }}</h3>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="margin-top:15px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'release_compile' library.id release.id %}" style="width:300px" class="btn btn-secondary btn-sm">Cancel & Return to Release Compile</a>
+    </span>
+  </header>
+</div>
+
+<div style="display:flex; justify-content:center; margin-top:50px; ">
+  <form action="{% url 'track_categorize_submission' library.id release.id track.id index_count %}" method="post" enctype="multipart/form-data">
+    <div style="display:flex; justify-content:space-between; width:820px">
+      <div style="width:400px">
+        {% csrf_token %}
+
+        <!-- title and audio -->
+        <div class="form-group col-md-12">
+          <label class="form-label">{{ track.index }}. {{ track.artist }} - {{ track.title }}</label>
+          {% if track.audio %}
+          <tr class="form-control">
+            <td>
+              <audio controls controlsList="noplaybackrate nodownload" style="height:32px; width:400px; float:center; background-color:whitesmoke">
+                <source src="{{ track.audio.url }}" type="audio/mp3" class='audios'>
+              </audio>
+            </td>
+            {% else %}
+            <td class="text-center">
+              <a class="btn btn-sm btn-warning" href="" style="margin-right:5px"><i class="fas fa-plus"></i> Audio</a>
+            </td>
+            {% endif %}
+          </tr>
+        </div>
+        
+        <!--genre-->
+          <div class="form-group col-md-12">
+            <label for="genre" class="form-label">Genre</label>
+            <select id="genre" class="form-control" name="genre" required>
+              <option selected>{{ track.genre }}</option>
+              {% for genre in genres %}
+                <option value="{{ genre }}">{{ genre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+    
+        <!--vibe-->
+        <div class="form-group col-md-12">
+          <label for="vibe" class="form-label">Vibe</label>
+          <select id="vibe" class="form-control" name="vibe" required>
+            <option selected>{{ track.vibe }}</option>
+              {% for vibes in vibe %}
+                <option value="{{ vibes }}">{{ vibes }}</option>
+              {% endfor %}
+          </select>
+        </div>
+
+      </div>
+      <div style="width:400px">
+
+        <!--energy_level-->
+        <div class="form-group col-md-12">
+          <label for="energy_level" class="form-label">Energy Level</label>
+          <select id="energy_level" class="form-control" name="energy_level" required>
+            <option selected>{{ track.energy_level }}</option>
+            {% for energy_levels in energy_level %}
+              <option value="{{ energy_levels }}">{{ energy_levels }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!--submit-->
+        <div class="form-group col-md-12" style="margin-top:40px">
+          <input type="submit" value="Finished Categorizing" class="btn btn-secondary form-control" style="width:400px" onfocus="autoCreateCrateID()"> 
+        </div>
+          
+        <!-- crate_id -->
+        <div class="form-group col-md-12">
+          <label for="crate_id" class="form-label">Crate ID</label>
+          {% if track.crate_id %}
+            <input type="text" id="crate_id" class="form-control" name="crate_id" value="{{ track.crate_id }}" required>
+          {% else %}
+            <input type="text" id="crate_id" class="form-control" name="crate_id" required>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:center; width:820px; margin-top:30px">
+      <!--#region master_genre_id -->
+      <div class="form-group col-md-6">
+        <label style="width:200px" class="form-label">Master Genre</label>
+        <select class="form-control form-control-sm" name="master_genre_id" >
+          {% if release.master_genre != None %}
+          <option value="{{ release.master_genre.id }}" selected>{{ release.master_genre.genre }}</option>
+          {% else %}
+          <option selected>Choose...</option>
+          {% endif %}
+          {% for genre in genres %}
+          {% if genre != release.master_genre %}
+            <option value="{{ genre.id }}">{{ genre.genre }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      <!--#endregion -->
+    </div>
+  </form>
+</div>
+
+
+<script>
+  function autoCreateCrateID() {
+    document.getElementById("crate_id").value = 
+    document.getElementById("genre").value +
+    ' ' +
+    document.getElementById("vibe").value.slice(0, 1) +
+    document.getElementById("energy_level").value.slice(0, 3);
+
+    const genre = document.getElementById("genre").value;
+    const vibe = document.getElementById("vibe").value;
+    const energy_level = document.getElementById("energy_level").value;
+
+    if (genre != '-') {
+      if (vibe != '-')  {
+        if (energy_level != '-') {
+          const $select = document.querySelector('#categorization_final');
+          $select.value = 'Yes';
+        }
+      }
+    } 
+  }
+</script>
+
+{% endblock %}

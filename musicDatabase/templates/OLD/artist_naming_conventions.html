@@ -1,0 +1,63 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Artist Naming Convention{% endblock %}
+
+{% block nav-title %}Artist Naming Convention{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="margin-top: 20px; display:flex; justify-content:space-between;">
+  <span>
+    <form action="{% url 'artist_naming_conventions_search' library.id %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row">
+        <table>
+          <tr>
+            <td style="width:233px; padding-right:5px">
+              <input id="search_name" class="form-control form-control-sm" name="search_name">
+            </td>
+            <td>
+              <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-search"></i></button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </form>
+  </span>
+  <span>
+    <a href="{% url 'artist_naming_convention_add' library.id %}" class="btn btn-sm btn-warning"><i class="fas fa-plus"></i> Convention</a>
+  </span>
+</div>
+<br>
+
+
+<!-- artists -->
+<div >
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Real Name</th>
+        <th style="width:150px">Use This Name</th>
+        <th>Variations</th>
+        <th style="width:90px"></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for artist in artists %}
+      <tr>
+        <td>{{artist.real_name}}</td>
+        <td style="color:green; width:150px"><strong>{{artist.use_this_artist_name}}</strong></td>
+        <td>{{artist.aliases}}</td>
+        <td>
+          <a href="{% url 'artist_naming_convention_edit' library.id artist.id %}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+          <a href="{% url 'artist_naming_convention_delete' library.id artist.id %}" class="btn btn-sm btn-danger"><i class="fas fa-skull-crossbones"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>   
+    
+  </table>
+</div>
+
+{% endblock %}

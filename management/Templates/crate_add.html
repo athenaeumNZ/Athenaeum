@@ -1,0 +1,101 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Add Crate to Database{% endblock %}
+
+{% block nav-title %}ADD CRATE TO DATABASE{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:40px; display:flex; justify-content:space-between">
+  <span>
+  </span>
+  <span>
+    <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Return to Crate Database</button>
+  </span>
+</div>
+
+<div style="margin-top: 45px; display:flex; justify-content:center">
+  <form action="{% url 'crate_add_submission' library.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row" style="width:800px;">
+      <div class="column" style="width:395px; margin-right:5px">
+        <!-- genre -->
+        <div class="form-group col-md-12">
+          <label for="genre" class="form-label">Genre</label>
+          <select id="genre" class="form-control" name="genre"  class="form-control" required>
+            <option selected>Choose...</option>
+            {% for genre in genres %}
+              <option value="{{ genre }}"> {{ genre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- vibe -->
+        <div class="form-group col-md-12">
+          <label for="vibe" class="form-label">Vibe</label>
+          <select id="vibe" class="form-control" name="vibe"  class="form-control" required>
+            <option selected>Choose...</option>
+            {% for vibe in vibes %}
+              <option value="{{ vibe }}"> {{ vibe }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- energy_level -->
+        <div class="form-group col-md-12">
+          <label for="energy_level" class="form-label">Energy Level</label>
+          <select id="energy_level" class="form-control" name="energy_level"  class="form-control" required>
+            <option selected>Choose...</option>
+            {% for energy_level in energy_levels %}
+              <option value="{{ energy_level }}"> {{ energy_level }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <!-- auto draft crate id -->
+        <div class="form-group col-md-12" style="margin-top:23px">
+          <input type="checkbox" id="autofill" name="autofill" onchange="autoCreateCrateID()"/>
+          <label for="autofill" class="form-label"> Auto Draft Crate ID</label>
+        </div>
+        <!-- crate_id --> 
+        <div class="form-group col-md-12">
+          <label for="crate_id" class="form-label">Crate ID</label>
+          <input type="text" id="crate_id" name="crate_id" class="form-control" oninput="this.value = this.value.toUpperCase()" required>
+        </div>
+      </div>
+      <div class="column" style="width:395px; margin-left:5px">
+        <!-- description -->
+        <div class="form-group col-md-12">
+          <label for="index" class="form-label">Description</label>
+          <textarea type="text" id="description" name="description" class="form-control" rows="10" cols="40"></textarea>
+        </div>   
+
+        <!--mix-->
+        <div class="form-group col-md-12">
+          <label for="mix" class="form-label">Mix</label>
+          <input class="form-control" id="mix" type="file" name="mix">
+        </div>
+        <br>
+      </div>
+    </div>
+    <div class="row" style="width:800px; ">
+      <!--submit-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:center">
+        <input type="submit" value="Add Crate" class="btn btn-secondary btn-sm" style="width:300px"> 
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  function autoCreateCrateID() {
+    document.getElementById("crate_id").value = 
+    document.getElementById("genre").value +
+    ' ' +
+    document.getElementById("vibe").value +
+    ' ' +
+    document.getElementById("energy_level").value;
+  }
+</script>
+{% endblock %}

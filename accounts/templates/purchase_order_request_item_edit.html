@@ -1,0 +1,126 @@
+{% extends 'library_base.html' %}
+
+{% block title %}On Order{% endblock %} 
+
+
+{% block nav-title %}{{ library }} <span style="color:green">ON ORDER</span>{% endblock %}
+
+{% block content %}
+
+<span style="margin-top:30px; display:flex; justify-content:space-between">
+  <span>
+  </span>
+  <span>
+    <a href="{% url 'purchase_order_request_item_edit_remove_all_items' library.id purchase_order_request.id purchase_order_request_item.id %}" class="btn btn-sm btn-danger">Remove all orders for {{ purchase_order_request_item.vinyl_release.catalog_number }}</a>
+  </span>
+</span>
+<span style="margin-top:5px; display:flex; justify-content:space-between">
+  <span>
+  </span>
+  <span>
+    <a href="{% url 'return_to_purchase_order_request' library.id purchase_order_request.id %}" class="btn btn-sm btn-secondary">Return to PO {{ purchase_order_request_item.id|stringformat:'04d' }}</a>
+  </span>
+</span>
+
+<!--#region items -->
+  <table class="table" style="margin-top:30px">
+    <thead>
+      <tr>
+        <th class="text-center" style="width:30px">IMG</th>
+        <th style="width:200px;" class="text-center">CATALOG</th>
+        <th class="text-center">Q</th>
+        
+        <th class="text-center">M</th>
+        <th class="text-center">O</th>
+        <th class="text-center"><i class="fas fa-arrow-right"></i> </th>
+        <th class="text-center">I</th>
+        <th class="text-center">P</th>
+        <th class="text-center">S</th>
+        <th class="text-center">RELEASED</th>
+        <th>ARTIST</th>
+        <th>TITLE</th>
+        <th>LABEL</th>
+      </tr>
+    </thead>
+    
+    <tbody>
+      {% for item in order_request_items %}
+        {% if item.stockpiled == True %}
+          <tr style="opacity: 0.2;">
+        {% else %}
+          <tr>
+        {% endif %}
+        
+          <!--#region img -->
+          {% if item.vinyl_release.artwork %}
+            <td><img src="{{ item.vinyl_release.artwork.url }}" width="25px" height="25px"></td>
+          {% else %}
+            <td></td>
+          {% endif %}
+          <!--#endregion -->
+          
+          <td style="width:200px"><a href="{% url 'release' library.id item.vinyl_release.id %}"class="btn btn-secondary btn-sm" style="width:200px;" target="_blank">{{ item.vinyl_release }}</a></td>
+
+          <td class="text-center" style="color:red">
+            {{ item.quantity }}
+          </td>
+
+          {% if search_member and search_member != 'Member...' %}
+            <td style="color:green" class="text-center">{{ item.order_request.member.membership_number }}</td>
+          {% else %}
+            <td class="text-center">{{ item.order_request.member.membership_number }}</td>
+          {% endif %}
+          
+
+          <!--#region ordered -->
+            {% if item.ordered == True %}
+              <td class="text-center"><i class="fas fa-check" style="color:green"></i></td>
+            {% else %}
+              <td class="text-center"<i class="fas fa-arrow-right" style="color:gray"></i></td>
+            {% endif %}
+          <!--#endregion --> 
+
+          <!--#region sent to invoice -->
+            {% if item.sent_to_invoice_receipt %}
+              <td class="text-center"><i class="fas fa-check" style="color:green"></i></td>
+            {% else %}
+              <td class="text-center"><i class="fas fa-arrow-right" style="color:gray"></i></td>
+            {% endif %}
+          <!--#endregion --> 
+                  
+          <!--#region invoiced -->
+            {% if item.invoiced %}
+              <td class="text-center"><i class="fas fa-check" style="color:green"></i></td>
+            {% else %}
+              <td class="text-center"><i class="fas fa-times" style="color:gray"></i></td>
+            {% endif %}
+          <!--#endregion --> 
+
+          <!--#region paid -->
+            {% if item.paid %}
+              <td class="text-center"><i class="fas fa-check" style="color:green"></i></td>
+            {% else %}
+              <td class="text-center"><i class="fas fa-times" style="color:gray"></i></td>
+            {% endif %}
+          <!--#endregion --> 
+
+          <!--#region stockpiled -->
+            {% if item.stockpiled %}
+              <td class="text-center"><i class="fas fa-check" style="color:green"></i></td>
+            {% else %}
+              <td class="text-center"><i class="fas fa-times" style="color:gray"></i></td>
+            {% endif %}
+          <!--#endregion -->  
+          
+          <td class="text-center">{{ item.vinyl_release.release_date|date:'d m y' }}</td>
+          <td>{{ item.vinyl_release.artist }}</td>
+          <td>{{ item.vinyl_release.release_title }}</td>
+          <td>{{ item.vinyl_release.label }}</td>  
+        </tr>
+        {% endfor %}
+    </tbody>
+  
+  </table>
+<!--#endregion -->
+
+{% endblock %}

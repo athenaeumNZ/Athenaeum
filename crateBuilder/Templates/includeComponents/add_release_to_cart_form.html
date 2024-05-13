@@ -1,0 +1,71 @@
+<form action="{% url 'add_release_to_cart' library.id %}" method="post"  enctype="multipart/form-data" style="margin:0px; padding:0px; display:inline;">
+    {% csrf_token %}
+    <input name="crate_id"                                value="{{ crate_id }}"                                            type="hidden">
+    <input name="crate_parent_id"                         value="{{ crate_parent_id }}"                                     type="hidden">
+    <input name="display_searched_releases"               value='{{ display_searched_releases }}'                           type="hidden">
+    <input name="display_stock"                           value="{{ display_stock }}"                                       type="hidden">
+    <input name="display_unallocated"                     value="{{ display_unallocated }}"                                 type="hidden">
+    <input name="member_id"                               value="{{ member.id }}"                                           type="hidden">
+    <input name="member_plate_id"                         value="{{ member_plate.id }}"                                     type="hidden">
+    <input name="member_release_id"                       value="{{ member_release_id }}"                                   type="hidden" >
+    {% if 'shopping_cart' in request.build_absolute_uri %}
+    <input name="previous_url"                            value="shopping_cart"                                             type="hidden">
+    {% elif 'plate_sorter' in request.build_absolute_uri %}
+    <input name="previous_url"                            value="plate_sorter"                                              type="hidden">
+    {% elif 'vinyl_release' in request.build_absolute_uri %}
+    <input name="previous_url"                            value="vinyl_release"                                             type="hidden">    
+    {% endif %}
+    <input name="previous_vertical_location"              value="{{ previous_vertical_location }}"                          type="hidden"           class="page_vertical_location">  
+    <!--#region search_artist -->
+    {% if search_artist and search_artist != 'None' %}
+    <input name="search_artist"                           value="{{ search_artist }}"                                       type="hidden"           id="search_artist">
+    {% endif %}
+    <!--#endregion -->
+    <!--#region search_title -->
+    {% if search_title  and search_title != 'None' %}
+    <input name="search_title"                            value="{{ search_title }}"                                        type="hidden"           id="search_title">
+    {% endif %}
+    <!--#endregion -->
+    <!--#region search_label -->
+    {% if search_label  and search_label != 'None' %}
+    <input name="search_label"                            value="{{ search_label }}"                                        type="hidden"            id="search_label">
+    {% endif %}
+    <!--#endregion -->
+    <!--#region search_catalog -->
+    {% if search_catalog and search_artist != 'None' %}
+    <input name="search_catalog"                          value="{{ search_catalog }}"                                      type="hidden"            id="search_catalog">
+    {% endif %}
+    <!--#endregion -->
+    {% if stock_item %}
+    <input name="stock_item_id"                           value="{{ stock_item.id }}"                                       type="hidden" >               
+    {% else %}
+    <input name="stock_item_id"                           value="{{ stock_item_id }}"                                       type="hidden" >               
+    {% endif %}
+    <!--#region vinyl_release_id -->
+    {% if plate %}
+    <input name="vinyl_release_id"                        value="{{ plate.related_release.id }}"                            type="hidden" >
+    {% elif vinyl_release %}
+    <input name="vinyl_release_id"                        value="{{ vinyl_release.id }}"                                    type="hidden" >
+    {% endif %}
+    <!--#endregion -->
+    {% if 'vinyl_shop' in request.build_absolute_uri %}
+    <button type="submit" class="btn btn-warning btn-sm" style="margin-right:5px">
+        <i class="fas fa-cart-plus"></i>
+    </button>
+    {% else %}
+    <button type="submit" class="btn btn-warning btn-sm" style="padding-left:15px; padding-right:15px">
+        <i class="fas fa-cart-plus" style="margin-right:5px"></i>
+        {% if stock_item.vinyl_release.plate_count == 1 %}
+        {{ stock_item.vinyl_release.plate_size }}
+        {% else %}
+        {{ stock_item.vinyl_release.plate_count }}x{{ stock_item.vinyl_release.plate_size }}
+        {% endif %}
+        Add to Shopping Cart $
+        {% if stock_item.price != 999.00 %}
+        {{ stock_item.price }} + G.S.T.
+        {% else %}
+        TBD
+        {% endif %}
+    </button>
+    {% endif %}
+</form>

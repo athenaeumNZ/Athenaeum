@@ -1,0 +1,18 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Return to Artist Naming Conventions{% endblock %}
+
+{% block nav-title %}RETURN TO Artist Naming Conventions{% endblock %}
+
+{% block content %}
+
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <a href="{% url 'artist_naming_conventions' library.id %}" id="auto_clicked_button" style="width:400px" class="btn btn-secondary btn-sm">Go to Artist Naming Conventions</a>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block title %}Login{% endblock %} 
+
+{% block content %}
+
+<div style="display:flex; justify-content: center">
+  <form method="post" action="{% url 'log_in_backend' %}" style="padding-top:100px">
+    {% csrf_token %}
+    <!--login_user_name-->
+    <div class="form-group col-md-12">
+      <label for="login_user_name" class="form-label">Username</label>
+      <input type="text" id="login_user_name" name="login_user_name" class="form-control" required>
+    </div>
+
+    <!--login_password-->
+    <div class="form-group col-md-12">
+      <label for="login_password" class="form-label">Password</label>
+      <input type="text" id="login_password" name="login_password" class="form-control" required>
+    </div>
+    <br>
+    
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+        <input type="submit" value="Login" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+{% endblock %}

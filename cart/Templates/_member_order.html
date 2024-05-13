@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+      <title>INV-{{ order.id|stringformat:"06d" }} {{ order.member }}</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+  </head>
+  <body style="background-color:whitesmoke">
+    <div style="left:0; position:relative; width:210mm; height:297mm; margin: 0mm auto; background-color:white; padding:0mm 5mm">
+      
+      <span style="display:flex; justify-content:space-between; text-transform:uppercase">
+        <span>
+          <span style="font-size:4rem"><strong>{{ order.library.name }}</strong></span><br>
+          <span style="font-size:1.4rem">{{ order.member.user.first_name }} {{ order.member.user.last_name }}</span><br>
+          <span style="font-size:1.2rem">Order:{{ order.id|stringformat:"06d" }}</span><br>
+          <span>{{ order.created|date:"d M Y" }}</span>
+          
+        </span>
+        <span class="d-print-none" style="margin:10mm 5mm 0mm 0mm; display:flex">
+          <span style="display:flex">
+          {% if order.on_order != True and library.librarian == user %}
+            <form action="{% url 'invoice_order_items_submission' library.id order.id %}" method="post" style="margin-left:5px">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">Ordered</button>
+            </form>
+          {% endif %}
+          </span>
+          
+        </span>
+      </span>
+
+
+
+
+
+      <span style="margin-top:10mm; display:flex; justify-content:center">
+        <div style="width:100%">
+          <table class="table" style="font-size:0.7rem">
+            <thead>
+              <tr>
+                <th class="d-print-none text-center">Stock</th>
+                <th class="d-print-none text-center">Ordered</th>
+                <th>Catalog</th>
+                <th></th>
+                <th>Artist</th>
+                <th>Title</th>
+                <th>Label</th>
+                <th style="text-align:center">Q</th>
+                <th style="text-align:center">Item Cost</th>
+                <th style="text-align:center">Sub Total</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for item in order_items %}
+                <tr>
+                  <td class="d-print-none" style="text-align:center">
+                    {% if item.vinyl_release.id in library_in_stock and item.ordered == False %}
+                      <span><a href="{% url 'invoice_order_get_item_found_in_stock_submission' library.id order.id item.id %}" style="color:blue;" onclick="return confirm('Move stock to members Stockpile crate before clicking OK!')">S</a></span>&#160;
+                    {% endif %}
+                    {% if item.vinyl_release.id in library_in_coming_stock and item.ordered == False %}
+                      <span><a href="{% url 'invoice_order_get_item_found_in_on_order_submission' library.id order.id item.id %}" style="color:green;" onclick="return confirm('Assign Incoming Stock?')">I</a></span>
+                    {% endif %}
+                  </td>
+                  {% if item.ordered %}
+                    <td style="color:green; font-size:0.5rem; text-align:center"  class="d-print-none"><i class="fas fa-check"></i></td>
+                  {% else %}
+                    <td style="text-align:center"  class="d-print-none"><a href="{% url 'invoice_order_item_submission' library.id order.id item.id %}" style="color:red"><i class="fas fa-times" style="font-size:0.5rem"></i></a></td>
+                  {% endif %}
+                  <td>
+                  {{ item.vinyl_release.catalog_number }}
+                  <span class="d-print-none">
+                    {% if order.on_order == False %}
+                      <span style="color:red">
+                        {{ item.vinyl_release.supplier.distributor_code }}
+                      </span>
+                    {% endif %}
+                  </span>
+                  {% if item.vinyl_release.plate_count == 1 %}
+                    <td class="text-center">{{ item.vinyl_release.plate_size }}</td>
+                  {% else %}
+                    <td class="text-center">{{ item.vinyl_release.plate_count }}x{{ item.vinyl_release.plate_size }}</td>
+                  {% endif %}
+                  </td>
+                  <td>{{ item.vinyl_release.artist }}</td>
+                  <td>{{ item.vinyl_release.release_title }}</td>
+                  <td>{{ item.vinyl_release.label }}</td>
+                  <td style="text-align:center"><a href="{% url 'invoice_item_update' library.id order.id item.id %}" style="color:black; text-decoration:none">{{ item.quantity }}</a></td>
+                  <td style="text-align:center; color:gray">${{ item.price }}</td>
+                  <td style="text-align:center">${{ item.get_cost }}</td>
+                </tr>
+              {% endfor %}
+              <tr>
+                <td class="d-print-none" colspan="2"></td>
+                <td style="text-align:right; font-size:1rem; width:20mm" colspan="7">Pre-Total (NZD)</td>
+                <td style="text-align:center; font-size:1rem; color:gray"><strong>${{ order.get_total_cost }}</strong></td>
+              </tr>
+              <tr>
+                <td class="d-print-none" colspan="2"></td>
+                <td style="text-align:right; font-size:1rem; width:20mm" colspan="7"></td>
+                <td style="text-align:center; font-size:1rem; color:gray"><strong>+ Shipping</strong></td>
+              </tr>
+              <tr>
+                <td class="d-print-none" colspan="2"></td>
+                <td style="text-align:right; font-size:1rem; width:20mm" colspan="7"></td>
+                <td style="text-align:center; font-size:1rem; color:gray"><strong>+ GST</strong></td>
+              </tr>
+              {% if order.credit_used != 0.00 %}
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td style="text-align:right; font-size:0.7rem; width:20mm; vertical-align:middle">Credit Used</td>
+                  <td style="text-align:right; font-size:0.7rem; vertical-align:middle">${{ order.credit_used }}</strong></td>
+                </tr>
+              {% endif %}
+            </tbody> 
+          </table>
+
+          
+
+          <div style="font-size:0.8rem; padding-top:5mm;">
+            <p>
+              <strong>This is not an invoice, you do not need to pay anything now.</strong>
+              These prices will differ slightly due to exchange rates at the time the invoice is issued.
+            </p>
+            
+          </div>
+        </div>
+      </span>
+    </div>
+  </body>
+</html>

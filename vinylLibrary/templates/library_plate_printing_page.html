@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <title>{{ plate }} Sleeve Insert</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+</head>
+<body style="font-size: 1.5rem; background-color:whitesmoke">
+  <div style="left:0; position:relative; width:210mm; height:297mm; margin: auto; background-color:white">
+    {% if plate.related_sub_crate.crate_type == 'Member' %}
+    <div>
+      <!-- selected tracks -->
+      {% for track in plate.related_vinyl_plate.related_vinyl_track.all %}
+        {% if track.crate_id in plate.related_sub_crate.sub_crate_id %}
+          {{track.index}}. <strong style="font-size: 3rem;">{{track.title}}</strong>
+          <br>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% elif plate.related_library_crate.crate_type == 'Trade' %}
+      <div style="font-family:coalition; color:rgb(231, 231, 231)">
+        <span style="font-size: 3rem; font-family:coalition">TRADE</span>
+      </div>
+    {% elif plate.related_library_crate.crate_type == 'Mix' %}
+      <div>
+        <!-- selected tracks -->
+        {% for track in plate.related_vinyl_plate.related_vinyl_track.all %}
+          {% if track.crate_id ==  plate.related_library_crate.related_crate.crate_id %}
+            {{track.index}}. <strong style="font-size: 3rem;">{{track.title}}</strong>
+            <br>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    <!-- release information -->
+    <div style="position:absolute; bottom:0; width:100%; padding:2mm; font-size:1.2rem">
+      <!-- catalog number -->
+      <section style="display:flex; justify-content:left">
+        <div class="text-left"><strong>{{ plate.related_vinyl_plate }}</strong></div>
+      </section>
+
+      <!-- release artist & title -->
+      <section style="display:flex; justify-content:left">
+        <div class="text-left">{{ plate.related_vinyl_plate.related_release.artist }} - {{ plate.related_vinyl_plate.related_release.release_title }}</div>
+      </section>
+
+      <section style="width:100%">
+        <div style="display:flex; justify-content:left">{{ plate.related_vinyl_plate.related_release.label }}</div>
+        <div style="display:flex; justify-content:left">{{ plate.related_vinyl_plate.related_release.release_date|date:"Y" }}</div>
+        <em><div style="display:flex; justify-content:left">{{ plate.related_vinyl_plate.related_release.country }}</div></em>
+      </section>
+
+      <!-- tracks -->
+      <section style="margin-top:2mm">
+        {% for track in plate.related_vinyl_plate.related_vinyl_track.all %}
+          <table class=" text-left">
+            <tbody>
+              <tr>
+              {% if track.crate_id ==  plate.related_library_crate.related_crate.crate_id %}
+                <tr style="color:black">
+              {% else %}
+                <tr style="color:black">
+              {% endif %}
+                <td style="width:8mm">{{ track.index }}.</td>
+                <td>{{track.artist}} - {{ track.title }}
+                  {% if track.catergorization_final == 'Yes' %}
+                    {% if track.crate_id %}
+                      - {{ track.crate_id }}
+                    {% endif %}
+                  {% endif %}                  
+                  {% if track.bpm %}
+                     - {{ track.bpm }}
+                  {% endif %}
+                  {% if track.key_in %}
+                    - {{ track.key_in }}
+                  {% endif %}
+                  </td>
+              </tr>
+            </tbody> 
+          </table>  
+        {% endfor %}
+      </section>
+
+      <!-- plate information -->
+      <section style="margin-top:20mm; font-size:1.5rem">
+        {% if plate.barcode %}
+        <div style=" display:flex; justify-content:right"><img src="{{ plate.barcode.url }}" height="100px"></div>
+        {% else %}
+          <div style=" display:flex; justify-content:right">{{ library.name }} :&nbsp;<span style="text-transform: uppercase;"> {{ plate.related_library_crate.related_crate.genre }} {{ plate.related_library_crate.related_crate.vibe }} {{ plate.related_library_crate.related_crate.get_energy_level_display }}</span></div>
+          <div style="text-transform:capitalize; display:flex; justify-content:right">Contributor : {{ plate.contributor.user.first_name }} {{ plate.contributor.user.last_name }} - {{ plate.contributor.membership_number }}</div>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+</body>
+</html>

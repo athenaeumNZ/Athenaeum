@@ -1,0 +1,144 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{ member.membership_number }} Crates{% endblock %} 
+
+{% block nav-title %}{{ member.membership_number }} CRATES{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:25px; margin-bottom:20px">
+  <span>
+  </span>
+  <span>
+  </span>
+</div>
+
+<!-- admin crates -->
+<div style="margin-top:30px">
+  <table class="table" style="margin-top:15px">
+    <thead>
+      <th style="width:250px;">Admin Crates</th>
+      <th></th>
+      <th></th>
+      <th style="text-align:center; width:230px">Options</th>
+      </tr>
+    </thead> 
+      <tbody>
+        <!-- Limbo Crate -->
+        <tr>
+          <td>
+            <a href="{% url 'member_limbo_crate' library.id member.id %}" class="btn btn-secondary btn-sm" style="width:250px" >Limbo</a>
+          </td>
+          {% if limbo_crate_count >= 1 %}
+            <td>{{ limbo_crate_count }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+          <td>{{ limbo_crate_description }}</td>
+          <td style="text-align:center">
+            <a href="{% url 'library_plate_add_select_plate' library.id limbo_crate.master_library_crate.id limbo_crate.id %}" style="margin-right:5px" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Plate</a>
+            <a href="{% url 'sub_crate_divider_insert_printing' library.id limbo_crate.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print" style="width:15px"></i></a>
+          </td>
+        </tr>
+        <!-- only for library_shop crates -->
+        {% if library.library_shop == user %}
+          {% for member_crate in admin_crates %}
+            {% if member_crate.plate_count >= 1 %}
+            <tr>
+              <td>
+                  <a href="{% url 'sub_crate' library.id member_crate.id member.id %}" class="btn btn-secondary btn-sm" style="width:250px" >{{ member_crate }}</a>
+              </td>
+              {% if member_crate.plate_count == 0 %}
+                <td></td>
+              {% else %}
+                <td>{{ member_crate.plate_count }}</td>
+              {% endif %}
+              <td>{{ member_crate.description }}</td>
+              <td style="text-align:center">
+                {% if 'En Route' not in member_crate.sub_crate_id %}
+                  <a href="{% url 'sub_crate_divider_insert_printing' library.id member_crate.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print" style="width:15px"></i></a>
+                {% endif %}
+                {% if 'Stockpile' in member_crate.sub_crate_id %}
+                  <a href="{% url 'shipping_request' library.id member_crate.id member.id %}" class="btn btn-warning btn-sm" ><i class="fas fa-truck"></i></a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+        <!-- other crates -->
+        
+        {% for member_crate in member_crates %}
+          {% if 'Stockpile' in member_crate.sub_crate_id or 'Limbo' in member_crate.sub_crate_id or 'To Library' in member_crate.sub_crate_id or 'En Route' in member_crate.sub_crate_id %}
+            {% if member_crate.plate_count >= 1 %}
+            <tr>
+              <td>
+                {% if 'Stockpile' in member_crate.sub_crate_id or 'On Order' in member_crate.sub_crate_id or 'Processing Order' in member_crate.sub_crate_id or 'Limbo' in member_crate.sub_crate_id or 'To Library' in member_crate.sub_crate_id or 'Placing Order' in member_crate.sub_crate_id or 'En Route' in member_crate.sub_crate_id %}
+                  <a href="{% url 'sub_crate' library.id member_crate.id member.id %}" class="btn btn-secondary btn-sm" style="width:250px" >{{ member_crate.name }}</a>
+                {% endif %}
+              </td>
+              {% if member_crate.plate_count == 0 %}
+                <td></td>
+              {% else %}
+                <td>{{ member_crate.plate_count }}</td>
+              {% endif %}
+              <td>{{ member_crate.description }}</td>
+              <td style="text-align:center">
+                {% if 'En Route' not in member_crate.sub_crate_id %}
+                  <a href="{% url 'sub_crate_divider_insert_printing' library.id member_crate.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print" style="width:15px"></i></a>
+                {% endif %}
+                {% if 'Stockpile' in member_crate.sub_crate_id %}
+                  <a href="{% url 'shipping_request' library.id member_crate.id member.id %}" class="btn btn-warning btn-sm" ><i class="fas fa-truck"></i></a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+<!-- members crates -->
+<div style="margin-top:30px">
+  <table class="table" style="margin-top:15px">
+    <thead>
+      <th style="width:250px;"><a href="{% url 'member_crate_add' user.member.library.id member.id %}" class="btn btn-warning btn-sm"><i class="fas fa-plus"></i> Personal Crate</a></th>
+      <th>    
+      </th>
+      <th></th>
+      <th style="text-align:center; width:230px">Options</th>
+      </tr>
+    </thead> 
+    <tbody>
+      {% for member_crate in member_crates %}
+        {% if 'Stockpile' in member_crate.sub_crate_id or 'Limbo' in member_crate.sub_crate_id or 'To Library' in member_crate.sub_crate_id or 'En Route' in member_crate.sub_crate_id %}
+        {% else %}
+          <tr>
+            <td>
+              <a href="{% url 'sub_crate' library.id member_crate.id member.id %}" class="btn btn-secondary btn-sm" style="width:250px" >{{ member_crate.name }}</a>
+            </td>
+            {% if member_crate.plate_count == 0 %}
+              <td></td>
+            {% else %}
+              <td>{{ member_crate.plate_count }}</td>
+            {% endif %}
+            <td>{{ member_crate.description }}</td>
+            <td style="text-align:center">
+              {% if member_crate.plate_count <= 0 %}
+                <a href="{% url 'sub_crate_delete' library.id member_crate.id member.id %}" class="btn btn-danger btn-sm"><i class="fas fa-skull-crossbones" style="width:15px"></i></a>           
+              {% else %}
+                <a class="btn btn-default btn-sm" target="_blank" style="background-color:whitesmoke" onclick="return alert('You must move all plates to other crates before you can delete a crate.')"><i class="fas fa-skull-crossbones" style="width:15px; color:white"></i></a>  
+              {% endif %}
+              <a href="{% url 'sub_crate_divider_insert_printing' library.id member_crate.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print" style="width:15px"></i></a>
+            </td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

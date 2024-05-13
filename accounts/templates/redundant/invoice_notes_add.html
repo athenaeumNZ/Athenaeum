@@ -1,0 +1,42 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Add Invoice Note{% endblock %}
+
+{% block nav-title %}ADD INV{{ invoice.id|stringformat:"04d" }} NOTES {% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="margin-top:10px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel</button>
+    </span>
+  </header>
+</div>
+
+
+<div style="display:flex; justify-content:center; margin-top:10px">
+  <form action="{% url 'invoice_notes_add_submission' library.id invoice.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+    {% csrf_token %}
+
+    <!--#region notes -->
+      <div class="form-group col-md-12">
+        <label for="notes" class="form-label">Notes</label>
+        <textarea id="notes" name="notes" class="form-control" cols="20" rows="5">{{ invoice.notes }}</textarea>
+      </div>
+    <!--#endregion -->     
+    
+    <!--#region submit-->
+      <div class="form-group col-md-12" style="margin-top:45px">
+        <input type="submit" value="Add Notes" class="btn btn-secondary btn-sm form-control"> 
+      </div>
+    <!--#endregion -->
+
+  </form>
+</div>
+
+{% endblock %}

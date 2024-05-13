@@ -1,0 +1,74 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Add Crate to {{ library.name }}{% endblock %}
+
+{% block nav-title %}ADD CRATE{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:40px; display:flex; justify-content:space-between">
+  <span>
+    <a href="{% url 'crate_database' library.id %}" class="btn btn-secondary btn-sm" style="width:200px" target="_blank">Crate Database</a>
+  </span>
+  <span>
+    <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Return to Crates</button>
+  </span>
+</div>
+
+{% if crates|length == 0 %}
+No crates
+{% else%}
+<div style="margin-top: 45px; display:flex; justify-content:center">
+    <form action="{% url 'library_crate_add_submission' library.id %}" method="post" style="width: 400px">
+      {% csrf_token %}
+      <!-- related_crate -->
+      <div class="form-group col-md-12">
+        <label for="related_crate" class="form-label">Crate ID&nbsp;&nbsp;</label>
+        <select id="related_crate" name="related_crate" class="form-control">
+          <option>Choose...</option>
+          {% for crate in crates %}
+          <option value="{{crate.crate_id}}" >{{crate.crate_id}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- library_id -->
+      <input type="hidden" value="{{ library.id }}" name="library_id">
+
+      <!-- library_name -->
+      <input type="hidden" value="{{ library.name }}" id="library_name">
+
+      <!-- crate_type -->
+      <input type="hidden" value="Mix" name="crate_type">
+
+      <!-- library_crate_id -->
+      <div class="form-group col-md-12" style="padding-top:5px">
+        <input type="checkbox" id="autofill" name="autofill" onchange="autoCreateCrateID()" />
+        <label for="autofill"> Auto Create Crate ID </label>
+      </div>
+
+      <div class="form-group col-md-12">
+        <label for="library_crate_id" class="form-label">Crate ID</label><br>
+        <input type="text" id="library_crate_id" name="library_crate_id" class="form-control" oninput="this.value = this.value.toUpperCase()">
+      </div>
+
+      <!--submit-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:center; margin-top:30px">
+        <input type="submit" value="Add Crate" class="btn btn-secondary btn-sm" style="width:300px;">
+      </div>
+        
+    </form>
+</div>
+{% endif %}
+<script>
+  function autoCreateCrateID() {
+    document.getElementById("library_crate_id").value = 
+    document.getElementById("related_crate").value +
+    ' ' +
+    document.getElementById("library_name").value.toUpperCase().slice(0, 3);
+    
+  }
+</script>
+
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Add Release{% endblock %}
+
+{% block nav-title %} {% if 'release_edit' in request.build_absolute_uri %}EDITING {{ release.catalog_number }}{% elif catalog_number_to_check %}ADDING {{ catalog_number_to_check }}{% else %}ADD Release{% endif %}{% endblock %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:center;">
+  <div class="row" style="display:flex; margin-top:80px">
+    {% if not catalog_number_to_check %}
+                <div class="column" style="width:900px; ">
+                  <!--#region catalog_number_to_check -->
+                  <form action="{% url 'release_add' library.id %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group col-md-12">
+                      <span style="display:flex; justify-content: space-between; align-items:center">
+                        <input type="text" id="catalog_number_to_check" name="catalog_number_to_check" style="width:500px" class="form-control" oninput="this.value = this.value.toUpperCase()" autofocus required>
+                        <input type="submit" class="btn btn-secondary btn-sm" value="Check Release Catalog Number" style="margin-left:10px; height:30px; width:300px">
+                      </span>
+                    </div>
+                  </form>
+                  <!--#endregion-->
+                </div>
+    
+    {% if 'release_edit' in request.build_absolute_uri %}
+                      <div class="column" style="width:450px;">
+                        {% if 'release_edit' in request.build_absolute_uri %}
+                        <form action="{% url 'release_edit_submission' library.id release.id %}" method="post" enctype="multipart/form-data">
+                        {% else %}
+                        <form action="{% url 'release_add_submission' library.id %}" method="post" enctype="multipart/form-data"></form>
+                        {% endif %}
+                        {% csrf_token %}
+                        <!--#region catalog_number-->
+                        {% if catalog_number_to_check %}
+                          <input type="hidden" value="{{ catalog_number_to_check }}" id="catalog_number" name="catalog_number" class="form-control" oninput="this.value = this.value.toUpperCase()" readonly>
+                        {% elif 'release_edit' in request.build_absolute_uri %}
+                          <div class="form-group col-md-12">
+                            <label for="catalog_number" class="form-label">!!! WARNING If you choose to update this release's catalog number to a catalog number that already is in use the form will not be able to complete !!!</label>
+                            <label for="catalog_number" class="form-label">Catalog Number</label>
+                            <input type="text" value="{{ release.catalog_number }}" id="catalog_number" name="catalog_number" class="form-control" oninput="this.value = this.value.toUpperCase()">
+                          </div>
+                        {% endif %}
+                        <!--#endregion -->
+                        <!--#region artist-->
+                        <div class="form-group col-md-12">
+                          <label for="artist" class="form-label">Artist/s</label>
+                          <input type="text" value="{% if 'release_edit' in request.build_absolute_uri %}{{ release.artist }}{% endif %}" id="artist" name="artist" class="form-control" required>
+                        </div>
+                        <!--#endregion -->
+                        <!--#region release_title-->
+                        <div class="form-group col-md-12">
+                          <label for="release_title" class="form-label">Release Title</label>
+                          <input type="text" value="{% if 'release_edit' in request.build_absolute_uri %}{{ release.release_title }}{% endif %}" id="release_title" name="release_title" class="form-control" required>
+                        </div>
+                        <!--#endregion -->
+                        <!--#region label-->
+                        <div class="form-group col-md-12">
+                          <label for="label" class="form-label">Label</label>
+                          <input type="text" value="{% if 'release_edit' in request.build_absolute_uri %}{{ release.label }}{% endif %}" id="label" name="label" class="form-control" required>
+                        </div>
+                        <!--#endregion -->
+                        <!--#region release_date-->
+                        <div class="form-group col-md-12">
+                          <label for="release_date" class="form-label">Release Date</label>
+                          <input type="date" value="{% if 'release_edit' in request.build_absolute_uri %}{{ release.release_date|date:'Y-m-d' }}{% endif %}" id="release_date" name="release_date" class="form-control" required>
+                        </div>
+                        <!--#endregion -->
+                      {% if 'release_edit' in request.build_absolute_uri %}
+                      </div>
+                      <div class="column" style="width:450px;">
+                      {% endif %}
+                        <!--#region artwork-->
+                        <div class="form-group col-md-12" style="padding-right:5px">
+                          <label for="artwork" class="form-label">Update Artwork</label>
+                          <input class="form-control" id="artwork" type="file" name="artwork" accept="image/*">
+                        </div>
+                        <!--#endregion -->
+                      {% if 'release_edit' not in request.build_absolute_uri %}
+                      </div>
+                      <div class="column" style="width:450px;">
+                      {% endif %}
+                        <div style="display:flex">
+                          <!--#region plate_size -->
+                          <div class="form-group col-md-6" style="padding-right:5px">
+                            <label for="plate_size" class="form-label">Plate Size </label>
+                            <select class="form-control" name="plate_size">
+                              {% if 'release_edit' in request.build_absolute_uri %}
+                              <option value="{{ release.plate_size }}" selected>{{ release.plate_size }}</option>
+                              {% else %}
+                              <option selected>Choose...</option>
+                              {% endif %}
+                              {% for plate_size in plate_sizes %}
+                              {% if plate_size.plate_size != release.plate_size %}
+                                <option value="{{ plate_size }}">{{ plate_size }}</option>
+                              {% endif %}
+                              {% endfor %}
+                            </select>
+                          </div>
+                          <!--#endregion -->
+                          <!--#region plate_count -->
+                            <div class="form-group col-md-6" style="padding-right:5px">
+                              <label for="plate_count" class="form-label">Plate Count</label>
+                              <input type="number" value="{% if 'release_edit' in request.build_absolute_uri %}{{ release.plate_count }}{% endif %}" value="1" id="plate_count" name="plate_count" class="form-control">
+                            </div>
+                          <!--#endregion -->
+                        </div>
+                        <!--#region distributor -->
+                        <div class="form-group col-md-48" style="padding-right:5px">
+                          <label for="distributor" class="form-label">Distributor</label>
+                          <select id="distributor" name="distributor" class="form-control" >
+                            {% if 'release_edit' in request.build_absolute_uri %}
+                            <option value="{{ release.distributor.id }}" selected>{{ release.distributor.name }}</option>
+                            {% else %}
+                            <option selected>Choose...</option>
+                            {% endif %}
+                            {% for distributor in distributors %}
+                            {% if distributor.name != release.distributor.name %}
+                              <option value="{{ distributor.id }}">{{ distributor.name }}</option>
+                            {% endif %}
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <!--#endregion -->
+                        <!--#region stock_estimation -->
+                        <div class="form-group col-md-12" style="padding-right:5px">
+                          <label for="stock_estimation" class="form-label">Stock Estimation at Distributor</label>
+                          <input type="number" value="{% if 'release_edit' in request.build_absolute_uri %}{{ release.stock_estimation }}{% endif %}" id="stock_estimation" name="stock_estimation" class="form-control" required>
+                        </div>
+                        <!--#endregion --> 
+                        <!--#region cost_price -->
+                        <div class="form-group col-md-12" style="padding-right:5px">
+                          <label for="cost_price" class="form-label">Cost Price, in Distributor's Currency</label>
+                          <input type="number" value="{% if 'release_edit' in request.build_absolute_uri %}{{ release.cost_price }}{% endif %}" step=".01" id="cost_price" name="cost_price" class="form-control">
+                        </div>
+                        <!--#endregion -->
+                        <!--#region submit-->
+                        <div class="form-group col-md-12" style="margin-top:45px">
+                          <input type="submit" value="Continue" class="btn btn-secondary btn-sm form-control"> 
+                        </div>
+                        <!--#endregion -->
+                      </div>
+                    </div>
+                  </form>    
+  {% endif %}
+
+</div>
+
+{% endblock %}

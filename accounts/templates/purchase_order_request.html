@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+      <title>PO{{ purchase_order_request.id|stringformat:"04d" }} TO: {{ purchase_order_request.distributor }} FROM: {{ purchase_order_request.library }}</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+      <style>
+        @media print
+          {    
+              .no-print, .no-print *
+              {
+                  display: none !important;
+              }
+          }
+      </style>
+    </head>
+  <body style="background-color:whitesmoke">
+    <div style="left:0; position:relative; width:210mm; height:297mm; margin: 0mm auto; background-color:white; padding:0mm 5mm">
+      <span style="display: inline-block;">
+        <!--#region header -->
+          <span style="display:flex;text-transform:uppercase; align-items: center;">
+            <span style="font-size:4rem">
+              <strong>{{ purchase_order_request.library.name }}</strong>
+            </span>
+            <span style="padding-left:10mm; font-size:1rem">
+              Purchase Order Request PO{{ purchase_order_request.id|stringformat:"04d" }}
+            </span>
+          </span>
+          <span style="text-transform:uppercase;">
+            <span style="display:flex; justify-content:space-between">
+              <span>
+                <span style="font-size:1.4rem">{{ purchase_order_request.distributor.name }}</span><br>
+              </span>
+              <span>
+                {% if not purchase_order_request.all_filled_or_unavailable %}
+                  <a href="{% url 'purchase_order_request_items_filled_submission' library.id purchase_order_request.id %}" class="btn btn-sm btn-danger no-print">All Items Filled</a>
+                {% endif %}
+              </span>
+            </span>
+            <span>
+              {{ purchase_order_request.created|date:"d M Y" }}
+            </span>
+          </span>
+        <!--#endregion -->
+
+        <!--#region items -->
+          <span style="margin-top:10mm; display:flex; justify-content:center; width:100%">
+            <table class="table" style="font-size:0.7rem">
+              <!--#region table headers -->
+                <thead>
+                  <tr>
+                    <th colspan="2">Catalog Number</th>
+                    <th>Artist</th>
+                    <th>Title</th>
+                    <th>Label</th>
+                    <th class="text-center">Release Date</th>
+                    <th class="text-center" style="width:18mm">Cost</th>
+                    <th class="text-center">Quantity</th>
+                    <th class="text-center no-print">Filled</th>
+                    <th class="no-print"></th>
+                  </tr>
+                </thead>
+              <!--#endregion -->
+
+              <tbody>
+                <!--#region items line by line -->
+                  {% for item in purchase_order_request_items %}
+                    {% for i in item.order_request_item_purchase_order_request_item.all %}
+                      {% if forloop.first %}
+                        {% if i.purchase_order_request_item == item and i.unavailable == True %}
+                          <tr style="opacity:0.2; text-decoration:line-through">
+                        {% else %}
+                          <tr>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+
+                      <!--#region catalog -->
+                        <td>{{ item.vinyl_release.catalog_number }}</td>
+                      <!--#endregion -->
+
+                      <!--#region release type -->
+                        {% if item.vinyl_release.plate_count == 1 %}
+                          <td class="text-center">{{ item.vinyl_release.plate_size }}</td>
+                        {% else %}
+                          <td class="text-center">{{ item.vinyl_release.plate_count }}x{{ item.vinyl_release.plate_size }}</td>
+                        {% endif %}
+                      <!--#endregion -->
+
+                      <!--#region artist, title, label, release date -->
+                        <td>{{ item.vinyl_release.artist }}</td>
+                        <td>{{ item.vinyl_release.release_title }}</td>
+                        <td>{{ item.vinyl_release.label }}</td>
+                        <td class="text-center">{{ item.vinyl_release.release_date|date:"d m Y" }}</td>
+                      <!--#endregion -->
+
+                      <!--#region cost -->
+                        <td class="text-center">
+                          {% if purchase_order_request.distributor.currency == 'GBP' %}
+                            £
+                          {% elif purchase_order_request.distributor.currency == 'EUR' %}
+                            €
+                          {% else %}
+                            $
+                          {% endif %}
+                          {{ item.vinyl_release.cost_price }}
+                        </td>
+                      <!--#endregion -->
+
+                      <!--#region quantity -->
+                        <td class="text-center">
+                          {{ item.quantity }}
+                        </td>
+                      <!--#endregion -->
+
+                      <!--#region filled -->
+                        {% if item.filled %}
+                          <td class="text-center no-print"><i class="fas fa-check" style="color:green; font-size:0.5rem;"></i></td>
+                        {% else %}
+                          <td class="text-center no-print"><a href="{% url 'purchase_order_request_item_filled_submission' library.id purchase_order_request.id item.id %}"><i class="fas fa-times" style="color:red; font-size:0.5rem"></i></a></td>
+                        {% endif %}
+                      <!--#endregion -->
+                      
+                      <td class="text-center no-print">
+                        <a href="{% url 'purchase_order_request_item_edit' library.id purchase_order_request.id item.id %}">Edit</a>
+                      </td>
+                    </tr>
+
+                    {% for i in item.order_request_item_purchase_order_request_item.all %}
+                      {% if forloop.first %}
+                        {% if i.purchase_order_request_item == item and i.unavailable == True %}
+                          <tr>
+                            <td colspan="11" style="padding:5mm">
+                              {{ i.note }}
+                            </td>
+                          </tr>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endfor %}
+                <!--#endregion -->
+              </tbody>
+            </table>
+          </span>
+        <!--#endregion -->
+        <span style="font-size:0.8rem; text-transform:none"><em>
+          Please let me know when these items are on order for me or if any are unavailable.
+          Where price is set to 0.00, please provide price.
+          Apologies if the price was previously stated clearly.
+        </em>
+        </span>
+      </span>
+    </div>
+  </body>
+</html>

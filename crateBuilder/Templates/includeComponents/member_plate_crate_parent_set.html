@@ -1,0 +1,7 @@
+<form action="{% url 'member_plate_crate_parent_set' library.id %}" method="post"  enctype="multipart/form-data" style="margin:0px; padding:0px; display:inline;">
+    {% csrf_token %}
+    {% include 'form_variables.html' %}
+    <input value="{{ member_plate.crate_parent.id }}" type="hidden" name="desired_crate_parent_option_crate_parent_id">
+    <input value="{{ member_plate.id }}" type="hidden" name="member_plate_id">
+    <button type="submit" class="btn btn-sm">Keep in This Crate</button>
+</form>

@@ -1,0 +1,29 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Return Crate{% endblock %}
+
+{% block nav-title %}Return Crate{% endblock %}
+
+{% block content %}
+<!-- header -->
+<div style="padding-top:30px; display:flex; justify-content:space-between">
+  <span>
+  </span>
+  <span>
+    <button class="btn btn-secondary btn-sm" onclick="history.back()" style="width:200px">Cancel Return</button>
+  </span>
+</div>
+
+<div style="padding-top: 180px; display:flex; justify-content:center">
+    <form action="{% url 'return_crate_submission' library.id sub_crate.id %}" method="post" style="width:400px">
+      {% csrf_token %}
+      <span>
+        <a href="{% url 'sub_crate' library.id sub_crate.master_library_crate.id sub_crate.id user.member.id %}" class="btn btn-secondary btn-sm" target="_blank"><strong style="font-size: 2rem;">{{ sub_crate.plate_count }}</strong><span>&nbsp;&nbsp;&nbsp;Plates</span></a>
+      </span>
+      <!--submit-->
+      <div class="form-group col-md-12" style="display:flex; justify-content:center; margin-top:30px">
+        <input type="submit" value="Return {{ sub_crate }}" class="btn btn-secondary btn-sm" style="width:400px;">
+      </div>
+    </form>
+</div>
+{% endblock %}

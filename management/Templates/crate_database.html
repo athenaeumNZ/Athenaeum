@@ -1,0 +1,232 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Crate Database{% endblock %} 
+
+{% block nav-title %}CRATE DATABASE{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:30px;">
+  <!-- search -->
+  <span style="display:flex; justify-content:space-between">
+    <div class="row">
+      <div class="column">
+        <table>
+          <form action="{% url 'crate_database_search' library.id %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <tbody>
+            <tr>
+              <!-- search crate id -->
+              <td style="width:180px; padding-right:5px">
+                {% if search_crate_id and search_crate_id != 'Crate ID...' %}
+                  <select id="search_crate_id" style="width:180px; height:30px; border:3px solid green " name="search_crate_id">
+                {% else %}
+                  <select id="search_crate_id" style="width:180px; height:30px;" name="search_crate_id">
+                {% endif %}
+                  {% if search_crate_id %}
+                    <option selected>{{ search_crate_id }}</option>
+                    <option></option>
+                  {% else %}
+                    <option selected>Crate ID...</option>
+                  {% endif %}
+                  {% for crate in crates %}
+                    <option value="{{ crate.crate_id }}">{{ crate.crate_id }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <!-- search genre -->
+              <td style="width:180px; padding-right:5px">
+                {% if search_genre and search_genre != 'Genre...' %}
+                  <select id="search_genre" style="width:180px; height:30px; border:3px solid green " name="search_genre">
+                {% else %}
+                  <select id="search_genre" style="width:180px; height:30px;" name="search_genre">
+                {% endif %}
+
+                {% if search_genre %}
+                  <option selected>{{ search_genre }}</option>
+                  <option></option>
+                  {% for genre in genres %}
+                    <option value="{{ genre }}">{{ genre }}</option>
+                  {% endfor %}
+                {% else %}
+                  <option>Genre...</option>
+                  {% for genre in genres %}
+                    <option value="{{ genre }}">{{ genre }}</option>
+                  {% endfor %}
+                {% endif %}
+              </td>
+
+              <!-- search vibe -->
+              <td style="width:180px; padding-right:5px">
+                {% if search_vibe and search_vibe != 'Vibe...'%}
+                  <select id="search_vibe" style="width:180px; height:30px; border:3px solid green " name="search_vibe">
+                {% else %}
+                  <select id="search_vibe" style="width:180px; height:30px;" name="search_vibe">
+                {% endif %}
+
+                {% if search_vibe %}
+                  <option selected>{{ search_vibe }}</option>
+                  <option></option>
+                  {% for vibe in vibes %}
+                    <option value="{{ vibe }}">{{ vibe }}</option>
+                  {% endfor %}
+                {% else %}
+                  <option>Vibe...</option>
+                  {% for vibe in vibes %}
+                    <option value="{{ vibe }}">{{ vibe }}</option>
+                  {% endfor %}
+                {% endif %}
+              </td>
+
+              <!-- search energy_level -->
+              <td style="width:180px; padding-right:5px">
+                {% if search_energy_level and search_energy_level != 'Energy Level...'%}
+                  <select id="search_energy_level" style="width:180px; height:30px; border:3px solid green " name="search_energy_level">
+                {% else %}
+                  <select id="search_energy_level" style="width:180px; height:30px;" name="search_energy_level">
+                {% endif %}
+
+                {% if search_energy_level %}
+                  <option selected>{{ search_energy_level }}</option>
+                  <option></option>
+                  {% for energy_level in energy_levels %}
+                    <option value="{{ energy_level }}">{{ energy_level }}</option>
+                  {% endfor %}
+                {% else %}
+                  <option>Energy Level...</option>
+                  {% for energy_level in energy_levels %}
+                    <option value="{{ energy_level }}">{{ energy_level }}</option>
+                  {% endfor %}
+                {% endif %}
+              </td>
+
+              <td style="width:180px; padding-right:5px">
+                {% if search_description %}
+                  <input name="search_description" value="{{ search_description }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Search Description..." name="search_description">
+                {% endif %}
+              </td>
+              <td>
+                <button type="submit" class="btn btn-secondary btn-sm" style="height:30px; margin-right:5px"><i class="fas fa-search"></i></button>
+              </td>
+              <td>
+                <a href="{% url 'crate_database' library.id %}" class="btn btn-secondary btn-sm" style="height:30px;">Reset Search</a>
+              </td>
+            </tr>
+          </tbody>
+          </form>
+        </table>
+      </div>
+    </div>
+  </span>
+  <!-- options -->
+  <span>
+    <a href="{% url 'crate_add' library.id %}" class="btn btn-warning btn-sm"><i class="fas fa-plus"></i> Crate</a>
+  </span>
+</div>
+
+<!-- other crates -->
+<div style="padding-top:30px">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>CRATE ID</th>
+        <th>DESCRIPTION</th>
+        <th style="width:250px"></th>  
+        <th></th>  
+      </tr>
+    </thead>   
+    {% for crate in other_crates %}
+    <tbody>
+      <tr>
+        <td>{{ crate.crate_id }}</td>
+        <td>{{ crate.description }}</td>
+        <td></td>
+        <td><a class="btn btn-warning btn-sm" href="{% url 'crate_edit' library.id crate.id %}"><i class="fas fa-edit"></i></a></td>
+      </tr>
+    </tbody>   
+    {% endfor %}
+  </table>
+</div>
+
+<!-- crates -->
+<div style="padding-top:30px">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>CRATE ID</th>
+        <th>DESCRIPTION</th>
+        <th style="width:250px"></th>  
+        <th></th>  
+      </tr>
+    </thead>   
+    {% for crate in crates %}
+    <tbody>
+      <tr>
+        <td>{{ crate.crate_id }}</td>
+        <td>{{ crate.description }}</td>
+        {% if crate.mix %}
+          <td>
+            <audio controls controlsList="noplaybackrate nodownload novolume" style="width:250px;height:32px; float:right; background-color:whitesmoke" preload="none">
+              <source src="{{ crate.mix.url }}" type="audio/mp3" class='audios'>
+            </audio>
+          </td>
+        {% else %}
+          <td class="text-center">
+            No Audio
+          </td>
+        {% endif %}
+        <td><a class="btn btn-warning btn-sm" href="{% url 'crate_edit' library.id crate.id %}"><i class="fas fa-edit"></i></a></td>
+      </tr>
+    </tbody>   
+    {% endfor %}
+  </table>
+</div>
+<br>
+
+<!-- pagination-->
+<div style="padding-top: 5px;">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if crates.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ crates.previous_page_number }}">&lsaquo;</a></li>
+          {% if crates.number > 2 %}
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+              {% if crates.number > 3 %}
+                <span class="page-link">...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      {% for num in crates.paginator.page_range %}
+        {% if crates.number == num %}
+          <li class="page-item"><a class="page-link active" href="?page={{ num }}">{{ num }}</a></li>
+        {% elif num > crates.number|add:'-2' and num < crates.number|add:'2' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if crates.has_next %}
+        {% if crates.number < crates.paginator.num_pages|add:'-2' %}
+          <span class="page-link">...</span>
+          <li class="page-item"><a class="page-link" href="?page={{ crates.paginator.num_pages }}">{{ crates.paginator.num_pages }}</a></li>
+        {% elif crates.number < crates.paginator.num_pages|add:'-1' %}
+          <li class="page-item"><a class="page-link" href="?page={{ crates.paginator.num_pages }}">{{ crates.paginator.num_pages }}</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link" href="?page={{ crates.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav> 
+</div>
+
+<script>
+  var previousAudio;
+    document.addEventListener('play', function(e){
+      if(previousAudio && previousAudio != e.target){
+          previousAudio.pause();
+      }
+      previousAudio = e.target;
+    }, true);
+</script>
+
+{% endblock %}

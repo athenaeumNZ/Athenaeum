@@ -1,0 +1,33 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Update {{ purchase_order_item }}{% endblock %}
+
+{% block nav-title %}Update {{ purchase_order_item }}{% endblock %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:center">
+<div style="max-width: 400px; margin-top:150px">
+  <form action="{% url 'purchase_order_order_item_update_submission' library.id purchase_order.id purchase_order_item.id %}" method="post">
+    {% csrf_token %}
+
+    <!-- quantity -->
+    <div class="form-group col-md-12">
+      <label>Quantity</label>
+      <input type="number" class="form-control" name="quantity" value="{{ purchase_order_item.quantity }}">
+    </div>    
+    <!-- price -->
+    <div class="form-group col-md-12">
+      <label>Price</label>
+      <input type="number" class="form-control" step="0.01" name="price" value="{{ purchase_order_item.price }}">
+    </div>    
+    <br>
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Update" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+</div>
+{% endblock %}

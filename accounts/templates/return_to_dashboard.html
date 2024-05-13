@@ -1,0 +1,17 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Return to Dashboard{% endblock %}
+
+{% block nav-title %}RETURN TO DASHBOARD{% endblock %}
+
+{% block content %}
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <a href="{% url 'dashboard' library.id %}" id="auto_clicked_button" style="width:400px" class="btn btn-default btn-sm">Return to Dashboard</a>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

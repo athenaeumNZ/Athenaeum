@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Edit {{ track }}{% endblock %}
+{% block content %}
+
+<header>
+  <h1>EDIT {{ track }}</h1>
+</header>
+
+<div class="container" style="max-width: 400px;">
+  <form action="{% url 'track_edit_submission' library.id release.id track.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!--#region artist-->
+    <div class="form-group col-md-12">
+      <label for="artist" class="form-label">Artist</label>
+      <input type="text" id="artist" name="artist" class="form-control" value="{{ track.artist }}">
+    </div>
+    <!--#endregion -->
+    <!--#region title-->
+    <div class="form-group col-md-12">
+      <label for="title" class="form-label">Title</label>
+      <input type="text" id="title" name="title" class="form-control" value="{{ track.title }}">
+    </div>
+    <!--#endregion -->
+    <!--#region index -->
+    <div class="form-group col-md-12">
+      <label for="label" class="form-label">Index</label>
+      <input id="index" class="form-control" name="index" value="{{ track.index }}">
+    </div>
+    <!--#endregion -->
+    <!--#region remixer -->
+    <div class="form-group col-md-12">
+      <label for="remixer" class="form-label">Remixer - if applicable</label>
+      <input type="text" id="remixer" name="remixer" class="form-control" value="{{ track.remixer }}">
+    </div>
+    <!--#endregion -->
+    <!--#region bpm -->
+    <div class="form-group col-md-12">
+      <label for="bpm" class="form-label">BPM - if known</label>
+      <input type="text" id="bpm" name="bpm" class="form-control" value="{% if track.bpm != None %}{{ track.bpm }}{% else %}{% endif %}">      
+    </div>
+    <br>
+    <!--#endregion -->
+    <!--#region plate -->
+    <div class="form-group col-md-12">
+      <label for="vinyl_plate_id" class="form-label">Plate</label>
+      <select class="form-control" name="vinyl_plate_id">
+        {% if track.related_vinyl_plate != None %}
+        <option value="{{ track.related_vinyl_plate.id }}" selected>{{ track.related_vinyl_plate.plate_index }}</option>
+        {% endif %} 
+        {% for plate in plates %}
+        {% if track.related_vinyl_plate.plate_index != plate.plate_index %}
+        <option value="{{ plate.id }}">{{ plate.plate_index }}</option>
+        {% endif %}
+        {% endfor %}
+        <option value="add_plate">New Plate</option>
+      </select> 
+    </div>
+    <br>
+    <!--#endregion -->
+    <!--#region submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Edit {{ track }}" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+    <!--#endregion -->
+  </form>
+</div>
+
+{% endblock %}

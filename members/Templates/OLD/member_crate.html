@@ -1,0 +1,131 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{ sub_crate }}{% endblock %} 
+
+{% block nav-title %}{{ member_crate }}{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:25px;">
+  <span>
+
+  </span>
+  <span style="display:flex; align-items:center">
+      <span style="padding:0px 5px; border: 1px solid black; margin-right:5px">Plate Count: {{ plate_count }}</span>
+      <a href="" style="margin-right:5px" class="btn btn-warning btn-sm"><i class="fas fa-plus"></i> Plate</a>
+      <a href="" style="margin-right:5px" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Sub Crate</a>
+      <a href="" class="btn btn-danger btn-sm" target="_blank"><i class="fas fa-print"></i> All</a>
+  </span>
+</div>
+
+
+<!-- plates -->
+{% for plate in crate_plates %}
+  <div style="border: 0.1px solid black; margin:30px 0px; padding:10px">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:200px;" class="text-center">CATALOG</th>
+          <th>RELEASE TYPE</th>
+          <th class="text-center">SIZE</th>
+          <th>COLOUR</th>
+          <th>COVER</th>
+          <th class="text-center">CONDITION</th>
+          <th>CONTRIBUTOR</th>
+          <th>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% if plate.related_vinyl_plate.related_release.release_date_confirmed %}
+            <td style="width:200px"><a href="{% url 'release' library.id plate.related_vinyl_plate.related_release.id %}"class="btn btn-secondary btn-sm" style="width:200px" target="_blank">{{ plate.related_vinyl_plate }}</a></td>
+          {% else %}
+            <td style="width:200px"><a href="{% url 'release' library.id plate.related_vinyl_plate.related_release.id %}"class="btn btn-warning btn-sm" style="width:200px" target="_blank">{{ plate.related_vinyl_plate }}</a></td>
+          {% endif %}
+          <td>{{ plate.release_type }}</td>
+          <td class="text-center">{{ plate.plate_size }}</td>
+          <td>{{ plate.vinyl_colour }}</td>   
+          <td>{{ plate.cover }}</td>
+          <td class="text-center">{{ plate.media_condition }}</td>
+          <td style="text-transform:capitalize">{{ plate.contributor.dj_name }}</td>
+          <td style="width:130px" class="text-center" style="display:flex" >
+            <a href="" class="btn btn-warning btn-sm"><i class="fas fa-dolly"></i></a>
+            <a href="" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+            <a href="" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-print" style="width:15px"></i></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="table" style="color:gray">
+      <thead>
+        <tr style="background-color: #fcfbfb">
+          <th style="width:15px"></th>
+          <th>Artist</th>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>Vibe</th>
+          <th style="text-align:center">Energy</th>
+        </tr>
+      </thead>
+      {% for track in plate.related_vinyl_plate.related_vinyl_track.all %}
+        <tbody>
+          {% if track.crate_id ==  plate.related_library_crate.related_crate.crate_id %}
+          <tr style="color:green">
+        {% else %}
+          <tr>
+        {% endif %}
+            <td style="width:15px">{{track.index}}.</td>
+            <td style="width: auto;">{{track.artist}}</td>
+            <td>{{track.title}}</td>
+            {% if track.catergorization_final == 'Yes' %}
+              <td>{{track.genre}}</td>
+              <td>{{track.vibe}}</td>
+              <td style="text-align:center">{{track.energy_level}}</td>
+            {% else %}
+              <td style="color:red">{{track.genre}}</td>
+              <td style="color:red">{{track.vibe}}</td>
+              <td style="color:red; text-align:center">{{track.energy_level}}</td>
+            {% endif %}
+          </tr>
+        </tbody>   
+      {% endfor %}
+    </table>
+  </div>
+{% endfor %}
+
+<!-- pagination-->
+<div style="padding-top: 5px;">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if crate_plates.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ crate_plates.previous_page_number }}">&lsaquo;</a></li>
+          {% if crate_plates.number > 2 %}
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+              {% if crate_plates.number > 3 %}
+                <span class="page-link">...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      {% for num in crate_plates.paginator.page_range %}
+        {% if crate_plates.number == num %}
+          <li class="page-item"><a class="page-link active" href="?page={{ num }}">{{ num }}</a></li>
+        {% elif num > crate_plates.number|add:'-2' and num < crate_plates.number|add:'2' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if crate_plates.has_next %}
+        {% if crate_plates.number < crate_plates.paginator.num_pages|add:'-2' %}
+          <span class="page-link">...</span>
+          <li class="page-item"><a class="page-link" href="?page={{ crate_plates.paginator.num_pages }}">{{ crate_plates.paginator.num_pages }}</a></li>
+        {% elif crate_plates.number < crate_plates.paginator.num_pages|add:'-1' %}
+          <li class="page-item"><a class="page-link" href="?page={{ crate_plates.paginator.num_pages }}">{{ crate_plates.paginator.num_pages }}</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link" href="?page={{ crate_plates.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav> 
+</div>
+{% endblock %}

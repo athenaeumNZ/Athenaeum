@@ -1,0 +1,270 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Move {{ library_plate.related_vinyl_plate }}{% endblock %}
+
+{% block nav-title %}<span style="color:green">MEMBER PLATE MOVE</span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="margin-top:50px; display:flex; justify-content:space-between">
+  <span>
+  </span>
+  <span>
+    <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel Move</button>
+  </span>
+</div>
+
+<div style="margin-top:100px; display:flex; justify-content:space-between">
+
+    <!--#region existing crate-->
+    <span style="width:300px">
+      <h2>Existing Crate</h2>
+
+      <div style="display:flex; justify-content:center">
+        <form action="{% url 'member_plate_move_submission' library.id sub_crate.id library_plate.id %}" method="post" enctype="multipart/form-data" style="width:300px">
+          {% csrf_token %}
+      
+          {% if library.library_shop == user %}
+            <!-- related_sub_crate_id -->
+            <div class="form-group col-md-12">
+              <label for="related_sub_crate_id" class="form-label">Destination</label>
+              <select id="related_sub_crate_id" class="form-control" name="related_sub_crate_id" onchange="movingWhere(this)">
+                <option selected value="{{ sub_crate.title }}" readonly>{{ sub_crate.title }} </option>
+                <option>-------</option>
+                {% for crate in library_shop_crate_choices %}
+                  <option value="{{ crate.title }}">{{ crate.title }}</option>
+                {% endfor %}
+                <option>-------</option>
+                {% for crate in member_crate_choices %}
+                  <option value="{{ crate.title }}">{{ crate.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+      
+          {% elif user.member.membership_number in sub_crate.sub_crate_id %}
+            <!--related_sub_crate_id-->
+            <div class="form-group col-md-12">
+              <label for="related_sub_crate_id" class="form-label">Destination</label>
+              <select id="related_sub_crate_id" class="form-control" name="related_sub_crate_id" onchange="movingWhere(this)">
+                <option selected>Choose...</option>
+                {% for crate in member_crate_choices %}
+                  <option value="{{ crate.title }}">{{ crate.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endif %}
+          <br>
+      
+          <!--submit-->
+          <div class="form-group col-md-12" style="display:flex; justify-content:center">
+            <input id="not_to_library" type="submit" value="Move {{ library_plate.related_vinyl_plate }}" class="btn btn-secondary btn-sm" style="width:300px; display: block;">
+            <input id="to_library" type="submit" value="Move {{ library_plate.related_vinyl_plate }} To Library" class="btn btn-danger btn-sm" style="width:300px; display: none;" onclick="return confirm('You are choosing to add this plate to {{ library }}! Only click OK if you are sure you want to do this!')">
+          </div>
+        </form>
+      </div>
+    </span>
+    <!--#endregion -->
+
+    <!--#region advanced move-->
+    <span style="width:300px">
+      {% if library.library_shop == user %}
+        <div>
+          <h2>Advanced Move</h2>
+
+          <div style="display:flex; justify-content:center">
+            <form action="{% url 'member_plate_advanced_move_submission' library.id sub_crate.id library_plate.id %}" method="post" enctype="multipart/form-data" style="width:380px">
+              {% csrf_token %}
+        
+                <!-- related_sub_crate_id -->
+                <div class="form-group col-md-12">
+                  <label for="related_sub_crate_id" class="form-label">Destination</label>
+                  <select id="related_sub_crate_id" class="form-control" name="related_sub_crate_id">
+                    <option>Choose...</option>
+                    {% for crate in advanced_sub_crate_options %}
+                      <option value="{{ crate.id }}">{{ crate }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <!-- member -->
+                <div class="form-group col-md-12">
+                  <label for="member" class="form-label">Change Member</label>
+                  <select id="member" class="form-control" name="member">
+                    <option>Choose...</option>
+                    {% for member in members %}
+                      <option value="{{ member.id }}">{{ member }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <!--submit-->
+                <div class="form-group col-md-12" style="display:flex; justify-content:center; margin-top:30px">
+                  <input type="submit" value="Complete Advanced Move" class="btn btn-secondary btn-sm" style="width:300px;">
+                </div>
+              </form>
+            </div>
+          </div>
+        {% endif %}
+      </span>
+    <!--#endregion -->
+
+    <!--#region new crate-->
+    <span style="width:300px">
+      <h2>New Crate</h2>
+
+      <div style="display:flex; justify-content:center;">
+        <form action="{% url 'member_crate_add_and_move_submission' library.id library_plate.id %}" method="post" style="width:300px">
+          {% csrf_token %}
+          <!-- master_library_crate -->
+          <input type="hidden" id="master_library_crate" name="master_library_crate" value="{{ pending_crate.id }} ">
+    
+          <!-- membership_number -->
+          <input type="hidden" id="membership_number" value="{{ user.member.membership_number }}">
+    
+          <!-- library_name -->
+          <input type="hidden" id="library_name" value="{{ user.member.library.name }}">
+    
+          <!-- crate_index_start -->
+          <input type="hidden" id="crate_index_start" name="crate_index_start" class="form-control" value="A">
+    
+          <!-- crate_index_end -->
+          <input type="hidden" id="crate_index_end" name="crate_index_end" class="form-control" value="Z">
+    
+          <!-- issued -->
+          <input type="hidden" value="Issued"  name="issued">
+    
+          <!-- reserved -->
+          <input type="hidden" value="Reserved"  name="reserved">
+    
+          <!-- master_crate_id -->
+          <div class="form-group col-md-12">
+            <label for="master_crate_id" class="form-label">Crate Type</label>
+            <select id="master_crate_id" class="form-control">
+              <option>Choose...</option>
+              {% for master_crate in master_crates %}
+                <option value="{{ master_crate.crate_id }}">{{ master_crate.crate_id }}</option>
+              {% endfor %}
+          </div>
+    
+          <!-- sub_crate_id -->
+          <div class="form-group col-md-12">
+            <input type="checkbox" id="autofill" name="autofill" onchange="autoCreateCrateID()" />
+            <label for="autofill" class="form-label" style="margin-top:20px"> Auto Create Crate ID </label>
+          </div>
+    
+          <div class="form-group col-md-12">
+            <label for="sub_crate_id" class="form-label">Crate ID</label><br>
+            <input type="text" id="sub_crate_id" name="sub_crate_id" class="form-control">
+          </div>
+          <br>
+    
+          <!--submit-->
+          <div class="form-group col-md-12" style="display:flex; justify-content:center">
+            <input type="submit" value="Crate New Crate & Move Plate to it" class="btn btn-secondary btn-sm" style="width:300px;">
+          </div>
+            
+        </form>
+      </div>
+    </span>
+
+    <!--#endregion -->
+
+    <!--#region move and swap-->
+    <span style="width:300px">
+      {% if library.library_shop == user and 'Sale Vinyl' in sub_crate.sub_crate_id %}
+      <div>
+        <h2>Move & Swap</h2>
+
+        <div style="display:flex; justify-content:center">
+          <form action="{% url 'member_plate_swap_stock_for_incoming_stock' library.id sub_crate.id library_plate.id %}" method="post" enctype="multipart/form-data" style="width:380px">
+            {% csrf_token %}
+      
+              <!-- related_sub_crate_id -->
+              <div class="form-group col-md-12">
+                <label for="related_sub_crate_id" class="form-label">Destination</label>
+                <select id="related_sub_crate_id" class="form-control" name="related_sub_crate_id">
+                  <option>Choose...</option>
+                  {% for crate in move_and_swap_crates %}
+                    <option value="{{ crate.id }}">{{ crate }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!--submit-->
+              <div class="form-group col-md-12" style="display:flex; justify-content:center; margin-top:30px">
+                <input type="submit" value="Move & Swap" class="btn btn-secondary btn-sm" style="width:300px;">
+              </div>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+    </span>
+    <!--#endregion -->
+
+    <!--#region move and delete -->
+    <span style="width:300px">
+      {% if library.library_shop == user and 'Sale Vinyl' in sub_crate.sub_crate_id %}
+      <div>
+        <h2>Move & Delete On Order</h2>
+
+        <div style="display:flex; justify-content:center">
+          <form action="{% url 'member_plate_swap_stock_for_incoming_stock_and_delete_member_plate' library.id sub_crate.id library_plate.id %}" method="post" enctype="multipart/form-data" style="width:380px">
+            {% csrf_token %}
+      
+              <!-- related_sub_crate_id -->
+              <div class="form-group col-md-12">
+                <label for="related_sub_crate_id" class="form-label">Destination</label>
+                <select id="related_sub_crate_id" class="form-control" name="related_sub_crate_id">
+                  <option>Choose...</option>
+                  {% for crate in move_and_swap_crates %}
+                    <option value="{{ crate.id }}">{{ crate }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!--submit-->
+              <div class="form-group col-md-12" style="display:flex; justify-content:center; margin-top:30px">
+                <input type="submit" value="Move & Swap" class="btn btn-secondary btn-sm" style="width:300px;">
+              </div>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+    </span>
+    <!--#endregion -->
+
+  </div>
+</div>
+
+<!-- auto create crate id --> 
+<script> 
+  function autoCreateCrateID() {
+    document.getElementById("sub_crate_id").value = 
+    document.getElementById("membership_number").value +
+    ' ' +
+    document.getElementById("master_crate_id").value +
+    ' ' +
+    document.getElementById("library_name").value.toUpperCase().slice(0, 3)
+  }
+</script>
+
+<!-- moving where -->
+<script>
+function movingWhere() {
+  var location = document.getElementById('related_sub_crate_id').value;
+  if (location == 'To Library') {
+    document.getElementById('not_to_library')
+    not_to_library.style.display = 'none';
+    document.getElementById('to_library')
+    to_library.style.display = 'block';
+  } else {
+    document.getElementById('to_library')
+    to_library.style.display = 'none';
+    document.getElementById('not_to_library')
+    not_to_library.style.display = 'block';
+  }
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+      <title>ORDER-{{ purchase_order.id|stringformat:"03d" }}</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+  </head>
+  <body style="background-color:whitesmoke">
+    <div style="left:0; position:relative; width:210mm; height:297mm; margin: 0mm auto; background-color:white; padding:0mm 5mm">
+      
+      <span style="display:flex; justify-content:space-between; text-transform:uppercase">
+        <span>
+          <span style="font-size:4rem"><strong>{{ purchase_order.library.name }}</strong></span><br>
+          <span style="font-size:1.5rem">ORDER-{{ purchase_order.id|stringformat:"03d" }}</span><br>
+          <span style="font-size:1rem">{{ purchase_order.created|date:'d m Y' }}</span><br>
+        </span>
+        <span class="d-print-none" style="margin:10mm 5mm 0mm 0mm; display:flex">
+          <span>
+          </span>
+          <span style="display:flex">
+            {% if purchase_order.on_order != True and library.librarian == user %}
+              <form action="{% url 'purchase_order_order_items_submission' library.id purchase_order.id %}" method="post" style="margin-left:5px">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Ordered</button>
+              </form>
+            {% endif %}
+            {% if purchase_order.funded != True and library.librarian == user and purchase_order.is_restock != True %}
+              <form action="{% url 'purchase_order_funded_submission' library.id purchase_order.id %}" method="post" style="margin-left:5px">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Funded</button>
+              </form>
+            {% endif %}
+            {% if purchase_order.cashbook_entry_added != True and library.librarian == user and purchase_order.is_restock != True %}
+              <form action="{% url 'purchase_order_cashbook_entry_add_submission' library.id purchase_order.id %}" method="post" style="margin-left:5px">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Add Cashbook Entry</button>
+              </form>
+            {% endif %}
+            {% if purchase_order.is_restock != True and library.librarian == user and purchase_order.funded != True %}
+              <form action="{% url 'purchase_order_is_restock_submission' library.id purchase_order.id %}" method="post" style="margin-left:5px">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Is Restock</button>
+              </form>
+            {% endif %}
+          </span>
+          
+        </span>
+        <span style="margin:10mm 5mm 0mm 0mm;">{{ order.created|date:"d M Y" }}</span>
+      </span>
+
+      <span style="display:flex; justify-content:space-around; margin-top:5mm; font-size:0.8rem">
+
+      <span style="margin-top:10mm; display:flex; justify-content:center">
+        <div style="width:100%">
+          <table class="table" style="font-size:0.7rem">
+            <thead>
+              <tr>
+                <th style="text-align:center">Order</th>
+                <th>Catalog</th>
+                <th>Size</th>
+                <th>Artist</th>
+                <th>Title</th>
+                <th>Label</th>
+                <th style="text-align:center">DIS</th>
+                <th style="text-align:center">Q</th>
+                <th style="text-align:center">Unit Cost</th>
+                <th style="text-align:center">Sub Total</th>
+                <th></th>      
+              </tr>
+            </thead>
+            
+            <tbody>
+              {% for item in purchase_order_items %}
+                <tr>
+                  {% if item.ordered %}
+                    <td style="color:green; font-size:0.5rem; text-align:center"><i class="fas fa-check"></i></td>
+                  {% else %}
+                    <td style="text-align:center"><a href="{% url 'purchase_order_order_item_submission' library.id purchase_order.id item.id %}" style="color:red"><i class="fas fa-times" style="font-size:0.5rem"></i></a></td>
+                  {% endif %}
+                  <td>
+                    {{ item.vinyl_release.catalog_number }}
+                    <span class="d-print-none">
+                      {% if order.on_order == False %}
+                        <span style="color:red">
+                          {{ item.vinyl_release.supplier.distributor_code }}
+                        </span>
+                      {% endif %}
+                    </span>
+                  </td>
+                  {% if item.vinyl_release.plate_count == 1 %}
+                    <td class="text-center">{{ item.vinyl_release.plate_size }}</td>
+                  {% else %}
+                    <td class="text-center">{{ item.vinyl_release.plate_count }}x{{ item.vinyl_release.plate_size }}</td>
+                  {% endif %}
+                  <td>{{ item.vinyl_release.artist }}</td>
+                  <td>{{ item.vinyl_release.release_title }}</td>
+                  <td>{{ item.vinyl_release.label }}</td>
+                  <td style="text-align:center">{{ item.vinyl_release.supplier.distributor_code }}</td>
+                  {% if purchase_order.on_order != True %}
+                    <td style="text-align:center"><a href="{% url 'purchase_order_order_item_update' library.id purchase_order.id item.id %}" style="color:black">{{ item.quantity }}</a></td>
+                  {% else %}
+                    <td style="text-align:center">{{ item.quantity }}</a></td>
+                  {% endif %}
+                  <td style="text-align:center">{{ item.price }}</td>
+                  <td style="text-align:center">{{ item.total_price }}</td>
+                </tr>
+                {% endfor %}
+                <tr></tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  
+                  <td><strong>Total:</strong></td>
+                  <td style="text-align:center">{{ purchase_order.order_total }}</td> 
+                </tr>
+              
+            
+            </tbody> 
+          </table>
+
+
+      </span>
+    </div>
+  </body>
+</html>

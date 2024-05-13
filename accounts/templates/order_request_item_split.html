@@ -1,0 +1,29 @@
+<!--#region###############################################         BLOCKS                        ###############################################-->
+{% extends 'library_base.html' %}
+
+{% block title %}Split {{ order_request_item }}{% endblock %}
+
+{% block nav-title %}Split {{ order_request_item }}{% endblock %}
+
+{% block content %}
+<!--#endregion -->
+
+<span style="font-size:1.4rem; margin-top:40px">{{ order_request_item.member }}</span><br>
+<span style="font-size:1.4rem; margin-top:10px">{{ order_request_item.vinyl_release }}</span><br>
+<div style="display:flex; justify-content:center">
+  <div style="max-width: 400px; margin-top:120px">
+    <form action="{% url 'order_request_item_split_submission' library.id order_request_item.id %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-group col-md-12">
+        <label>Split Amount [ Must be less than {{ order_request_item.quantity }} ]</label>
+        <input type="number" class="form-control" name="split_amount" value="1">
+      </div>
+
+      <div class="form-group col-md-12" style="display:flex; justify-content:center">
+        <input type="submit" value="Split" class="btn btn-secondary btn-sm" style="width:400px"> 
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

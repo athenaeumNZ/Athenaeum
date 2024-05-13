@@ -1,0 +1,25 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Go to my Dashboard{% endblock %}
+
+{% block nav-title %}GO TO MY DASHBOARD{% endblock %}
+
+{% block content %}
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <form action="{% url 'member_dashboard' library.id %}" method="post" enctype="multipart/form-data" target="_blank">
+    {% csrf_token %}
+    <input name="crate_id"                              value="None"                                  type="hidden" >
+    <input name="crate_parent_id"                       value=""                                      type="hidden" >
+    <input name="display_stock"                         value="do_not_display_stock_plates"           type="hidden" >
+    <input name="display_unallocated"                   value="do_not_display_unallocated_plates"     type="hidden" >
+    <input name="member_id"                             value="{{ member.id }}"                       type="hidden" >
+    <button name="submit"                                                                             type="submit"     id="auto_clicked_button" style="width:400px" class="btn btn-default btn-sm">Go to My Dashboard</button>
+    </form>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

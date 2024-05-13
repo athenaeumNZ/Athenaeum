@@ -1,0 +1,141 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{ library }} Members{% endblock %} 
+
+
+{% block nav-title %}<span style="color:green">MEMBERS</span>{% endblock %}
+
+{% block content %}
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:25px;">
+  <span style="display:flex; justify-content:space-between">
+    <div class="row">
+      <div class="column">
+        <table>
+          <form action="" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <tbody>
+            <tr>
+              <td style="width:180px; padding-right:5px">
+                {% if search_member and search_member != 'Member...' %}
+                  <select id="search_member" style="width:180px; height:30px; border:3px solid green " name="search_member">
+                {% else %}
+                  <select id="search_member" style="width:180px; height:30px;" name="search_member">
+                {% endif %}
+                {% if search_member and search_member != 'Member...' %}
+                  <option selected>{{ search_member }}</option>
+                  <option></option>
+                {% else %}
+                  <option selected>Member...</option>
+                {% endif %}
+                {% for member in members %}
+                  <option value="{{ member }}">{{ member }}</option>
+                {% endfor %}
+                </select>
+              </td>
+              
+              <td>
+                <button type="submit" class="btn btn-secondary btn-sm" style="height:30px; margin-right:5px"><i class="fas fa-search"></i></button>
+              </td>
+              <td>
+                <a href="{% url 'members' library.id %}" class="btn btn-secondary btn-sm" style="height:30px;">Reset Search</a>
+              </td>
+            </tr>
+          </tbody>
+          </form>
+        </table>
+      </div>
+    </div>
+  </span>
+  <span>
+    <a href="/admin/auth/user/add/" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-plus"></i> Member</a></td>
+  </span>
+</div>
+
+<!-- members -->
+    <table class="table" style="margin-top:30px">
+      <thead>
+        <tr>
+          <th style="width:100px;">Crates</th>
+          <th>Name</th>
+          <th class="text-center">Plates</th>
+          <th class="text-center">Releases</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th class="text-center"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for member in members %}
+          <tr>
+            <td>
+              <form action="{% url 'plate_sorter' library.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="crate_id"                              type="hidden" value="{{ crate_id }}">
+                <!--#region crate_parent_id -->
+                {% if crate_parent %}
+                <input name="crate_parent_id"                       type="hidden" value="{{ crate_parent.id }}">
+                {% else %}
+                <input name="crate_parent_id"                       type="hidden" value="{{ crate_parent_id }}">
+                {% endif %}
+                <!--#endregion -->
+                <!--#region display_stock -->
+                {% if display_stock %}
+                <input name="display_stock"                         type="hidden" value="{{ display_stock }}">
+                {% else %}
+                <input name="display_stock"                         type="hidden" value="do_not_display_stock_plates">
+                {% endif %}
+                <!--#endregion -->
+                <!--#region display_unallocated -->
+                {% if display_unallocated %}
+                <input name="display_unallocated"                   type="hidden" value="{{ display_unallocated }}">
+                {% else %}
+                <input name="display_unallocated"                   type="hidden" value="do_not_display_unallocated_plates">
+                {% endif %}
+                <!--#endregion -->
+                <input name="member_id"                             type="hidden" value="{{ member.id }}">
+                <input name="member_plate_id"                       type="hidden" value="{{ member_plate.id }}">
+                <!--#region member_release_id -->
+                {% if member_release %}
+                <input name="member_release_id"                     type="hidden" value="{{ member_release.id }}">
+                {% else %}
+                <input name="member_release_id"                     type="hidden" value="{{ member_release_id }}">
+                {% endif %}
+                <!--#endregion -->
+                <input name="previous_url"                          type="hidden" value="{{ previous_url }}">
+                <input name="previous_vertical_location"            type="hidden" value="{{ previous_vertical_location }}" class="page_vertical_location">
+                <input name="stock_item_id"                         type="hidden" value="{{ stock_item.id }}">               
+                <!--#region vinyl_release_id -->
+                {% if plate %}
+                <input name="vinyl_release_id"                      type="hidden" value="{{ plate.related_release.id }}">
+                {% elif vinyl_release %}
+                <input name="vinyl_release_id"                      type="hidden" value="{{ vinyl_release.id }}">
+                {% endif %}
+                <!--#endregion -->
+                <button type="submit"                               class="btn btn-sm btn-secondary"><i class="fas fa-database"></i></button>
+              </form>
+            </td>
+            <td><a href="{% url 'member_dashboard' member.library.id %}" class="btn btn-secondary btn-sm">{{ member.address.first_name }} {{ member.address.last_name }}</a></td>
+            <td class="text-center">{{ member.members_plate_count }}</td>
+            <td class="text-center">{{ member.members_release_count }}</td>
+            <td>{{ member.user.email}}</td>
+            <td>{{ member.phone_number }}</td>
+            <td class="text-center">
+              {% if member.order_request_items|length >= 1 %}
+                <a class="btn btn-danger btn-sm" style="margin-right:5px" target="_blank"><i class="fas fa-coins"></i></a>
+              {% else %}
+                <a href="" class="btn btn-default btn-sm" style="margin-right:5px"><i class="fas fa-coins"></i></a>
+              {% endif %}
+              <a href="" class="btn btn-warning btn-sm" target="_blank"><i class="fa fa-envelope"></i></a>
+              <a href="http://127.0.0.1:8000/admin/management/member/{{ member.id }}/change/" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-user-edit"></i></a>
+              <a href="http://127.0.0.1:8000/admin/auth/user/{{ member.user.id }}/change/" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-user-cog"></i></a>
+
+                <a href="{% url 'print_crate_divider_stockpile' library.id member.id %}" class="btn btn-warning btn-sm" style="width:32px" target="_blank"><i class="fas fa-print"></i></a>
+
+              <a href="{% url 'member_credit_account' library.id member.id %}" class="btn btn-danger btn-sm" style="width:36px"><i class="fas fa-dollar-sign"></i><sup> <i class="fas fa-plus" style="font-size:0.5rem"></i></sup></a>  
+            </td>
+          </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}

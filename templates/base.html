@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link href="/static/styles.css" rel="stylesheet">
+    <title>{% block title %}My Site{% endblock%}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid" id="navbar-content" style="align-items: center; padding-bottom:5px">
+            <span style="display:flex; justify-content:space-between; margin:5px 0px 0px 0px; color:white">
+                <span style="padding-left:10px">
+                    <img src="/static/TONIC_logo mark_black.jpg" width="50" height="50">
+                </span>
+                <span style="display:flex; align-items:baseline; padding-top:5px; align-items: baseline; color:white; text-transform:uppercase;">
+                  <h1>&nbsp;&nbsp;<strong>STATIC RECORDS</strong></h1>
+                    <h2>&nbsp;&nbsp;{% block nav-title %}{% endblock %}</h2>
+                </span>
+            </span>
+            <span style="display:flex;">
+                <span style="margin-right:5px">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'crates' user.member.library.id user.member.id %}" class="btn btn-secondary btn-sm">{{ user.member.library }}</a>
+                    {% endif %}
+                </span>
+                <span style="margin-right:5px">
+                    <a href="{% url 'libraries' %}" class="btn btn-secondary btn-sm">Libraries</a>
+                </span>
+                <span>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-align-justify"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                            <li><a href="/" class="dropdown-item"><i class="fas fa-home"></i> Static</a></li>
+                            <li><a href="/libraries" class="dropdown-item"><i class="fas fa-landmark"></i> Libraries</a></li>
+                            
+                            <li><a href="/release_database" class="dropdown-item"><i class="	fas fa-record-vinyl"></i> Database</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            {% if request.user.is_authenticated %}
+                                <li><a href="" class="dropdown-item"><i class="far fa-id-card"></i> My Profile</a></li>
+                                <li><a href="/log_out" class="dropdown-item"><i class="fas fa-lock"></i> Logout {{ request.user.member.membership_number }}</a></li> 
+                            {% else %}
+                                <li><a href="/login" class="dropdown-item"><i class="fas fa-user-alt"></i> Login</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a href="/admin" class="dropdown-item" target="_blank"><i class="fas fa-user-tie"></i> Admin</a></li>
+                        </ul>
+                    </div>
+                </span>
+            </span>
+        </div>
+    </nav>
+    <div class="container" id="page-container"><div id="content-wrap">{% block content %}{% endblock %}</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <br><br>
+    <footer class="footer text-center">
+        <span style="padding-right: 10px">Copyright Static Records 2022</span>
+    </footer>
+    </div>
+</body>
+</html>

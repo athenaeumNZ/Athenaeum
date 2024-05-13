@@ -1,0 +1,18 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Return to Stockpile Crate{% endblock %}
+
+{% block nav-title %}Return to Stockpile Crate{% endblock %}
+
+{% block content %}
+
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <a href="{% url 'sub_crate' library.id sub_crate.id member.id %}" id="auto_clicked_button" style="width:400px">Return to Stockpile Crate</a>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

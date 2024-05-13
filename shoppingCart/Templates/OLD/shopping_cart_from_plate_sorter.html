@@ -1,0 +1,106 @@
+<!--#region blocks -->
+{% extends "library_base.html" %}
+
+{% block title %}SHOPPING CART{% endblock %}
+
+{% block nav-title %}SHOPPING CART{% endblock %}
+
+{% block content %}
+<!--#endregion -->
+
+<!--#region header -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:30px;">
+    <span>
+    </span>
+    <!--#region return to plate sorter -->
+    <span>
+      <form action="{% url 'plate_sorter' library.id member.id crate_id crate_parent_id display_stock display_unallocated display_searched_releases %}"  method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" value="{{ previous_vertical_location }}" name="previous_vertical_location">
+        <button type="submit" class="btn btn-sm btn-secondary" style="padding-left:15px; padding-right:15px">Return to Plate Sorter</button>
+      </form>
+    </span>
+    <!--#endregion -->
+</div>
+<!--#endregion -->
+
+{% if items|length >= 1 %}
+<!--#region cart-->
+<div style="margin-top:50px; padding:10px;">
+  <table class="table table-borderless">
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <!--#region artwork -->
+        <td style="height:30px; width: 30px; text-align:center;">
+          {% if item.vinyl_release.artwork_small %}
+          <img src="{{ item.vinyl_release.artwork_small.url }}" width="30" height="30">
+          {% else %}
+          <div style="text-align:center; font-size: 0.5rem;">No image</div>
+          {% endif %}
+        </td>
+        <!--#endregion -->
+        <td style="text-align:center; width:250px;">
+          <a href="{% url 'release' library.id item.vinyl_release.id %}" class="btn btn-secondary btn-sm" style="width:220px;font-style:normal">{{item.vinyl_release.catalog_number}}</a>
+        </td>
+        <td>{{ item.vinyl_release.artist }}</td>
+        <td>{{ item.vinyl_release.release_title }}</td>
+        <td>{{ item.vinyl_release.label }}</td>
+        {% if item.price == 999.00 %}
+        <td style="color:red; text-align:right; width:200px;">Price Not Set</td>
+        {% else %}
+        <td style="color:gray; text-align:right; width:100px;">${{ item.price }}</td>
+        {% endif %}
+        <td style="text-align:center; width:80px;">
+          <form action="{% url 'shopping_cart_from_plate_sorter_remove_item_submission' library.id member.id crate_id crate_parent_id display_stock display_unallocated display_searched_releases %}"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" value="{{ item.id }}" name="stock_item_id">
+            <input type="hidden" value="{{ previous_vertical_location }}" name="previous_vertical_location">
+            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-skull-crossbones"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td style="font-size:1.5rem; text-align:right;" colspan="5"></td>
+        <td style="font-size:2rem; text-align:right;" colspan="1">
+          {% if shopping_cart.some_items_price_not_set != True or shopping_cart.get_total_price == 0 %}
+          <strong>$TBC</strong>
+          {% else %}
+          <strong>${{ shopping_cart.get_total_price }}</strong>
+          {% endif %}
+        </td>
+        <td style="vertical-align:middle">
+          {% if shopping_cart.some_items_price_not_set != True %}
+          {% else %}
+          <span>+ G.S.T.</span>
+          {% endif %}
+        </td>
+      </tr>
+      <!--#region submit  -->
+      <tr>
+        <td colspan="4"></td>
+        <form action="{% url 'shopping_cart_from_plate_sorter_submission' library.id member.id crate_id crate_parent_id display_stock display_unallocated display_searched_releases %}" method="post" enctype="multipart/form-data">
+          <td style="text-align:right">
+            {% csrf_token %}
+            <input type="text" value="{{ member }}" disabled="disabled">
+            <input type="hidden" value="{{ member.id }}" name="search_member">
+          </td>
+          <td colspan="2" style="text-align:center">
+            <input type="submit" value="Get These Plates" class="btn btn-sm btn-success" style="width:180px" onclick="return confirm('By clicking OK you are agreeing to purchase these releases. No upfront payment is required.')">
+          </td>
+        </form>
+        <td></td>
+      </tr>
+      <!--#endregion -->
+    </tbody>
+  </table>
+</div>
+<!--#endregion -->
+{% else %}
+<div style="margin-top:200px; display:flex; justify-content:center">
+  <span style="font-size:2rem">Your Cart is Empty</span>
+</span>
+
+{% endif %}
+{% endblock %}

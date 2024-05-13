@@ -1,0 +1,20 @@
+<form id="orderForm_{{ release.id }}" method="post" action="/stock_item_add_edit_order_submission/" enctype="multipart/form-data" >
+  {% csrf_token %}
+  <table class="table table-sm" style="font-size:0.7rem; margin-top:3mm">
+    <thead style="border: solid 1px lightgray;">
+      <tr>
+        <th class="cat_col_header" colspan="2">Catalog</th>
+        <th class="atl_col_header">Artist - Title - Label</th>
+        <th class="crate_id_col_header">Crate ID's</th>
+        <th class="text-center minimize-th">Avg.</th>
+        <th class="text-center minimize-th">Bla.</th>
+        <th class="text-center minimize-th">Size</th>
+        <th class="text-center minimize-th" style="border-right: solid 1px lightgray">NZD</th>
+        <th class="text-center no-print minimize-th">Stock</th>
+        <th class="text-center no-print minimize-th">Inc.</th>
+        <th class="text-center no-print minimize-th">Want</th>
+        <th class="text-center no-print minimize-th">Auto</th>
+        <th class="no-print minimize-th" colspan="2">Order</th>
+      </tr>
+    </thead>        
+    <tbody style="border-top:solid 1px lightgray; vertical-align:middle">

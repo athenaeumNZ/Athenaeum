@@ -1,0 +1,134 @@
+{% extends 'database_base.html' %}
+
+{% block title %}Track Database{% endblock %} 
+
+{% block nav-title %}TRACK DATABASE <span style="font-size:1rem">{% endblock %}
+
+{% block content %}
+
+
+<!-- search -->
+<div style="padding-top:30px">
+  <form action="{% url 'track_database_search' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+      <table>
+        <tr>
+          <td style="width:0px; padding-right:5px; text-align:right;" ><label for="genre" class="col-form-label-sm control-label">Genre:</label></td>
+          <td style="width:233px; padding-right:5px">
+            <select id="genre" class="form-select form-select-sm" name="genre">
+              <option selected></option>
+              {% for genre in genres %}
+                <option value="{{ genre }}">{{ genre }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td style="width:0px; padding-right:5px"><label for="vibe" class="col-form-label-sm control-label">Vibe:</label></td>
+          <td style="width:144px; padding-right:5px; text-align:right;">
+            <select id="vibe" class="form-select form-select-sm" name="vibe">
+              <option selected></option>
+              {% for vibe in vibes %}
+                <option value="{{ vibe }}">{{ vibe }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td style="width:0px; padding-right:5px; text-align:right;"><label for="vibe" class="col-form-label-sm control-label">Energy:</label></td>
+          <td style="width:144px; padding-right:10px">
+            <select id="energy_level" class="form-select form-select-sm" name="energy_level">
+              <option selected></option>
+              {% for energy_level in energy_levels %}
+                <option value="{{ energy_level }}">{{ energy_level }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <button type="submit" class="btn btn-secondary btn-sm"><i class="fas fa-search"></i></button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </form>
+</div>
+<br>
+
+<!-- tracks -->
+<div id="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="text-center">IMG</th>
+        <th class="text-center">RELEASE</th>
+        <th>Artist</th>
+        <th>Title</th>
+        <th>Label</th>
+        <th>Genre</th>
+        <th>Vibe</th>
+        <th>Energy</th>    
+      </tr>
+    </thead>
+    
+    <tbody>
+    {% for info in track %}
+      <tr>
+        <td style="height:30px; width: 30px; text-align:center;">
+          {% if info.related_vinyl_plate.related_release.artwork %}
+            <img src="{{ info.related_vinyl_plate.related_release.artwork.url }}" width="30" height="30">
+          {% else %}
+          <div style="text-align:center; font-size: 0.5rem;">No image</div>
+          {% endif %}
+        </td>
+        <td class="text-center"><a href="{% url 'release' info.related_vinyl_plate.related_release %}" target="_blank" style="width:150px" class="btn btn-secondary btn-sm">{{info.related_vinyl_plate.related_release}}:{{info.index}}</a></td>
+        <td>{{info.artist}}</td>
+        <td>{{info.title}}</td>
+        <td>{{info.related_vinyl_plate.related_release.label}}</td>
+        {% if info.catergorization_final == 'Yes' %}
+          <td>{{info.genre}}</td>
+          <td>{{info.vibe}}</td>
+          <td>{{info.energy_level}}</td>
+        {% else %}
+          <td style="color:red">{{info.genre}}</td>
+          <td style="color:red">{{info.vibe}}</td>
+          <td style="color:red">{{info.energy_level}}</td>
+        {% endif %}
+        
+      </tr>
+      {% endfor %}
+    </tbody>   
+    
+  </table>
+</div>
+
+<!-- pagination-->
+<div style="padding-top: 5px;">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if track.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ track.previous_page_number }}">&lsaquo;</a></li>
+          {% if track.number > 2 %}
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+              {% if track.number > 3 %}
+                <span class="page-link">...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      {% for num in track.paginator.page_range %}
+        {% if track.number == num %}
+          <li class="page-item"><a class="page-link active" href="?page={{ num }}">{{ num }}</a></li>
+        {% elif num > track.number|add:'-2' and num < track.number|add:'2' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if track.has_next %}
+        {% if track.number < track.paginator.num_pages|add:'-2' %}
+          <span class="page-link">...</span>
+          <li class="page-item"><a class="page-link" href="?page={{ track.paginator.num_pages }}">{{ track.paginator.num_pages }}</a></li>
+        {% elif track.number < track.paginator.num_pages|add:'-1' %}
+          <li class="page-item"><a class="page-link" href="?page={{ track.paginator.num_pages }}">{{ track.paginator.num_pages }}</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link" href="?page={{ track.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav> 
+</div>
+
+{% endblock %}

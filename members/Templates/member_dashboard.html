@@ -1,0 +1,265 @@
+<!--#region###############################################         BLOCKS                        ###############################################-->
+{% extends 'library_base.html' %}
+
+{% block title %}{{ member.membership_number }} {{ member.user.first_name }} {{ member.user.last_name }} Dashboard{% endblock %} 
+
+{% block nav-title %}{{ member.membership_number }} DASHBOARD{% endblock %}
+
+{% block content %}
+<!--#endregion-->
+
+<!--#region###############################################         HEADER                        ###############################################-->
+{% block internal_header %}{% include 'member_header.html' %}{% endblock %}
+<!--#endregion -->
+<!--#region###############################################         INVOICES                      ###############################################-->
+{% if invoices|length != 0 %}
+<table class="table table-borderless table-sm" style="margin-top:30px">
+  <thead style="background-color:white">
+    <tr style="height:5px; border-top:1px solid black;"></tr>
+    <tr style="vertical-align:middle"> 
+      <th colspan="3" style="font-weight:600; font-size:1.8rem">Invoices</th>
+      <th class="text-center">Payment Made</th>
+      <th class="text-center">Payment Cleared</th>
+      <th class="text-center">All Plates Received</th>
+      <th class="text-center">Options</th>
+    </tr>
+    <tr style="height:5px"></tr>
+  </thead>
+  <tbody>
+    <tr style="height:20px; border-top:1px solid black;"></tr>
+    {% for invoice in invoices %}
+    <tr>
+      <td style="width:130px">{{ invoice.created|date:"d M Y" }}</td>
+      <td class="text-center"><a href="{% url 'invoice' library.id invoice.id %}" >INV {{ invoice.id|stringformat:"04d" }}</a></td>
+      <td style="text-align:right">${{ invoice.invoice_total }}</td>
+      <!--#region paid -->
+      {% if invoice.member_has_made_payment == True %}
+        <td class="text-center"><i class="fas fa-check" style="color:green; font-size:0.5rem"></i></td>
+      {% else %}
+        <td class="text-center"><a href="{% url 'invoice_member_has_payed_submission' library.id invoice.id %}" class="btn btn-sm btn-secondary">I Have Made Payment</a></td>
+      {% endif %}
+      <!--#endregion -->
+      <!--#region payment received -->
+      {% if invoice.paid == True %}
+        <td class="text-center"><i class="fas fa-check" style="color:green; font-size:0.5rem"></i></td>
+      {% elif invoice.member_has_made_payment == True %}
+        <td class="text-center">Payment Pending</td>
+      {% else %}
+        <td class="text-center">...</td>
+      {% endif %}
+      <!--#endregion -->
+      <!--#region all items received -->
+      {% if invoice.member_has_received_all_plates %}
+      <td class="text-center"><i class="fas fa-check" style="color:green; font-size:0.5rem"></i></td>
+      {% elif invoice.paid == True %}
+      <td class="text-center">
+        <a href="{% url 'invoice_member_has_received_all_plates_submission' library.id invoice.id %}" class="btn btn-sm btn-secondary" onclick="return confirm('Click OK to confirm you have received the following\n\n{% for i in invoice.invoice_items %}{{ i.invoiced_quantity }} x {{ i.order_request_item.vinyl_release.catalog_number }}\n{% endfor %}')">I Have Received All These Plates</a>
+      </td>
+      {% else %}
+        <td class="text-center">...</td>
+      {% endif %}
+      <!--#endregion -->
+      <!--#region archive -->
+      {% if invoice.member_has_received_all_plates == True %}
+        <td class="text-center">
+          <a href="{% url 'invoice_member_archive_submission' library.id invoice.id %}" class="btn btn-sm btn-success" onclick="return confirm('INV{{ invoice.id|stringformat:"04d" }} will no longer be visible to you.\n\nThis action can not be reversed.')">Archive Invoice</a>
+        </td>
+      {% else %}
+        <td class="text-center">...</td>
+      {% endif %}
+      <!--#endregion -->
+    </tr>
+    {% endfor %}
+    <tr style="height:15px"></tr>
+  </tbody>
+</table>
+{% endif %}
+<!--#endregion -->
+<!--#region###############################################         STOCKPILED                    ###############################################-->
+{% if order_request_items_stockpiled|length != 0 %}
+<form action="{% url 'invoice_create_submission' library.id member.id %}" method="post" enctype="multipart/form-data" style="margin-top:40px">    
+  {% csrf_token %}
+  <table class="table table-borderless table-sm">
+    <thead style="background-color:white">
+      <tr style="height:5px; border-top:1px solid black;"></tr>
+      <tr style="vertical-align:middle;">        
+        <th colspan="2" style="font-weight:600; font-size:1.8rem">Stockpile</th>
+        <th class="text-center">Ordered</th>
+        <th class="text-center">Stockpiled</th>
+        <th class="text-center">Received</th>
+        <th class="text-center">Price</th>
+        <th class="text-center">Quantity</th>
+        <th style="text-align: right;">Sub T.</th>
+        <th></th>
+      </tr>
+      <tr style="height:5px"></tr>
+    </thead>
+    <tbody>
+      <tr style="height:20px; border-top:1px solid black;"></tr>
+      <!--#region items list -->
+      {% for item in order_request_items_stockpiled %}
+      <tr>     
+        <!--#region img -->
+          <td>
+            <a href="{% url 'release' library.id item.vinyl_release.id %}" target="_blank">
+              {% if item.vinyl_release.artwork_small %}
+                <img src="{{ item.vinyl_release.artwork_small.url }}" width="25px" height="25px">
+              {% else %}
+              {% endif %}
+            </a>
+          </td>
+        <!--#endregion -->       
+        <!--#region title etc. -->
+          <td>{{ item.vinyl_release.artist }} - {{ item.vinyl_release.release_title }} - {{ item.vinyl_release.label }} - {{ item.vinyl_release }}</td>
+        <!--#endregion -->
+        <!--#region ordered -->
+          {% if item.stockpiled %}
+            <td></td>
+          {% elif item.shop_purchase %}
+            <td class="text-center"><i class="fas fa-check" style="color:green; font-size:0.5rem"></i></td>
+          {% elif item.ordered %}
+            <td class="text-center"><i class="fas fa-check" style="color:green; font-size:0.5rem"></i></td>
+          {% else %}
+            <td class="text-center"><i class="fas fa-times" style="color:gray"></i></td>
+          {% endif %}
+        <!--#endregion --> 
+        <!--#region stockpiled -->
+          {% if item.delivered %}
+            <td></td>
+          {% elif item.stockpiled %}
+            <td class="text-center"><i class="fas fa-check" style="color:green; font-size:0.5rem"></i></td>
+          {% else %}
+            <td class="text-center"><i class="fas fa-times" style="color:gray"></i></td>
+          {% endif %}
+        <!--#endregion -->
+        <!--#region delivered -->
+          {% if item.delivered %}
+            <td class="text-center"><i class="fas fa-check" style="color:green; font-size:0.5rem"></i></td>
+          {% else %}
+            <td class="text-center"><a href="" onclick="return confirm('This action will let {{ member.library }} know you have received {{ item.vinyl_release }}.')"><i class="fas fa-times" style="color:gray"></i></td></a>
+          {% endif %}
+        <!--#endregion -->
+        <!--#region price -->
+          <td class="text-center">
+            {{ item.sale_price }}
+          </td>
+        <!--#endregion -->
+        <!--#region quantity -->
+          <td class="text-center">
+            {{ item.quantity }}
+          </td>
+        <!--#endregion -->
+        <!--#region sub_total -->
+          <td style="text-align: right;">
+            {{ item.sub_total }}
+          </td>
+        <!--#endregion -->
+      </tr>
+      {% endfor %}
+      <!--#endregion -->
+      <tr style="height:15px"></tr>
+      <tr style="height:20px; border-top:1px solid black;"></tr>
+      <!--#region subtotal gst total -->
+      <tr style="font-size:1.2rem;">
+        <td colspan="7" style="text-align: right;" style="text-align: right;">Sub Total (Excl. Shipping)</td>
+        <td colspan="1" style="text-align: right;" style="text-align: right;">
+          {{ sub_total_of_stockpile }}
+        </td>
+      </tr>
+      <tr style="font-size:1.2rem">
+        <td colspan="7" style="text-align: right;" style="text-align: right;">GST (Excl. GST on Shipping)</td>
+        <td colspan="1" style="text-align: right;">
+          {{ gst_of_stockpile }}
+        </td>
+      </tr>
+      <tr style="font-size:1.2rem">
+        <td colspan="7" style="text-align: right;">Total (Excl. Shipping)</td>
+        <td colspan="1" style="text-align: right;">
+          {{ total_of_stockpile_including_gst }}
+        </td>
+      </tr>
+      <!--#endregion -->
+    </tbody>
+  </table>
+  
+  <span style="float:right">
+    <select name="shipping" onchange="detectChange(this)">
+      <option selected>Select Shipping...</option>
+      {% for key, value in courier_options %}
+        <option value="{{ key }},{{ value }}" required>{{ key }}: ${{ value }}</option>
+      {% endfor %}
+    </select>
+  </span><br><br>
+  <span style="float:right">
+    <input type="submit" id="hidden_checkout" class="btn btn-sm btn-success" value="Buy & Ship My Stockpile" style="display: none;">
+  </span>
+  <input type="hidden" name="invoice_weight" value="{{ total_weight_of_stockpile }}">
+  <input type="hidden" name="invoice_sub_total_excl_shipping" value="{{ sub_total_of_stockpile }}">
+</form>
+{% endif %}
+<!--#endregion -->
+<!--#region###############################################         ORDERED                       ###############################################-->
+{% if order_request_items_not_yet_stockpiled|length != 0 %}
+  <table class="table table-borderless table-sm" style="margin-top:40px">
+    <thead style="background-color:white">
+      <tr style="height:5px; border-top:1px solid black;"></tr>
+      <tr style="vertical-align:middle">        
+        <th colspan="2" style="font-weight:600; font-size:1.8rem">Not Yet Stockpiled</th>
+        <th class="text-center">Ordered</th>
+        <th class="text-center">Price (G.S.T. Excl.)</th>
+        <th></th>
+      </tr>
+      <tr style="height:5px"></tr>
+    </thead>
+    <tbody>
+      <tr style="height:20px; border-top:1px solid black;"></tr>
+      {% for item in order_request_items_not_yet_stockpiled %}
+      <tr>     
+        <!--#region img -->
+          <td>
+            <a href="{% url 'release' library.id item.vinyl_release.id %}" target="_blank">
+              {% if item.vinyl_release.artwork_small %}
+                <img src="{{ item.vinyl_release.artwork_small.url }}" width="25px" height="25px">
+              {% else %}
+              {% endif %}
+            </a>
+          </td>
+        <!--#endregion -->   
+                 
+        <!--#region title etc. -->
+          <td>{{ item.vinyl_release.artist }} - {{ item.vinyl_release.release_title }} - {{ item.vinyl_release.label }} - {{ item.vinyl_release }}</td>
+        <!--#endregion -->
+        <!--#region ordered -->
+        {% if item.stockpiled %}
+        <td></td>
+      {% elif item.shop_purchase %}
+        <td class="text-center"><i class="fas fa-check" style="color:green; font-size:0.5rem"></i></td>
+      {% elif item.ordered %}
+        <td class="text-center"><i class="fas fa-check" style="color:green; font-size:0.5rem"></i></td>
+      {% else %}
+        <td class="text-center"><i class="fas fa-times" style="color:gray"></i></td>
+      {% endif %}
+    <!--#endregion -->    
+        <!--#region price -->
+          <td class="text-center">
+            {{ item.sale_price }}
+          </td>
+        <!--#endregion -->
+
+      </tr>
+      {% endfor %}
+      <tr style="height:15px"></tr>
+      <tr style="height:20px; border-top:1px solid black;"></tr>
+    </tbody>
+  </table>
+{% endif %}
+<!--#endregion -->
+<!--#region###############################################         JAVA                          ###############################################-->
+<script>
+  function detectChange() {
+    document.getElementById('hidden_checkout')
+    hidden_checkout.style.display = 'inline-block';
+  }
+</script>
+<!--#endregion -->
+{% endblock %}

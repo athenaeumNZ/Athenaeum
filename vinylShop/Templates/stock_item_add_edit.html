@@ -1,0 +1,259 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Stock Item Add/Edit{% endblock %} 
+
+{% block nav-title %}STOCK ITEM ADD/EDIT{% endblock %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:center; margin-top:45px">
+  <span style="width:500px">
+    <form id="stockItemForm" action="{% url 'stock_item_add_edit_submission' library.id release.id %}" method="post" enctype="multipart/form-data">
+      <span style="display:flex;">
+      <!--#region artwork -->
+      <span>
+      {% if release.artwork %}
+      <img src="{{ release.artwork.url }}" width="150" height="150">
+      {% else %}
+      <span style="text-align:center; font-size: 0.5rem;">No image</span>
+      {% endif %}
+      </span>
+      <!--#endregion -->
+      <!--#region details-->
+      <span style="margin-left: 10px; font-size:1.5rem">
+        {{ release.artist }} - {{ release.release_title }}<br>
+      <span>
+      </span>
+        {{ release.distributor.distributor_code }} ({{ release.stock_estimation }})
+        <br>
+        <!--#region master_genre_id -->
+        <div class="form-group col-md-12">
+          <select class="form-control" name="master_genre_id" >
+            {% if release.master_genre != None %}
+            <option value="{{ release.master_genre.id }}" selected>{{ release.master_genre.genre }}</option>
+            {% else %}
+            <option selected>Master Genre Choose...</option>
+            {% endif %}
+            {% for genre in genres %}
+            {% if genre != release.master_genre %}
+              <option value="{{ genre.id }}">{{ genre.genre }}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+        <!--#endregion -->
+        <!--#region quantity_to_order  -->
+        {% if release.stock_estimation >= 1 %}
+        <div style="font-size:1rem; margin-top:10px ">
+          <label for="quantity_to_order" class="form-label">Order Quantity</label>
+          <input type="number" style="height:35px; width:100px; margin-left:20px" name="quantity_to_order">
+        </div>
+        {% else %}
+        <input type="hidden" value="False" name="order_for_shop">
+        {% endif %}
+        <!--#endregion -->
+        <!--#region want list -->
+        <div class="form-group col-md-3" style="font-size:1rem; display:flex">
+          {% if stock_item.in_library_shop_want_list == True %}
+          <select style="height:35px;" name="in_library_shop_want_list">
+            <option value="False">Remove From Want List</option>
+            <option value="True" selected>In Want List</option>
+          </select>
+          <span style="margin-left:5px">*</span>
+          {% else %}
+          <select style="height:35px; " name="in_library_shop_want_list">
+            <option value="False" selected>Do Not Add to Want List</option>
+            <option value="True">Add to Want List</option>
+          </select>
+          {% endif %}
+        </div>
+        <!--#endregion -->
+      </span>
+      <!--#endregion -->
+    </span>
+    <div style="width:490px; margin-top:50px">
+      {% csrf_token %}   
+      <!--#region quantity -->
+        <div class="form-group col-md-12">
+          <label for="quantity" class="form-label">
+            {% if stock_item %}
+              Quantity <strong>to Add or Subtract</strong> <span style="color:green">(In Stock: {{ stock_item.quantity }})</span> + <span style="color:royalblue">(Incoming: {{ stock_item.quantity_incoming }})</span> = {{ stock_item.quantity_plus_quantity_incoming_stock }}
+            {% else %}
+              Quantity
+            {% endif %}
+          </label>
+          <input type="number" id="quantity" placeholder="Set to 0 if not changing" name="quantity" class="form-control" required autofocus>
+        </div>
+      <!--#endregion -->
+      <!--#region price -->
+        <div class="form-group col-md-12" style="margin-top:20px">
+          <label for="price" class="form-label">Set Price <span style="color:green">[ RRP ${{ release.recommended_sale_price_NZ }} ({{ library.currency }}) excl. G.S.T. ]</span></label>
+          {% if stock_item %}
+            <input type="number" step=".01" value="{{ stock_item.price }}" id="price" name="price" class="form-control" style="text-align:center;" onfocus="calculate_final_cost(this)" onchange="calculate_final_cost(this)">
+          {% else %}
+            <input type="number" step=".01" placeholder="{{ release.recommended_sale_price_NZ }} " id="price" name="price" class="form-control" style="text-align:center;" onchange="calculate_final_cost(this)" onchange="calculate_final_cost(this)">
+          {% endif %}
+          </div>
+      <!--#endregion -->
+      <!--#region final price -->
+        <div class="form-group col-md-12" style="margin-top:20px">
+          <label class="form-label" style="float:right">Final Price = [ $<span style="color:green"><span id="final_price"></span></span>  incl. G.S.T. ]</label>
+        </div>
+      <!--#endregion -->
+      <div class="form-group col-md-12" style="display:flex; justify-content:space-between; vertical-align:middle">
+      <!--#region auto restock on off -->
+      <div class="form-group col-md-3">
+        <label class="form-label">Auto Restock</label>
+        <select style="height:35px; width:120px" name="auto_restock">
+          {% if stock_item.auto_restock == True %}
+          <option value="True" selected>On</option>
+          <option value="False">Off</option>
+          {% else %}
+          <option value="True">On</option>
+          <option value="False" selected>Off</option>
+          {% endif %}
+        </select>
+      </div>
+      <!--#endregion -->
+      <!--#region auto_restock_threshold -->
+      <div class="form-group col-md-4">
+        <label class="form-label">Threshold:</label>
+        <input type="number" value="{{ stock_item.auto_restock_threshold }}" name="auto_restock_threshold" class="form-control">
+      </div>
+      <!--#endregion -->
+      <!--#region auto_restock_quantity -->
+        <div class="form-group col-md-4">
+          <label class="form-label">Quantity:</label>
+          <input type="number" value="{{ stock_item.auto_restock_quantity }}" name="auto_restock_quantity" class="form-control">
+        </div>
+        <!--#endregion -->
+      <!--#region previous_url -->
+        <input type="hidden" value="{{ previous_url }}" name="previous_url">
+      <!--#endregion -->
+      </div>
+      <!--#region submit-->
+      <div class="form-group col-md-12" style="margin-top:40px">
+        <input type="button" value="Edit {{ release }}" class="btn btn-secondary btn-sm form-control" onclick="submitFormAndCloseWindow()">
+      </div>
+      <!--#endregion -->
+    </div>
+    </form>
+  </span>
+  <!--#region divider -->
+  <span style="width:20px"></span>
+  <!--#endregion -->
+  <span style="width:600px;">
+  <!--#region tracks -->
+  <table class="table table-borderless table-sm" style="margin-top:20px">
+    <thead>
+      <th colspan="2" style="font-weight:600">Tracks</th>
+      <th><span style="float:right">{% include 'vinyl_release_form.html' %}</span></th>
+    </thead>
+    {% for track in tracks %}
+    <tbody>
+      <tr>
+        <td>{{ track.index }}</td>
+        <td>{{ track.title }}</td>
+        {% if track.audio %}
+        <td><audio controls controlsList="noplaybackrate nodownload" style="width:300px;height:32px; float:right; background-color:whitesmoke" preload="none">
+            <source src="{{ track.audio.url }}" type="audio/mp3" class='audios'>
+        </audio></td>
+        {% else %}
+        <td class="text-center">No Audio</td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <!--#endregion -->
+  <!--#region other releases on label -->
+    <table class="table table-borderless">
+      <thead>
+        <tr>
+          <th colspan="4" style="font-weight:300">Other <span style="font-weight:600">{{ release.label }}</span style="font-weight:600"> Sale Items:</th>
+          <th class="text-center">$</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in other_stock_items_on_label %}
+        <tr>
+          <td><a href="{% url 'stock_item_add_edit' library.id i.vinyl_release.id %}" target="_blank">{{ i.vinyl_release.catalog_number }}</a></td>
+          <td>{{ i.vinyl_release.artist }}</td>
+          <td>{{ i.vinyl_release.release_title }}</td>  
+          {% if  i.vinyl_release.plate_count == 1 %}
+            <td>{{ i.vinyl_release.plate_size }}</td>
+          {% else %}
+            <td>{{ i.vinyl_release.plate_count }}x{{ i.vinyl_release.plate_size }}</td>
+          {% endif %}
+          <td class="text-center">{{ i.price }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <!--#endregion -->
+  <!--#region stock_item_delete -->
+  {% if stock_item and stock_item.quantity == 0 and stock_item.quantity_incoming == 0 %}
+  <a href="{% url 'stock_item_delete_submission' library.id stock_item.id %}" class="btn btn-sm btn-danger" style="float:right" onclick="return confirm('Clicking OK will delete this stock item!!!')"><i class="fas fa-skull-crossbones"></i> Stock Item</a>
+  {% endif %}
+  <!--#endregion -->
+  </span>
+</div>
+<!--#region ################################## JAVASCRIPT -->
+<!--#region calculate_final_cost -->
+<script>
+  function calculate_final_cost() {
+      let with_gst = parseFloat(document.getElementById('price').value)
+      document.getElementById("final_price").innerHTML = (with_gst * 1.15).toFixed(2)
+  }
+</script>
+<!--#endregion -->
+<!--#region same_price_as_this_release -->
+<script>
+  function same_price_as_this_release() {
+      let with_gst = parseFloat(document.getElementById('price').value)
+      document.getElementById("final_price").innerHTML = (with_gst * 1.15).toFixed(2)
+  }
+</script>
+<!--#endregion -->
+<!--#region previousAudio -->
+<script>
+  var previousAudio;
+  document.addEventListener('play', function (e) {
+    if (previousAudio && previousAudio != e.target) {
+      previousAudio.pause();
+    }
+    previousAudio = e.target;
+  }, true);
+</script>
+<!--#endregion -->
+<!--#region submitFormAndCloseWindow -->
+<script>
+  function submitFormAndCloseWindow() {
+    // Submit the form asynchronously using AJAX
+    var form = document.getElementById("stockItemForm");
+    var formData = new FormData(form);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open(form.method, form.action, true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        // Check if the submission was successful
+        if (xhr.status === 200) {
+          // Close the window once the submission is successful
+          window.close();
+          // If the window has an opener (parent window), reload it
+          if (window.opener) {
+            window.opener.location.reload(true); // Reloads the page, forcing a refresh from the server
+          }
+        } else {
+          // Handle errors if any
+          console.error('Error:', xhr.responseText);
+        }
+      }
+    };
+    xhr.send(formData);
+  }
+</script>
+<!--#endregion -->
+<!--#endregion -->
+{% endblock %}

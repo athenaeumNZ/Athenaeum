@@ -1,0 +1,42 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Remove All PO Items{% endblock %}
+
+{% block nav-title %}REMOVE ALL {{ purchase_order_request_item.vinyl_release }} {% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="margin-top:10px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel</button>
+    </span>
+  </header>
+</div>
+
+
+<div style="display:flex; justify-content:center; margin-top:10px">
+  <form action="{% url 'purchase_order_request_item_edit_remove_all_items_submission' library.id purchase_order_request.id purchase_order_request_item.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+    {% csrf_token %}
+
+    <!--#region notes -->
+      <div class="form-group col-md-12">
+        <label for="note" class="form-label">Reason for Cancelling Order?</label>
+        <textarea id="note" name="note" class="form-control" cols="20" rows="5">{{ purchase_order_request_item.notes }}</textarea>
+      </div>
+    <!--#endregion -->
+    
+    <!--#region submit-->
+      <div class="form-group col-md-12" style="margin-top:45px">
+        <input type="submit" value="Remove {{ purchase_order_request_item.vinyl_release }} from PO {{ purchase_order_request.id|stringformat:'04d' }}" class="btn btn-danger btn-sm form-control"> 
+      </div>
+    <!--#endregion -->
+
+  </form>
+</div>
+
+{% endblock %}

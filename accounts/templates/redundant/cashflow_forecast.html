@@ -1,0 +1,451 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{library.name}} Cashflow Forecast{% endblock %} 
+
+{% block nav-title %}CASHFLOW FOReCAST{% endblock %}
+
+{% block content %}
+
+
+<style>
+  .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 1px;
+}
+</style>
+
+<span style="display:flex; font-size:0.75rem; margin-top:10px">
+  <div style="margin-top:10px">
+
+    <!--#region row headers -->
+    <table class="table" style="width:200px; border:1px solid lightgray" >
+      <tbody>
+        <tr>
+          <td><strong>Month</strong></td>
+        </tr>
+        <tr>
+          <td style="color:white">.</td>
+        </tr>
+        <tr>
+          <td style="color:white">.</td>
+        </tr>
+        <tr>
+          <td><strong>Opening Balance</strong></td>
+        </tr>
+        <tr>
+          <td style="color:white">.</td>
+        </tr>
+        <tr>
+          <td><strong>Cash In</strong></td>
+        </tr>
+        <tr>
+          <td></td>
+        </tr>
+        {% for i in invoice_types %}
+          {% if not i.is_expense %}
+          <tr>
+            <td style="font-style:italic">{{ i }}</td>
+          </tr>
+          {% endif %} 
+        {% endfor %}
+        <tr>
+          <td>GST Received</td>
+        </tr>
+        <tr>
+          <td></td>
+        </tr>
+        <tr>
+          <td><strong>Total Cash In</strong></td>
+        </tr>
+        <tr>
+          <td style="color:white">.</td>
+        </tr>
+        <tr>
+          <td><strong>Cash Out</strong></td>
+        </tr>
+        <tr>
+          <td></td>
+        </tr>
+        {% for i in invoice_types %}
+          {% if i.is_expense %}
+          <tr>
+            <td style="font-style:italic">{{ i }}</td>
+          </tr>
+          {% endif %} 
+        {% endfor %}
+        <tr>
+          <td>GST Paid</td>
+        </tr>
+        <tr>
+          <td></td>
+        </tr>
+        <tr>
+          <td><strong>Total Cash Out</strong></td>
+        </tr>
+        <tr>
+          <td style="color:white">.</td>
+        </tr>
+        <tr>
+          <td><strong>Closing Balance</strong></td>
+        </tr>
+      </tbody>
+    
+    </table>
+    <!--#endregion -->
+
+    <!--#region links -->
+
+    <div style="width:200px" >
+      <a href="{% url 'cashbook_month_add' library.id %}" target="_blank" style="text-decoration:none; color:black; margin-left:10px"><i class="fas fa-plus"></i> Month</a>
+    </div>
+
+    <!--#endregion -->
+  </div>
+
+  <div style="display:flex; overflow:scroll">
+  {% for m in cashbook_months %}
+  {{ m.types }}
+    <div style="margin-top:10px; margin-left:5px">
+      <table class="table" style="width:150px; border:1px solid lightgray" >
+        <tbody style="text-align:center">
+          <!--#region titles -->
+          <tr>
+            <td style="text-align:center" colspan="2"><strong>{{ m.start_date|date:'F y'}}</strong></td>
+          </tr>
+          <tr>
+            <td style="text-align:center"><a href="{% url 'cashbook_month_edit_forecast_choose_comparison_month' library.id m.id %}" style="text-decoration:none; color:black">Forecast</a></td>
+            <td style="text-align:center"><a href="{% url 'cashbook' library.id m.id %}" style="text-decoration:none; color:black" target="_blank">Actual</a></td>
+          </tr>
+          <tr>
+            <td style="color:white" colspan="2">.</td>
+          </tr>
+          <tr>
+            {% if m.opening_balance_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            <strong>{{ m.opening_balance_forecast }}</strong></td>
+            {% if m.opening_balance_actual == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            <strong>{{ m.opening_balance_actual }}</strong></td>
+          </tr>
+          <tr>
+            <td style="color:white" colspan="2">.</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="color:white">.</td>
+          </tr>
+          <tr>
+            <td colspan="2"></td>
+          </tr>
+          <!--#endregion -->
+          <!--#region income -->
+          <tr>
+            {% if m.funds_introduced_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.funds_introduced_forecast|floatformat:0 }}</td>
+            {% if m.funds_introduced_actual == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.funds_introduced_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.interest_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.interest_forecast|floatformat:0 }}</td>
+            {% if m.interest_actual == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.interest_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.logistics_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.logistics_forecast|floatformat:0 }}</td>
+            {% if m.logistics_actual == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.logistics_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.sales_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.sales_forecast|floatformat:0 }}</td>
+            {% if m.sales_actual == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.sales_actual|floatformat:0 }}</td>
+          </tr>       
+          <tr>
+            {% if m.gst_received_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.gst_received_forecast|floatformat:0 }}</td>
+            {% if m.gst_recieved == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.gst_recieved|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            {% if m.total_cash_in_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.total_cash_in_forecast }}</td>
+            {% if m.incomes == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            <strong>{{ m.incomes }}</strong></td>
+          </tr>
+          <tr>
+            <td style="color:white" colspan="2">.</td>
+          </tr>
+          <!--#endregion -->
+          <!--#region expenses -->
+          <tr>
+            <td colspan="2" style="color:white">.</td>
+          </tr>
+          <tr>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            {% if m.bank_fee_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.bank_fee_forecast|floatformat:0 }}</td>
+            {% if m.bank_fee_actual == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.bank_fee_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.communications_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.communications_forecast|floatformat:0 }}</td>
+            {% if m.communications_actual == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.communications_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.consumables_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.consumables_forecast|floatformat:0 }}</td>
+            {% if m.consumables_actual == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.consumables_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.drawings_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.drawings_forecast|floatformat:0 }}</td>
+            {% if m.drawings_actual == 0 %}
+            <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.drawings_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.fit_out_forecast == 0 %}
+            <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.fit_out_forecast|floatformat:0 }}</td>
+            {% if m.fit_out_actual == 0 %}
+            <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.fit_out_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.home_forecast == 0 %}
+            <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.home_forecast|floatformat:0 }}</td>
+            {% if m.home_actual == 0 %}
+            <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.home_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.professional_forecast == 0 %}
+            <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.professional_forecast|floatformat:0 }}</td>
+            {% if m.professional_actual == 0 %}
+            <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.professional_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.shipping_forecast == 0 %}
+            <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.shipping_forecast|floatformat:0 }}</td>
+            {% if m.shipping_actual == 0 %}
+            <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.shipping_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.stock_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.stock_forecast|floatformat:0 }}</td>
+            {% if m.stock_actual == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.stock_actual|floatformat:0 }}</td>
+          </tr>
+          <tr>
+            {% if m.sundry_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.sundry_forecast|floatformat:0 }}</td>
+            {% if m.sundry_actual == 0 %}
+            <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.sundry_actual|floatformat:0 }}</td>
+          </tr>
+          
+          <tr>
+            {% if m.gst_paid_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.gst_paid_forecast|floatformat:0| cut:"-" }}</td>
+            {% if m.gst_paid == 0 %}
+              <td style="opacity: 0.1;">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.gst_paid|floatformat:0| cut:"-" }}</td>
+          </tr>
+          <!--#endregion -->
+          <!--#region summary -->
+          <tr>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td>{{ m.total_cash_out_forecast }}</td>
+            <td><strong>{{ m.expenses_incl_gst }}</strong></td>
+          </tr>
+          <tr>
+            <td style="color:white" colspan="2">.</td>
+          </tr>
+          <tr>
+            {% if m.closing_balance_forecast == 0 %}
+              <td style="opacity: 0.1;">
+            {% elif m.closing_balance_forecast < 0 %}
+              <td style="color:red">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.closing_balance_forecast }}</td>
+            {% if m.closing_balance == 0 %}
+              <td style="opacity: 0.1;">
+            {% elif m.closing_balance < 0 %}
+              <td style="color:red">
+            {% else %}
+              <td>
+            {% endif %}
+            {{ m.closing_balance }}</td>
+          </tr>
+        <!--#endregion -->
+        </tbody>
+      </table>
+      <!--#region details  -->
+      <form action="{% url 'cashbook_month_edit_details_submission' library.id m.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="margin-right:5px; font-size:0.75rem; width:150px;">
+          <span style="display:flex; justify-content:center">
+            <input type="submit" value="Update {{ m.start_date|date:'F'}}" class="btn btn-sm btn-default" style="padding:0px; font-size:0.6rem;">
+          </span>
+          <textarea name="details" style="width:150px; border:1px solid lightgray; height:1000px; margin-top:5px">{{ m.details }}</textarea>
+        </div>
+      </form>
+      <!--#endregion -->
+    </div>
+  {% endfor %}
+  </div>
+</span>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+{% endblock %}

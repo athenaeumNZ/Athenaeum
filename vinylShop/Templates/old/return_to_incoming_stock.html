@@ -1,0 +1,17 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Return to Incoming Stock{% endblock %}
+
+{% block nav-title %}Return to Incoming Stock{% endblock %}
+
+{% block content %}
+
+<span style="display:flex; justify-content:center; padding-top:250px">
+  <a href="{% url 'incoming_stock' library.id %}" id="auto_clicked_button" style="width:400px" class="btn btn-default btn-sm">Continue</a>
+</span>
+
+<script>
+  document.getElementById('auto_clicked_button').click();
+</script>
+
+{% endblock %}

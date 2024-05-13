@@ -1,0 +1,53 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Cashbook Month Add{% endblock %}
+
+{% block nav-title %}CASHBOOK MONTH ADD{% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="margin-top:30px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel</button>
+    </span>
+  </header>
+</div>
+
+
+<div style="display:flex; justify-content:center; margin-top:80px">
+  <form action="{% url 'cashbook_month_add_submission' library.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+      
+    {% csrf_token %}
+
+    <!-- start_date -->
+    <div class="form-group col-md-12">
+      <label for="start_date" class="form-label">Start Date</label>
+      <input type="date" id="start_date" name="start_date" class="form-control" autofocus>
+    </div>
+
+    <!-- end_date -->
+    <div class="form-group col-md-12">
+      <label for="end_date" class="form-label">End Date</label>
+      <input type="date" id="end_date" name="end_date" class="form-control">
+    </div>
+
+    <!-- opening_balance_actual -->
+    <div class="form-group col-md-12">
+      <label for="opening_balance_actual" class="form-label">Opening Balance</label>
+      <input type="text" id="opening_balance_actual" name="opening_balance_actual" class="form-control" required>
+    </div>
+
+    <!--submit-->
+    <div class="form-group col-md-12" style="margin-top:45px">
+      <input type="submit" value="Add Entry" class="btn btn-secondary btn-sm form-control"> 
+    </div>
+        
+  </form>
+</div>
+
+{% endblock %}

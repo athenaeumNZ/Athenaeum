@@ -1,0 +1,44 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Library Plate Move{% endblock %}
+
+{% block nav-title %}<span style="color:green">LIBRARY PLATE MOVE</span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="padding-top:30px; display:flex; justify-content:space-between">
+  <span>
+  </span>
+  <span>
+    <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel Move</button>
+  </span>
+</div>
+{{ catalog_number_start }}
+
+{{ mlc }}
+
+{{ sub_crates }}
+
+{{ chosen_crate }}
+<div style="display:flex; justify-content:center; margin-top:100px">
+  <form action="{% url 'library_plate_move_submission' library.id sub_crate.id library_plate.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+    {% csrf_token %}
+    <!-- related_library_crate -->
+    <div class="form-group col-md-12">
+      <label for="related_library_crate" class="form-label">Destination</label>
+      <select id="related_library_crate" class="form-control" name="related_library_crate" >
+        {% for crate in library_crates %}
+          <option value="{{ crate.id }}">{{ crate }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <br>
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Move {{ library_plate.related_vinyl_plate }}" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+
+{% endblock %}

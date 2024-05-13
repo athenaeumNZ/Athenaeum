@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+        <title>Portfolio</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+        <style>
+        @media print
+            {    
+                .no-print, .no-print *
+                {
+                    display: none !important;
+                }
+            }
+
+            table.print-friendly tr td, table.print-friendly tr th {
+                page-break-inside: avoid;
+            }
+        </style>
+    </head>
+    <body>
+        {% load static %}
+        <div style="left:0; position:relative; width:210mm; height:297mm; margin: 0mm auto; background-color:white; padding:0mm 5mm">
+            <!--#region dashboard -->
+            <h3>Glossary</h3>
+            <br>
+            <strong>Library:</strong>
+            <br><br>
+            A library technically doesn't need to be an actual vinyl library.
+            Additionally, in the case that a library is a vinyl library, this is not a public library.
+            The term library is used to describe a collection of records, collaboratively built by a library's members, for which accessing the records is done much like you would at a 'book library'.
+            Originally, the intention of the Athenaeum software was to catalogue records and perform basic library tasks such as issuing and returning selections of vinyl.
+            As such, library is now the term used to cover a wide range of scenarios.
+            <br><br>
+            Think of our libraries more as clubs.
+            Not the flashing lights and loud music clubs, but community clubs such as you can be a member of a car club, a book club, or a sports club.
+            However, these clubs need to be some what related to vinyl.
+            Additionally, the music focus for these 'clubs', must be music that is intended to be mixed.
+            Note, if a physical vinyl library is formed, these need to housed in private residences.
+            Obviously, you can use Athenaeum to buy your music through but vinyl obtained other ways is totally OK.
+            However, the vinyl shop side of Athenaeum was thought of after the library aspect.
+            The aim of integrating vinyl shopping directly into the library system was that it will be used as a fundraising tool for the development and growth of our libraries and related technologies. 
+            <br><br>
+            Record labels, promoters and DJ crews dealing and/or using vinyl will likely form the basis for what makes up the bulk of our libraries.
+            Additionally, a library will more often than not include a combination aspects relating to vinyl.
+            A library in nearly all cases will be a place the records its members purchase through Athenaeum are collected from.            
+            Ideally however, each library will be involved in the releasing of electronic music on vinyl.
+            The aim is to build a micro-economy by re-cycling revenue, increasing industry output, and revitalizing interest in vinyl culture thus increasing vinyl use.
+            <br><br>
+            It is important to note that although part of Athenaeums long term goals include creating jobs within the industry, a library or any of their aspects are not intended to be a job for anyone.
+            Please understand, the reason for Athenaeum's creation is that the industry is struggling and we believe the library system can provide support to the industries continuing existence.
+            Also note, the mark up for vinyl and the volume a library will be dealing in is likely to be extremely small when compared to other products.
+            We would be very surprised if a library will ever be able to "make money" so to say.
+            However, each library will be allocated a cut of the revenue from the items purchased by its members.
+            Additionally, one thing we very much want to see is libraries reinvesting their allocations into making vinyl releases.
+            Once again, jack all money, but the potential exists.
+            <br><br>
+            In saying that, there is the potential for financial opportunities to exist for member.
+            For example, a member decides they want to be the person who has the records delivered to their house and will allow other members to pick up the records they order from them.
+            The members may all agree this is a great arrangement and agree all, or some of, the [very small] allocation can go to them.
+            In such a case the receiving member would probably given store credit.
+            Or at least that is what I would do if it was me. 
+            This is just one example of what might work.
+            Please note, their will be at least a proportion of a libraries members that make these decisions together.
+            Additionally, any allocations must be cleared by Athenaeum and fit within Athenaeums mission goals.
+            Ideally however, members are working collaboratively and using any allocations from sales or profits from things such as vinyl releases to further fund their own vinyl related goals.
+            <br><br>
+            <strong>Member:</strong>
+            <br><br>
+            For many people using Athenaeum, and especially during this period where the libraries have not yet been created, the term member can be interchanged with customer.
+            When the application becomes available, those customers will also become users.
+            However, clusters of customers are already coming together and new connections are forming fairly easy due to our shared passion of vinyl.
+            Most people in the electronic music community are split by only a few degrees of separation.
+            As such, many customers/users will inevitably choose to form libraries to reduce transportation costs.
+            At this stage, the term member will actually mean member.
+            <br><br>
+            <strong>Order Request Item:</strong>
+            <br><br>
+            
+            An order request item is created when a member places an order for a release.
+            An order request item is created for each release that is on order for any given member.
+            <br><br>
+            <strong>Purchase Order Request:</strong>
+            <br><br>
+            Typically, when a business creates a purchase order request it is a binding contract where the business is obligated to purchase the good or service they request.
+            Technically, an Athenaeum purchase order request does not have any legal obligation attached.
+            In certain cases canceling an order is appropriate.
+            E.g., accidentally ordering an item, accidentally doubling up on orders, the release date keeps being pushed back etc.
+            However, it really is a dick move to place an order with a distributor and then cancel that order.
+            Athenaeum expect its members and libraries to only place orders for items they plan to follow through.
+
+            <!--#region dashboard -->
+            <br><br>
+            <h3>Administration Dashboard:</h3>
+            <p>
+                Perform or link to other templates that contain many of the functions nessacary to run a vinyl shop.
+                Search through 'Order Request Items'.
+                When unpacking shipments, find the appropriate location for items and mark the items as being stockpiled into their correct location.
+                View a shelf-list or list of unordered items at any given distributor to generate purchase order requests or to arrange invoice + shipping.
+                Go to any members 'Member Dashboard' if nessacary.
+                Add a release to the database i.e. when a distributor adds a new release to their release schedule.
+                
+            </p>
+            <img src="{% static 'portfolio/Dashboard 1.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/Dashboard 2.jpg' %}" width="100%">
+            <p>
+                Access documents such as purchase order requests and invoices.
+                Follow, archive, and update the status of documents such as invoices.<br><br>
+                NOTE: In time, Athenaeum will become a tool for distributors to use.
+                At which point, functions like adding new releases to the database or generating purchase order requests will be integrated on the distributors end.
+                This will streamline many of the processes within the current system.
+            </p>
+            <h3>Purchase Order Request Template:</h3>
+            <p>
+                A purchase order request template can be found using the <select style="font-size: smaller;"><option >Create Purchase Order...</option></select> tab within the dashboard.
+                The distributors in the drop down menu will only contain distributors you currently have unordered items with.
+                The quantity column is the total number of that release you or your members have requested which have not be ordered  items listed on the template are the total quantities for each item that either a member or the library has made an 'order request item' for but an order has not yet placed with the specified distributor.
+            </p>
+            <img src="{% static 'portfolio/Purchase Order Request.jpg' %}" width="100%">
+            <p>
+                
+                Select a distributor to view a list of any items where an order has not yet been placed.
+                A library "Vinyl Shop" can generate purchase order requests from there.<br>
+                The <select class="p" style="font-size: smaller;"><option >View Member...</option></select> or <select class="p" style="font-size: smaller;"><option >View Stockpile...</option></select>
+                links to any member's "customers" dashboard. View Member lists all members of a given library
+                Informing the location to stockpile an item when shipments come in,
+                Linking to views containing a libraries shelf-list at any given distributor.
+                From there a vinyl shop can decide if there is enough on hand to warrant making a shipment.
+            </p>
+            <!--endregion -->
+            <img src="{% static 'portfolio/Plate Sorter.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/Plate Sorter - With Stock 1.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/Plate Sorter - With Stock 2.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/Plate Sorter - With Stock 3.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/vinyl_shop.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/vinyl_shop_new_releases.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/vinyl_shop_search.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/Release Compile.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/Release Edit.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/Stock Item Edit.jpg' %}" width="100%">
+            <img src="{% static 'portfolio/Invoice.jpg' %}" width="100%">
+            
+    </div>
+    </body>
+</html>

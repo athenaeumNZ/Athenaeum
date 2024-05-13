@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Invoice {{ invoice.id|stringformat:'04d' }}</title>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print, .no-print * {
+                display: none !important;
+            }
+        }
+
+        body {
+            margin: 10px;
+            font-size: 16px; /* Base font size */
+        }
+
+        .container {
+            padding: 10px;
+        }
+
+        .element-spacing {
+            margin-bottom: 10px;
+        }
+
+        table tbody tr {
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-size: 2.5rem; /* 40px */
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 2rem; /* 32px */
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.6rem; /* 26px */
+            margin-bottom: 5px;
+        }
+
+        p, td {
+            font-size: 1rem; /* 16px */
+            line-height: 1.5;
+            margin-bottom: 5px;
+        }
+
+        .btn {
+            font-size: 1rem; /* 16px */
+            padding: 0.5rem 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 800px; margin: 0 auto;">
+        <h1>{{ library.name }}</h1>
+        <h2>Invoice {{ invoice.id|stringformat:'04d' }}</h2>
+        <p>{{ member.user.first_name }} {{ member.user.last_name }}</p>
+
+        <div class="element-spacing">
+            <div style="float: left; margin-right: 20px;">
+                <h3>To</h3>
+                <p>{{ invoice.member.user.first_name }} {{ invoice.member.user.last_name }}</p>
+                <p>
+                    {% if invoice.member.address.c_o %}
+                        {{ invoice.member.address.c_o }}<br>
+                    {% endif %}
+                    {% if invoice.member.address.unit_number %}
+                        {{ invoice.member.address.unit_number }} /
+                    {% endif %}
+                    {{ invoice.member.address.street_number }} {{ invoice.member.address.street_name }}<br>
+                    {{ invoice.member.address.suburb }}<br>
+                    {{ invoice.member.address.city }} {{ invoice.member.address.post_code }}<br>
+                </p>
+            </div>
+            <div style="float: right;">
+                <h3>From</h3>
+                <p>{{ invoice.library.library_shop.member.address.first_name }} {{ invoice.library.library_shop.member.address.last_name }}</p>
+                <p>
+                    {% if invoice.library.library_shop.member.address.include_first_and_last_names == True %}
+                        {{ invoice.library.library_shop.member.address.first_name }} {{ invoice.library.library_shop.member.address.last_name }}<br>
+                    {% endif %}
+                    {% if invoice.library.library_shop.member.address.c_o %}
+                        {{ invoice.library.library_shop.member.address.c_o }}<br>
+                    {% endif %}
+                    {% if invoice.library.library_shop.member.address.unit_number %}
+                        {{ invoice.library.library_shop.member.address.unit_number }} /
+                    {% endif %}
+                    {{ invoice.library.library_shop.member.address.street_number }} {{ invoice.library.library_shop.member.address.street_name }}<br>
+                    {{ invoice.library.library_shop.member.address.suburb }}<br>
+                    {{ invoice.library.library_shop.member.address.city }} {{ invoice.library.library_shop.member.address.post_code }}<br>
+                    <br>
+                    GST# {{ invoice.library.gst }}
+                </p>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+
+        <div class="element-spacing">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left;">Release</th>
+                        <th style="text-align: left;">Artist</th>
+                        <th style="text-align: left;">Title</th>
+                        <th style="text-align: left;">Label</th>
+                        <th style="text-align: right;">Price</th>
+                        <th style="text-align: right;">Quantity</th>
+                        <th style="text-align: right;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in invoice_items %}
+                        <tr>
+                            <td>{{ item.order_request_item.vinyl_release.catalog_number }}</td>
+                            <td>{{ item.order_request_item.vinyl_release.artist }}</td>
+                            <td>{{ item.order_request_item.vinyl_release.release_title }}</td>
+                            <td>{{ item.order_request_item.vinyl_release.label }}</td>
+                            <td style="text-align: right;">{{ item.invoiced_sale_price }}</td>
+                            <td style="text-align: right;">{{ item.invoiced_quantity }}</td>
+                            <td style="text-align: right;">{{ item.invoiced_sub_total }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="element-spacing">
+            <p style="text-align: right;">Sub Total (Excl. GST): {{ invoice.invoice_sub_total }}</p>
+            <p style="text-align: right;">Shipping ({{ invoice.invoice_shipping_type }}): {{ invoice.invoice_shipping_cost }}</p>
+            <p style="text-align: right;">GST: {{ invoice.invoice_total_gst }}</p>
+            <p style="text-align: right; font-weight: bold;">Total: {{ invoice.invoice_total }}</p>
+
+            {% if not invoice.member_has_made_payment %}
+                <p class="no-print">
+                    <a href="{% url 'invoice_member_has_payed_submission' library.id invoice.id %}" class="btn btn-sm btn-secondary">Click me to let {{ library }} know you have paid this invoice</a>
+                </p>
+                <p>
+                    Please pay ${{ invoice.invoice_total }} to {{ library }}, 01-0804-0187544-48<br>
+                    Name: Tristan Maxwell<br>
+                    Reference: INV{{ invoice.id|stringformat:"04d" }}<br>
+                    {{ library }} GST Number: {{ library.gst }}
+                </p>
+            {% elif invoice.paid %}
+                <p>Thank you, {{ library }} has received your payment of this invoice.</p>
+            {% else %}
+                <p>Thank you, you have made the payment for this invoice. {{ library }} will let you know if there are any issues.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

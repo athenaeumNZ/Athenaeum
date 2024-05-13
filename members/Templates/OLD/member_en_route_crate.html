@@ -1,0 +1,181 @@
+{% extends 'library_base.html' %}
+
+{% block title %}{{ user.member.membership_number }} En Route Plates{% endblock %} 
+
+{% block nav-title %}{{ user.member.membership_number }} En Route Plates{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:30px;">
+  <!-- search -->
+  <span style="display:flex; justify-content:space-between">
+    <div class="row">
+      <div class="column">
+        <table>
+          <form action="{% url 'member_limbo_crate_search' library.id user.member.id %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <tbody>
+            <tr>
+              <td style="width:180px; padding-right:5px">
+                {% if search_track_crate_id and search_track_crate_id != 'Catergory...' %}
+                  <select id="search_track_crate_id" style="width:180px; height:30px; border:3px solid green" name="search_track_crate_id">
+                {% else %}
+                  <select id="search_track_crate_id" style="width:180px; height:30px;" name="search_track_crate_id">
+                {% endif %}
+                  {% if search_track_crate_id %}
+                    <option selected>{{ search_track_crate_id }}</option>
+                    <option></option>
+                  {% else %}
+                    <option selected>Catergory...</option>
+                  {% endif %}
+                  {% for crate in listerine %}
+                    <option value="{{ crate }}">{{ crate }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              
+              <td style="width:180px; padding-right:5px">
+                {% if search_artist %}
+                  <input name="search_artist" value="{{ search_artist }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Artist..." name="search_artist">
+                {% endif %}
+              </td>
+
+              <td style="width:180px; padding-right:5px">
+                {% if search_label %}
+                  <input name="search_label" value="{{ search_label }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Label..." name="search_label">
+                {% endif %}
+              </td>
+
+              <td style="width:180px; padding-right:5px">
+                {% if search_catalog %}
+                  <input name="search_catalog" value="{{ search_catalog }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Catalog..." name="search_catalog">
+                {% endif %}
+              </td>
+              <td>
+                <button type="submit" class="btn btn-secondary btn-sm" style="height:30px; margin-right:5px"><i class="fas fa-search"></i></button>
+              </td>
+              <td>
+                <a href="{% url 'member_limbo_crate' library.id user.member.id %}" class="btn btn-secondary btn-sm" style="height:30px;">Reset Search</a>
+              </td>
+            </tr>
+          </tbody>
+          </form>
+        </table>
+      </div>
+    </div>
+  </span>
+  <!-- options -->
+  <span>
+    <span style="padding:0px 5px; border: 1px solid black; margin-right:5px ">Plate Count: {{ plate_count }}</span>
+</div>
+
+<!-- plates -->
+{% for plate in member_plates %}
+  <div style="border: 0.1px solid black; margin:30px 0px; padding:10px">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:200px;" class="text-center">CATALOG</th>
+          <th>RELEASE TYPE</th>
+          <th class="text-center">SIZE</th>
+          <th>COLOUR</th>
+          <th>COVER</th>
+          <th class="text-center">CONDITION</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="width:200px"><a href="{% url 'release' library.id plate.related_vinyl_plate.related_release.id %}"class="btn btn-secondary btn-sm" style="width:200px" target="_blank">{{ plate.related_vinyl_plate }}</a></td>
+          <td>{{ plate.release_type }}</td>
+          <td class="text-center">{{ plate.plate_size }}</td>
+          <td>{{ plate.vinyl_colour }}</td>   
+          <td>{{ plate.cover }}</td>
+          <td class="text-center">{{ plate.media_condition }}</td>
+          <td style="width:130px" class="text-center" style="display:flex" >
+              <a href="{% url 'member_plate_move' library.id plate.related_sub_crate.id plate.id %}" class="btn btn-warning btn-sm"><i class="fas fa-dolly"></i></a>  
+            <a href="{% url 'library_plate_edit' library.id plate.related_sub_crate.id  plate.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="table">
+      <thead>
+        <tr style="background-color: #fcfbfb; margin:0px">
+          <th style="width:15px"></th>
+          <th>Artist</th>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>Vibe</th>
+          <th style="text-align:center">Energy</th>
+        </tr>
+      </thead>
+      {% for track in plate.related_vinyl_plate.related_vinyl_track.all %}
+        {% if track.crate_id ==  search_track_crate_id %}
+          <tbody style="color:green">
+        {% else %}
+          <tbody>
+        {% endif %}  
+          <tr>
+            <td style="width:15px">{{track.index}}.</td>
+            <td style="width: auto;">{{track.artist}}</td>
+            <td>{{track.title}}</td>
+            {% if track.catergorization_final == 'Yes' %}
+              <td>{{track.genre}}</td>
+              <td>{{track.vibe}}</td>
+              <td style="text-align:center">{{track.energy_level}}</td>
+            {% else %}
+              <td style="color:red">{{track.genre}}</td>
+              <td style="color:red">{{track.vibe}}</td>
+              <td style="color:red; text-align:center">{{track.energy_level}}</td>
+            {% endif %}
+          </tr>
+        </tbody>
+         
+      {% endfor %}
+    </table>
+  </div>
+{% endfor %}
+
+<!-- pagination-->
+<div style="padding-top: 5px;">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if member_plates.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ member_plates.previous_page_number }}">&lsaquo;</a></li>
+          {% if member_plates.number > 2 %}
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+              {% if member_plates.number > 3 %}
+                <span class="page-link">...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      {% for num in member_plates.paginator.page_range %}
+        {% if member_plates.number == num %}
+          <li class="page-item"><a class="page-link active" href="?page={{ num }}">{{ num }}</a></li>
+        {% elif num > member_plates.number|add:'-2' and num < member_plates.number|add:'2' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if member_plates.has_next %}
+        {% if member_plates.number < member_plates.paginator.num_pages|add:'-2' %}
+          <span class="page-link">...</span>
+          <li class="page-item"><a class="page-link" href="?page={{ member_plates.paginator.num_pages }}">{{ member_plates.paginator.num_pages }}</a></li>
+        {% elif member_plates.number < member_plates.paginator.num_pages|add:'-1' %}
+          <li class="page-item"><a class="page-link" href="?page={{ member_plates.paginator.num_pages }}">{{ member_plates.paginator.num_pages }}</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link" href="?page={{ member_plates.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav> 
+</div>
+
+{% endblock %}

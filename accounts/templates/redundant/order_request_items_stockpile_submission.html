@@ -1,0 +1,32 @@
+{% extends 'library_base.html' %}
+
+{% block title %}order_request_items_stockpile_submission{% endblock %}
+
+{% block nav-title %}order_request_items_stockpile_submission{% endblock %}
+
+{% block content %}
+
+
+<!-- header -->
+<div style="margin-top:10px">
+  <header>
+    <span>
+    </span>
+    <span>
+    </span>
+  </header>
+</div>
+
+{% for i in stock_items %}
+<ul>
+  <li>{{ i.id }} {{ i.price }} </li>
+</ul>
+{% endfor %}
+
+
+{% for i in order_request_items %}
+<ul>
+  <li>{{ i.stock_item.id }} {{ i.stock_item }} {{ i.member }} </li>
+</ul>
+{% endfor %}
+{% endblock %}

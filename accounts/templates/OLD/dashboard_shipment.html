@@ -1,0 +1,92 @@
+<a href="{% url 'shipment_add' library.id %}" class="btn btn-secondary btn-sm" style="height:30px"><i class="fas fa-plus"></i> <i class="fas fa-ship"></i></a>
+
+<!--#region shipments -->
+<h4>SHIPMENTS</h4>
+<table class="table" style="margin-top:20px">
+  <thead>
+    <tr>
+      <th style="width:130px">E.T.A.</th>
+      <th class="text-center" style="width:90px">I.D.</th>
+      <th style="width:250px">Distributor</th>
+      <th>Tracking Number</th>
+      <th></th>
+      <th class="text-center" style="width:40px">O</th>
+      <th class="text-center" style="width:40px">P</th>
+      <th class="text-center" style="width:40px">T</th>
+      <th class="text-center" style="width:40px">R</th>
+      <th class="text-center" style="width:200px">Options</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in non_closed_shipments %}
+      <tr>
+        <td>{{ s.eta|date:"d F" }}</td>
+        <td class="text-center">
+          <a href="{% url 'shipment' library.id s.id %}" target="_blank">S {{ s.id|stringformat:"04d" }}</a>
+        </td>
+        <td>
+          <span>
+            <span>{{ s.distributor }}</span>
+            {% if s.to_consolidate == True %}
+              <span style="font-style:italic">Consolidate: </span><span style="color:red; font-style:italic">{{ s.consolidation_location.distributor_code }}</span>
+            {% endif %}
+          </span>
+        </td>
+        <td style="width:250px">{{ s.tracking_number }}</td>
+        <td></td>
+
+        <!--#region open -->
+          {% if s.open %}
+            <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+          {% else %}
+            <td class="text-center" style="width:40px"><i class="fas fa-times" style="color:gray"></i></a></td>
+          {% endif %}
+        <!--#endregion -->   
+
+        <!--#region all invoices paid -->
+          {% if s.all_invoices_paid == True %}
+            <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+          {% else %}
+            <td class="text-center" style="width:40px"><i class="fas fa-times" style="color:red"></i></a></td>
+          {% endif %}
+        <!--#endregion --> 
+
+        <!--#region in transit -->
+          {% if s.in_transit == True %}
+            <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+          {% else %}
+            <td class="text-center" style="width:40px"><i class="fas fa-times" style="color:red"></i></a></td>
+          {% endif %}
+        <!--#endregion -->
+
+        <!--#region received -->
+          {% if s.all_invoice_items_stockpiled != False %}
+            <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:green"></i></td>
+          {% elif s.to_consolidate == True and s.arrived_at_consolidation_location == False %}
+            <td class="text-center" style="width:40px"><a href="{% url 'shipment_arrived_at_consolidation_location_submission' library.id s.id %}"><i class="fas fa-arrow-right" style="color:red"></i></a></td>
+          {% elif s.to_consolidate == True and s.arrived_at_consolidation_location == True %}
+            <td class="text-center" style="width:40px"><i class="fas fa-check" style="color:gray"></i></td>
+          {% else %}
+            <td class="text-center" style="width:40px"><i class="fas fa-times" style="color:red"></i></a></td>
+          {% endif %}
+        <!--#endregion -->   
+
+        <td>
+          <span class="text-center" style="display:flex; justify-content:space-around">
+            {% if s.all_invoice_items_stockpiled != False %}
+              <a href ="{% url 'shipment_close_submission' library.id s.id %}" class="btn btn-sm btn-danger">Close Shipment</a>
+            {% elif s.in_transit == True and s.arrived == False %}
+              <a href ="{% url 'shipment_arrived_submission' library.id s.id %}" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure this shipment has arrived?')">Shipment Arrived</a>
+            {% elif s.in_transit == True and s.arrived == True %}
+              Unpack Shipment
+            {% else %}
+              Waiting Departure
+            {% endif %}
+          </span>
+          
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<!--#endregion -->

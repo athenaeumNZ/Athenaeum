@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Library Plate and Replace{% endblock %}
+
+{% block nav-title %}Delete Library Plate and Replace{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="margin-top:30px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <button onclick="history.back()" class="btn btn-secondary btn-sm" style="width:200px">Cancel</button>
+    </span>
+  </header>
+</div>
+
+<div style="display:flex; justify-content:center; margin-top:50px">
+  <form action="{% url 'incoming_stock_budle_plate_change_to_actual_plate_submission' library.id plate.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+    
+    {% csrf_token %}
+    <!-- previous_plate -->
+    <div class="form-group col-md-12">
+      <label class="form-label">Current Plate</label>
+      <input type="text" class="form-control" value="{{ plate }}" readonly>
+    </div>
+
+    <!-- plate_to_swap_for_id -->
+    <div class="form-group col-md-12">
+      <label for="plate_to_swap_for_id" class="form-label">Plate to Swap for</label>
+      <select id="plate_to_swap_for_id" name="plate_to_swap_for_id" class="form-control" >
+        <option>Choose...</option>
+        {% for plate in plates_to_swap_for %}
+          <option value="{{ plate.id }}">{{ plate }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- submit -->
+    <div class="form-group col-md-12" style="margin-top:50px">
+      <input type="submit" value="Update Details" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+
+  </form>
+</div>
+
+{% endblock %}

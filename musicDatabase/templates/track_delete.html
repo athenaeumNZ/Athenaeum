@@ -1,0 +1,30 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Delete {{ track }}.{% endblock %}
+
+{% block nav-title %}<span style="color:green">DELETE <span style="text-transform: none;">{{ release }} {{ track.index }}.</span></span>{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="margin-top:30px">
+  <header>
+    <span>
+    </span>
+    <span>
+      <a href="{% url 'release_compile' library.id release.id %}" style="width:300px" class="btn btn-secondary btn-sm">Return to Release Compile</a>
+    </span>
+  </header>
+</div>
+
+<div style="margin-top:180px; display:flex; justify-content:center">
+  <form action="{% url 'track_delete_submission' library.id release.id track.id %}" method="post" enctype="multipart/form-data" style="width:400px">
+    {% csrf_token %}
+    <!--submit-->
+    <div class="form-group col-md-12" style="display:flex; justify-content:center">
+      <input type="submit" value="Delete {{ track }} ?" class="btn btn-secondary btn-sm" style="width:400px"> 
+    </div>
+  </form>
+</div>
+
+{% endblock %}

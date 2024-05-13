@@ -1,0 +1,26 @@
+{% if member_plate != None and member_plate.member_release.status.status == 'In Collection' %}
+<span style="display:flex; justify-content:space-between">
+  <span style="text-transform: uppercase; font-size:2rem">{{ plate.plate_index }}</span>
+  <span style="display:flex">
+    {% if member_plate.crate_parent != None %}
+    <span style="display:flex; align-items:baseline">
+      <span style="margin-right:5px">Location:</span>
+      <span style="display:flex; align-items:center; justify-content:space-between">
+        {% if member_plate.crate_parent %}
+        <span style="font-size:1.5rem">{{ member_plate.crate_parent.crate_id }}</span>
+        {% endif %}
+        {% if member_plate.crate_parent_desired_option == True and member_plate.desired_crate_parent_option_crate_parent == member_plate.crate_parent %}
+        <span style="margin-left:5px; color:green"><i class="fas fa-check"></i></span>
+        {% else %}
+        <span style="margin-left:5px"><i class="fas fa-check"></i></span>
+        {% endif %}
+        {% include 'member_plate_crate_parent_set.html' %}
+      </span>
+    </span>
+    {% endif %}
+    {% include 'move_plate_form.html' %}
+  </span>
+</span>
+{% else %}
+<span style="text-transform: uppercase; font-size:2rem">{{ plate.plate_index }}</span>
+{% endif %}

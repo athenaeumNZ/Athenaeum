@@ -1,0 +1,170 @@
+{% extends 'library_base.html' %}
+
+{% block title %}Release Database{% endblock %}
+
+{% block nav-title %}RELEASE DATABASE{% endblock %}
+
+{% block content %}
+
+<!-- header -->
+<div style="display:flex; justify-content:space-between; align-items:center; padding-top:30px;">
+  <!-- search -->
+  <span style="display:flex; justify-content:space-between">
+    <div class="row">
+      <div class="column">
+        <table>
+          <form action="{% url 'release_database_search' library.id %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <tbody>
+            <tr>
+              <td style="width:180px; padding-right:5px">
+                {% if search_track_crate_id and search_track_crate_id != 'Catergory...' %}
+                  <select id="search_track_crate_id" style="width:180px; height:30px; border:3px solid green " name="search_track_crate_id">
+                {% else %}
+                  <select id="search_track_crate_id" style="width:180px; height:30px;" name="search_track_crate_id">
+                {% endif %}
+                  {% if search_track_crate_id %}
+                    <option selected>{{ search_track_crate_id }}</option>
+                    <option></option>
+                  {% else %}
+                    <option selected>Catergory...</option>
+                  {% endif %}
+                  {% for crate in track_crate_ids %}
+                    <option value="{{ crate }}">{{ crate }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              
+              <td style="width:180px; padding-right:5px">
+                {% if search_artist %}
+                  <input name="search_artist" value="{{ search_artist }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Artist..." name="search_artist">
+                {% endif %}
+              </td>
+
+              <td style="width:180px; padding-right:5px">
+                {% if search_label %}
+                  <input name="search_label" value="{{ search_label }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Label..." name="search_label">
+                {% endif %}
+              </td>
+
+              <td style="width:180px; padding-right:5px">
+                {% if search_catalog %}
+                  <input name="search_catalog" value="{{ search_catalog }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Catalog..." name="search_catalog">
+                {% endif %}
+              </td>
+
+              <td style="width:180px; padding-right:5px">
+                {% if search_release_year %}
+                  <input name="search_release_year" value="{{ search_release_year }}" style="border:3px solid green">
+                {% else %}
+                  <input placeholder="Release Year..." name="search_release_year">
+                {% endif %}
+              </td>
+              <td>
+                <button type="submit" class="btn btn-secondary btn-sm" style="height:30px; margin-right:5px"><i class="fas fa-search"></i></button>
+              </td>
+              <td>
+                <a href="{% url 'release_database' library.id user.member.id %}" class="btn btn-secondary btn-sm" style="height:30px;">Reset Search</a>
+              </td>
+            </tr>
+          </tbody>
+          </form>
+        </table>
+      </div>
+    </div>
+  </span>
+  <!-- options -->
+  <span>
+    <a href="{% url 'release_check_catalog_number_before_adding' library.id %}" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-plus"></i> Release</a>
+  </span>
+</div>
+
+<!-- releases -->
+<div style="padding-top:30px">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>IMG</th>
+        <th></th>
+        <th class="text-center">CATALOG</th>
+        <th>Artist</th>
+        <th>Release Title</th>
+        <th>Label</th>
+        <th>Year</th>
+      </tr>
+    </thead>     
+    {% for release in releases %}
+    <tbody>
+      <tr>
+        <td style="height:30px; width: 30px; text-align:center;">
+          {% if release.artwork %}
+            <img src="{{ release.artwork.url }}" width="30" height="30">
+          {% else %}
+            <div style="text-align:center; font-size: 0.5rem;">No image</div>
+          {% endif %}
+        </td>
+        {% if release.id in members_collection %}
+          <td class="text-center" style="color:green; text-decoration:none">C</td>
+        {% elif release in member_want_list.want_list.all %}
+          <td class="text-center"><a href="{% url 'release_remove_to_members_wantlist_submission' library.id release.id user.member.id previous_url %}" style="color:blue; text-decoration:none" onclick="return confirm('Are you sure you want to remove {{ r}} from your wantlist?')">W</td>
+        {% else %}
+          <td class="text-center"><a href="{% url 'release_add_to_members_wantlist_submission' library.id release.id user.member.id previous_url %}" style="color:gray; text-decoration:none">+</td>
+        {% endif %}
+        <td><a href="{% url 'release' library.id release.id %}" target="_blank" style="width:150px" class="btn btn-secondary btn-sm">{{release.catalog_number}}</a></td>
+        <td>{{release.artist}}</td>
+        <td>{{release.release_title}}</td>
+        <td>{{release.label}}</td>
+        {% if release.supplier %}
+          <td style="color:green">
+        {% else %}
+          <td>
+        {% endif %}
+        {{ release.release_date|date:"Y" }}
+        </td>
+      </tr>
+    </tbody>   
+    {% endfor %}
+  </table>
+</div>
+<br>
+
+<!-- pagination-->
+<div style="padding-top: 5px;">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if releases.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ releases.previous_page_number }}">&lsaquo;</a></li>
+          {% if releases.number > 2 %}
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+              {% if releases.number > 3 %}
+                <span class="page-link">...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+      {% for num in releases.paginator.page_range %}
+        {% if releases.number == num %}
+          <li class="page-item"><a class="page-link active" href="?page={{ num }}">{{ num }}</a></li>
+        {% elif num > releases.number|add:'-2' and num < releases.number|add:'2' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if releases.has_next %}
+        {% if releases.number < releases.paginator.num_pages|add:'-2' %}
+          <span class="page-link">...</span>
+          <li class="page-item"><a class="page-link" href="?page={{ releases.paginator.num_pages }}">{{ releases.paginator.num_pages }}</a></li>
+        {% elif releases.number < releases.paginator.num_pages|add:'-1' %}
+          <li class="page-item"><a class="page-link" href="?page={{ releases.paginator.num_pages }}">{{ releases.paginator.num_pages }}</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link" href="?page={{ releases.next_page_number }}">&rsaquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav> 
+</div>
+
+{% endblock %}

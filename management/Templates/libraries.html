@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Libraries{% endblock %}
+ 
+{% block content %}
+
+<header>
+  <span>
+    <h1 id="inline" style="text-transform:uppercase; padding-top:10px;">&nbsp;&nbsp;<strong>Vinyl Libraries</strong></h1>
+  </span>
+  <span>
+    <a href="/" class="btn btn-secondary btn-sm"><i class="fas fa-home"></i> Static</a>
+  </span>
+  </header>
+<br>
+
+<div id="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="text-center">Logo</th>
+        <th>Visit</th>
+        <th>Location</th>
+        <th>Librarian</th>
+      </tr>
+    </thead>
+    {% for library in libraries %}
+    <tbody>
+      <tr>
+        <td style="height:30px; width: 30px; text-align:center;">
+          {% if library.logo_black_on_white %}
+            <img src="{{ library.logo_black_on_white.url }}" width="25" height="25">
+          {% else %}
+            <div style="text-align:center; font-size: 0.5rem;">No image</div>
+          {% endif %}
+        </td>
+        <td style="padding-top: 10px; text-transform:uppercase">
+          {% if library.has_crates == True %}
+            <a href="{% url 'crates' library.id user.member.id %}" class="btn btn-secondary btn-sm" style="width:200px;">{{ library.name }}</a>
+          {% else %}
+            <a href="{% url 'library_default_crates_add' library.id %}" class="btn btn-warning btn-sm" style="width:200px;">Add Default Crates</a>
+          {% endif %}
+        </td>
+        <td>{{ library.city }}, {{ library.country }}</td>
+        <td style="text-transform:capitalize">{{ library.librarian.member.dj_name }}</td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>  
+</div>
+
+{% endblock %}
